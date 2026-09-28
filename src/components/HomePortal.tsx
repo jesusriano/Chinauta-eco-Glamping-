@@ -14,6 +14,8 @@ import regeneratedDome2Image from '../assets/images/regenerated_image_1790617455
 import bochicaRomanticDecor from '../assets/images/bochica_romantic_decor_1790618007934.jpg';
 import bochicaJacuzziDeck from '../assets/images/bochica_jacuzzi_deck_1790618019311.jpg';
 import bochicaSunsetView from '../assets/images/bochica_sunset_view_1790617981274.jpg';
+import chinautaDeckAsoleadoras from '../assets/images/chinauta_deck_asoleadoras_1790624838157.jpg';
+import chinautaRomanticDomeNight from '../assets/images/chinauta_romantic_dome_night_1790624852355.jpg';
 
 interface HomePortalProps {
   onOpenBooking: (domeId?: number) => void;
@@ -60,10 +62,10 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
   const galleryItems = [
     {
       id: 1,
-      title: 'Domo Huitaca — Jacuzzi Privado',
-      category: 'Domos',
-      image: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80',
-      description: 'Jacuzzi panorámico con agua caliente y vista sobre las montañas de Chinauta.'
+      title: 'Deck Solárium con Asoleadoras & Sombrilla',
+      category: 'Jacuzzis & Vistas',
+      image: chinautaDeckAsoleadoras,
+      description: 'Deck privado en madera con asoleadoras, sombrilla verde, zona BBQ y tina de hidromasaje en Chinauta.'
     },
     {
       id: 2,
@@ -88,10 +90,10 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
     },
     {
       id: 3,
-      title: 'Tina de Cedro Japonés',
-      category: 'Jacuzzis & Vistas',
-      image: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1200&q=80',
-      description: 'Inmersión en agua caliente aromatizada con esencias naturales en el bosque.'
+      title: 'Noche Mágica Bajo las Estrellas — Pareja en Domo',
+      category: 'Domos',
+      image: chinautaRomanticDomeNight,
+      description: 'Cena romántica para parejas en bata blanca con vino tinto y vista estelar a través de los paneles geodésicos.'
     },
     {
       id: 4,
@@ -150,11 +152,11 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center bg-slate-950 overflow-hidden">
         {/* Background image with subtle dark overlay */}
-        <div className="absolute inset-0 z-0 opacity-45">
+        <div className="absolute inset-0 z-0 opacity-55">
           <img
-            src="https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=2000&q=85"
-            alt="Eco Glamping Chinauta"
-            className="w-full h-full object-cover scale-105 animate-pulse [animation-duration:10s]"
+            src={chinautaRomanticDomeNight}
+            alt="Eco Glamping Chinauta - Pareja bajo las estrellas"
+            className="w-full h-full object-cover scale-105"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-0"></div>
