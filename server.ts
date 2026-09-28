@@ -305,6 +305,19 @@ app.put("/api/domes/:id", (req, res) => {
   }
 });
 
+app.put("/api/domes/:id/images", (req, res) => {
+  try {
+    const { id } = req.params;
+    const { images, user_name } = req.body;
+    const imagesStr = Array.isArray(images) ? JSON.stringify(images) : typeof images === 'string' ? images : null;
+    db.prepare("UPDATE domes SET images = ? WHERE id = ?").run(imagesStr, id);
+    logAudit(user_name, "ACTUALIZAR_FOTOS_DOMO", "Domo", id, "Actualización de galería de fotos del domo");
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 app.post("/api/upload-video", (req, res) => {
   try {
     const { domeId, filename, videoData } = req.body;

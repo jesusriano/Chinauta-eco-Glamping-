@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, Volume2, VolumeX, Maximize2, Film, Camera, Upload, CheckCircle, ImagePlus, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Maximize2, Film, Camera, Upload, CheckCircle, ImagePlus, ChevronLeft, ChevronRight, X, Trash2 } from 'lucide-react';
 import { Dome } from '../types';
 import { getDomeImages } from '../utils/domeImages';
 import defaultDomo1Video from '../assets/videos/domo_1_huitaca.mp4';
@@ -236,6 +236,29 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
     setCurrentPhotoIdx(prev => (prev - 1 + images.length) % images.length);
   };
 
+  const handleDeleteCurrentPhoto = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (images.length <= 1) {
+      showToast("No se puede borrar la única foto del domo.");
+      return;
+    }
+    const newImages = images.filter((_, idx) => idx !== currentPhotoIdx);
+    setImages(newImages);
+    setCurrentPhotoIdx(prev => (prev >= newImages.length ? 0 : prev));
+    localStorage.setItem(`dome_${domeId}_custom_images`, JSON.stringify(newImages));
+    showToast("¡Foto eliminada de la galería!");
+
+    try {
+      await fetch(`/api/domes/${domeId}/images`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ images: newImages, user_name: 'Administrador' })
+      });
+    } catch (err) {
+      console.warn("Error updating dome images on server:", err);
+    }
+  };
+
   return (
     <div className={`relative w-full overflow-hidden select-none bg-slate-950 rounded-t-2xl flex flex-col justify-end ${className}`}>
       {/* Hidden File Inputs for Video and Image */}
@@ -373,7 +396,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
             </span>
           </div>
 
-          {/* Top Right: Subir Imagen & Expand */}
+          {/* Top Right: Subir Imagen, Borrar & Expand */}
           <div className="absolute top-3 right-3 z-20 flex items-center space-x-1.5 pointer-events-auto">
             <button
               type="button"
@@ -387,6 +410,17 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
               <ImagePlus className="w-3 h-3 text-emerald-400" />
               <span className="hidden sm:inline">Subir imagen</span>
             </button>
+
+            {images.length > 1 && (
+              <button
+                type="button"
+                onClick={handleDeleteCurrentPhoto}
+                title="Eliminar esta foto de la galería"
+                className="p-1.5 rounded-full bg-slate-900/80 hover:bg-rose-600 text-slate-300 hover:text-white backdrop-blur-md border border-white/20 transition-all active:scale-95 shadow-sm"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
 
             <button
               type="button"
@@ -550,15 +584,26 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
               )}
             </div>
 
-            <div className="flex items-center justify-center space-x-2 py-2">
+            <div className="flex flex-wrap items-center justify-center gap-2 py-2">
               <button
                 type="button"
                 onClick={() => imageInputRef.current?.click()}
-                className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold flex items-center space-x-1.5 hover:bg-emerald-700"
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95"
               >
                 <ImagePlus className="w-4 h-4" />
-                <span>Subir otra imagen a este domo</span>
+                <span>Subir otra imagen</span>
               </button>
+
+              {images.length > 1 && (
+                <button
+                  type="button"
+                  onClick={handleDeleteCurrentPhoto}
+                  className="px-4 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Borrar esta foto</span>
+                </button>
+              )}
             </div>
           </div>
         )}
