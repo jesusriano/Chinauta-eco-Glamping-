@@ -1,0 +1,568 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Pause, Volume2, VolumeX, Maximize2, Film, Camera, Upload, CheckCircle, ImagePlus, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Dome } from '../types';
+import { getDomeImages } from '../utils/domeImages';
+import defaultDomo1Video from '../assets/videos/domo_1_huitaca.mp4';
+
+interface DomeMediaCardProps {
+  dome: Dome;
+  className?: string;
+  onOpenBooking?: () => void;
+}
+
+export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
+  dome,
+  className = 'h-64 sm:h-72 md:h-80',
+  onOpenBooking
+}) => {
+  const domeId = Number(dome.id);
+
+  // Tab State: 'video' | 'photos'
+  const [activeTab, setActiveTab] = useState<'video' | 'photos'>('video');
+
+  // Video State
+  const [videoSrc, setVideoSrc] = useState<string>(() => {
+    try {
+      const stored = localStorage.getItem(`dome_${domeId}_custom_video`);
+      if (stored && !stored.startsWith('blob:')) {
+        return stored;
+      }
+      if (stored && stored.startsWith('blob:')) {
+        localStorage.removeItem(`dome_${domeId}_custom_video`);
+      }
+    } catch (_) {}
+
+    // Default per dome
+    if (domeId === 1) {
+      return defaultDomo1Video || '/assets/videos/domo_1_huitaca.mp4';
+    }
+    // High quality nature and glamping fallback video for other domes
+    return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+  });
+
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [videoError, setVideoError] = useState(false);
+
+  // Images State
+  const [images, setImages] = useState<string[]>(() => {
+    const baseImages = getDomeImages(dome);
+    try {
+      const stored = localStorage.getItem(`dome_${domeId}_custom_images`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Combine stored and base images avoiding duplicates
+          return Array.from(new Set([...parsed, ...baseImages]));
+        }
+      }
+    } catch (_) {}
+    return baseImages;
+  });
+
+  const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
+  const [isFullscreenPhoto, setIsFullscreenPhoto] = useState(false);
+
+  // Upload Feedback
+  const [isUploading, setIsUploading] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  // Safe Play
+  const safePlay = () => {
+    if (videoRef.current) {
+      const promise = videoRef.current.play();
+      if (promise !== undefined) {
+        promise
+          .then(() => setIsPlaying(true))
+          .catch(() => setIsPlaying(false));
+      }
+    }
+  };
+
+  const togglePlay = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      safePlay();
+    }
+  };
+
+  const toggleMute = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!videoRef.current) return;
+    const newMuted = !isMuted;
+    videoRef.current.muted = newMuted;
+    setIsMuted(newMuted);
+  };
+
+  const toggleFullscreen = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!videoRef.current) return;
+    if (videoRef.current.requestFullscreen) {
+      videoRef.current.requestFullscreen();
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (!videoRef.current) return;
+    const current = videoRef.current.currentTime;
+    const total = videoRef.current.duration || 1;
+    setProgress((current / total) * 100);
+  };
+
+  const handleVideoError = () => {
+    if (videoSrc !== '/assets/videos/domo_1_huitaca.mp4' && domeId === 1) {
+      setVideoSrc('/assets/videos/domo_1_huitaca.mp4');
+    } else {
+      setVideoError(true);
+      setActiveTab('photos');
+    }
+  };
+
+  // Upload Video Handler
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const blobUrl = URL.createObjectURL(file);
+      setVideoSrc(blobUrl);
+      setVideoError(false);
+      setActiveTab('video');
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64 = reader.result as string;
+          const res = await fetch('/api/upload-video', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              domeId,
+              filename: `domo_${domeId}_user_video.mp4`,
+              videoData: base64
+            })
+          });
+          const data = await res.json();
+          if (data?.url) {
+            localStorage.setItem(`dome_${domeId}_custom_video`, data.url);
+            setVideoSrc(data.url);
+          }
+        } catch (err) {
+          console.warn("Server video upload fallback:", err);
+        }
+      };
+      reader.readAsDataURL(file);
+
+      showToast(`¡Video cargado para ${dome.name}!`);
+      setTimeout(safePlay, 100);
+    } catch (err) {
+      console.error("Error al cargar video:", err);
+    } finally {
+      setIsUploading(false);
+      if (videoInputRef.current) videoInputRef.current.value = '';
+    }
+  };
+
+  // Upload Image Handler
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const previewUrl = URL.createObjectURL(file);
+      const newImages = [previewUrl, ...images];
+      setImages(newImages);
+      setCurrentPhotoIdx(0);
+      setActiveTab('photos');
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64 = reader.result as string;
+          const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              domeId,
+              filename: `dome_${domeId}_${Date.now()}.jpg`,
+              imageData: base64
+            })
+          });
+          const data = await res.json();
+          if (data?.url) {
+            const persistentImages = [data.url, ...images.filter(img => !img.startsWith('blob:'))];
+            setImages(persistentImages);
+            localStorage.setItem(`dome_${domeId}_custom_images`, JSON.stringify(persistentImages));
+          }
+        } catch (err) {
+          console.warn("Server image upload fallback:", err);
+        }
+      };
+      reader.readAsDataURL(file);
+
+      showToast(`¡Foto agregada a la galería de ${dome.name}!`);
+    } catch (err) {
+      console.error("Error al cargar imagen:", err);
+    } finally {
+      setIsUploading(false);
+      if (imageInputRef.current) imageInputRef.current.value = '';
+    }
+  };
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const nextPhoto = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setCurrentPhotoIdx(prev => (prev + 1) % images.length);
+  };
+
+  const prevPhoto = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setCurrentPhotoIdx(prev => (prev - 1 + images.length) % images.length);
+  };
+
+  return (
+    <div className={`relative w-full overflow-hidden select-none bg-slate-950 rounded-t-2xl flex flex-col justify-end ${className}`}>
+      {/* Hidden File Inputs for Video and Image */}
+      <input
+        type="file"
+        ref={videoInputRef}
+        onChange={handleVideoUpload}
+        accept="video/mp4,video/webm,video/quicktime"
+        className="hidden"
+      />
+      <input
+        type="file"
+        ref={imageInputRef}
+        onChange={handleImageUpload}
+        accept="image/jpeg,image/png,image/webp,image/jpg"
+        className="hidden"
+      />
+
+      {/* Main Display: Video vs Photos */}
+      {activeTab === 'video' && !videoError ? (
+        <div className="absolute inset-0 overflow-hidden cursor-pointer" onClick={togglePlay}>
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted={isMuted}
+            playsInline
+            preload="metadata"
+            onTimeUpdate={handleTimeUpdate}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onError={handleVideoError}
+            className="w-full h-full object-cover"
+          >
+            <source src={videoSrc} type="video/mp4" />
+            {domeId === 1 && <source src="/assets/videos/domo_1_huitaca.mp4" type="video/mp4" />}
+          </video>
+
+          {/* Vignette Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-slate-950/50 pointer-events-none" />
+
+          {/* Big Play Button when paused */}
+          {!isPlaying && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="w-14 h-14 rounded-full bg-emerald-600/90 text-white flex items-center justify-center shadow-xl backdrop-blur-md"
+              >
+                <Play className="w-7 h-7 text-white fill-current ml-1" />
+              </motion.div>
+            </div>
+          )}
+
+          {/* Top Left: Badges */}
+          <div className="absolute top-3 left-3 z-20 flex flex-wrap items-center gap-1.5 pointer-events-auto">
+            <span className="bg-slate-900/85 backdrop-blur-md text-white text-[11px] px-2.5 py-1 rounded-full font-medium shadow-sm border border-white/10">
+              Capacidad: {dome.capacity} personas
+            </span>
+            <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-950/85 backdrop-blur-md text-emerald-300 text-[11px] font-semibold border border-emerald-500/30 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Video Tour</span>
+            </span>
+          </div>
+
+          {/* Top Right Controls: Subir Video, Mute, Fullscreen */}
+          <div className="absolute top-3 right-3 z-20 flex items-center space-x-1.5 pointer-events-auto">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                videoInputRef.current?.click();
+              }}
+              title={`Subir o cambiar video para ${dome.name}`}
+              className="px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-emerald-600 text-white text-[11px] font-medium backdrop-blur-md border border-white/20 transition-all flex items-center space-x-1 shadow-sm active:scale-95"
+            >
+              <Upload className="w-3 h-3 text-emerald-400" />
+              <span className="hidden sm:inline">Subir video</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleMute}
+              aria-label={isMuted ? 'Activar sonido' : 'Silenciar sonido'}
+              className="p-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white backdrop-blur-md border border-white/20 transition-transform active:scale-95 shadow-sm"
+            >
+              {isMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-300" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-400" />}
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              aria-label="Pantalla completa"
+              className="p-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white backdrop-blur-md border border-white/20 transition-transform active:scale-95 shadow-sm"
+            >
+              <Maximize2 className="w-3.5 h-3.5 text-white" />
+            </button>
+          </div>
+
+          {/* Video Progress Bar */}
+          <div className="absolute bottom-0 inset-x-0 h-1 bg-white/20">
+            <div
+              className="h-full bg-emerald-400 transition-all duration-150"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      ) : (
+        /* Photos Carousel */
+        <div className="absolute inset-0 overflow-hidden group/carousel">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={currentPhotoIdx}
+              src={images[currentPhotoIdx] || images[0]}
+              alt={`${dome.name} - Foto ${currentPhotoIdx + 1}`}
+              initial={{ opacity: 0.4 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0.2 }}
+              transition={{ duration: 0.3 }}
+              className="w-full h-full object-cover cursor-pointer"
+              onClick={() => setIsFullscreenPhoto(true)}
+            />
+          </AnimatePresence>
+
+          {/* Vignette Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-slate-950/40 pointer-events-none" />
+
+          {/* Top Left: Badges */}
+          <div className="absolute top-3 left-3 z-20 flex flex-wrap items-center gap-1.5 pointer-events-auto">
+            <span className="bg-slate-900/85 backdrop-blur-md text-white text-[11px] px-2.5 py-1 rounded-full font-medium shadow-sm border border-white/10">
+              Capacidad: {dome.capacity} personas
+            </span>
+            <span className="bg-slate-900/85 backdrop-blur-md text-slate-300 text-[11px] px-2 py-1 rounded-full font-medium shadow-sm border border-white/10">
+              {currentPhotoIdx + 1} / {images.length}
+            </span>
+          </div>
+
+          {/* Top Right: Subir Imagen & Expand */}
+          <div className="absolute top-3 right-3 z-20 flex items-center space-x-1.5 pointer-events-auto">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                imageInputRef.current?.click();
+              }}
+              title={`Agregar nueva foto para ${dome.name}`}
+              className="px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-emerald-600 text-white text-[11px] font-medium backdrop-blur-md border border-white/20 transition-all flex items-center space-x-1 shadow-sm active:scale-95"
+            >
+              <ImagePlus className="w-3 h-3 text-emerald-400" />
+              <span className="hidden sm:inline">Subir imagen</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFullscreenPhoto(true);
+              }}
+              title="Ver imagen en tamaño completo"
+              className="p-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white backdrop-blur-md border border-white/20 transition-transform active:scale-95 shadow-sm"
+            >
+              <Maximize2 className="w-3.5 h-3.5 text-white" />
+            </button>
+          </div>
+
+          {/* Carousel Arrows */}
+          {images.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={prevPhoto}
+                aria-label="Foto anterior"
+                className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-slate-900/70 hover:bg-slate-900 text-white transition-opacity z-20 opacity-80 sm:opacity-0 group-hover/carousel:opacity-100 shadow-md backdrop-blur-xs"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={nextPhoto}
+                aria-label="Siguiente foto"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-slate-900/70 hover:bg-slate-900 text-white transition-opacity z-20 opacity-80 sm:opacity-0 group-hover/carousel:opacity-100 shadow-md backdrop-blur-xs"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </>
+          )}
+
+          {/* Dot Indicators */}
+          <div className="absolute bottom-16 inset-x-0 flex justify-center space-x-1.5 z-20 pointer-events-none">
+            {images.slice(0, 7).map((_, idx) => (
+              <span
+                key={idx}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  idx === currentPhotoIdx ? 'w-5 bg-emerald-400' : 'w-1.5 bg-white/40'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Bottom Floating Bar: Price and Tab switcher + Upload Action */}
+      <div className="relative z-20 p-3 sm:p-4 flex items-center justify-between pointer-events-auto">
+        {/* Price Tag */}
+        <div className="bg-emerald-600/95 text-white text-xs px-2.5 py-1 rounded-md font-bold shadow-md">
+          ${dome.price_per_night.toLocaleString('es-CO')} COP / noche
+        </div>
+
+        {/* Tab & Upload Switcher */}
+        <div className="flex items-center space-x-1 bg-slate-950/85 backdrop-blur-md rounded-full p-1 border border-white/15 shadow-lg">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setVideoError(false);
+              setActiveTab('video');
+              setTimeout(safePlay, 50);
+            }}
+            className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all flex items-center space-x-1.5 ${
+              activeTab === 'video'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            <Film className="w-3.5 h-3.5" />
+            <span>Video</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveTab('photos');
+            }}
+            className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all flex items-center space-x-1.5 ${
+              activeTab === 'photos'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            <Camera className="w-3.5 h-3.5" />
+            <span>Fotos</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Floating Quick Upload Bar on Mobile */}
+      <div className="absolute bottom-1.5 right-3 sm:hidden z-20 flex items-center space-x-1">
+        <button
+          type="button"
+          onClick={() => (activeTab === 'video' ? videoInputRef.current?.click() : imageInputRef.current?.click())}
+          className="text-[10px] text-emerald-300 underline font-medium"
+        >
+          {activeTab === 'video' ? '+ Subir video' : '+ Subir imagen'}
+        </button>
+      </div>
+
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-12 left-1/2 -translate-x-1/2 z-30 bg-emerald-600 text-white text-xs px-3.5 py-1.5 rounded-full font-medium shadow-xl flex items-center space-x-1.5 whitespace-nowrap"
+          >
+            <CheckCircle className="w-4 h-4 shrink-0" />
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Fullscreen Photo Modal */}
+      <AnimatePresence>
+        {isFullscreenPhoto && (
+          <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col justify-between p-4">
+            <div className="flex items-center justify-between text-white z-10">
+              <span className="text-sm font-semibold">{dome.name} • Foto {currentPhotoIdx + 1} de {images.length}</span>
+              <button
+                type="button"
+                onClick={() => setIsFullscreenPhoto(false)}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="relative flex-1 flex items-center justify-center p-2">
+              <img
+                src={images[currentPhotoIdx]}
+                alt={`${dome.name} tamaño completo`}
+                className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl"
+              />
+
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={prevPhoto}
+                    className="absolute left-2 sm:left-6 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextPhoto}
+                    className="absolute right-2 sm:right-6 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="flex items-center justify-center space-x-2 py-2">
+              <button
+                type="button"
+                onClick={() => imageInputRef.current?.click()}
+                className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold flex items-center space-x-1.5 hover:bg-emerald-700"
+              >
+                <ImagePlus className="w-4 h-4" />
+                <span>Subir otra imagen a este domo</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};

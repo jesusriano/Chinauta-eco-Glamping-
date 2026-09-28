@@ -1,0 +1,6 @@
+{
+  "name": "Eco Glamping Chinauta",
+  "description": "Sistema integral de reservas, servicio al cliente, ventas, operación y administración para Eco Glamping Chinauta",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

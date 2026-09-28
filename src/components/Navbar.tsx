@@ -1,0 +1,495 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Calendar, Compass, Phone, Shield, Search, Home, Utensils, 
+  Menu, X, ChevronDown, MapPin, Sparkles, Waves, Clock, 
+  MessageSquare, ChevronRight, ExternalLink
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface NavbarProps {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  onOpenBooking: () => void;
+  onOpenAdminLogin: () => void;
+  onOpenMyReservations: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  setActiveTab,
+  onOpenBooking,
+  onOpenAdminLogin,
+  onOpenMyReservations
+}) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isExplorarDropdownOpen, setIsExplorarDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsExplorarDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close mobile menu on tab switch or ESC key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+        setIsExplorarDropdownOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleNavClick = (tab: string) => {
+    setActiveTab(tab);
+    setIsMobileMenuOpen(false);
+    setIsExplorarDropdownOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <>
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            
+            {/* Logo & Brand */}
+            <div 
+              className="flex items-center space-x-3 cursor-pointer group select-none" 
+              onClick={() => handleNavClick('home')}
+            >
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white flex items-center justify-center shadow-md shadow-slate-300/40 relative overflow-hidden border border-slate-200 group-hover:scale-105 transition-transform">
+                <img 
+                  src="/logo.jpg" 
+                  alt="Eco Glamping Chinauta Logo" 
+                  className="w-full h-full object-cover" 
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div>
+                <div className="flex items-center space-x-1.5">
+                  <span className="text-base sm:text-lg font-black tracking-tight text-slate-900 group-hover:text-emerald-700 transition-colors">
+                    CHINAUTA
+                  </span>
+                  <span className="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 tracking-wider">
+                    ECO GLAMPING
+                  </span>
+                </div>
+                <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium tracking-widest uppercase">
+                  Fusagasugá • Colombia
+                </p>
+              </div>
+            </div>
+
+            {/* Desktop Navigation Links */}
+            <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2">
+              <button
+                onClick={() => handleNavClick('home')}
+                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === 'home'
+                    ? 'bg-emerald-50 text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                }`}
+              >
+                Inicio
+              </button>
+
+              <button
+                onClick={() => handleNavClick('availability')}
+                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === 'availability'
+                    ? 'bg-emerald-50 text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                }`}
+              >
+                Disponibilidad
+              </button>
+
+              <button
+                onClick={() => handleNavClick('domes')}
+                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-1 ${
+                  activeTab === 'domes'
+                    ? 'bg-emerald-50 text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                }`}
+              >
+                <span>Nuestros Domos</span>
+                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800">6</span>
+              </button>
+
+              <button
+                onClick={() => handleNavClick('menu')}
+                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-1.5 ${
+                  activeTab === 'menu'
+                    ? 'bg-emerald-50 text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                }`}
+              >
+                <Utensils className="w-4 h-4 text-emerald-600" />
+                <span>Menú Comidas</span>
+              </button>
+
+              {/* Elegant Dropdown: Explorar */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsExplorarDropdownOpen(!isExplorarDropdownOpen)}
+                  className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-1 ${
+                    isExplorarDropdownOpen || activeTab === 'map'
+                      ? 'bg-slate-100 text-slate-900'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  }`}
+                >
+                  <span>Explorar</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isExplorarDropdownOpen ? 'rotate-180 text-emerald-600' : ''}`} />
+                </button>
+
+                <AnimatePresence>
+                  {isExplorarDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200/90 py-2.5 z-50 overflow-hidden"
+                    >
+                      <button
+                        onClick={() => handleNavClick('map')}
+                        className="w-full text-left px-4 py-2.5 hover:bg-emerald-50 flex items-start space-x-3 transition-colors group"
+                      >
+                        <div className="p-2 rounded-lg bg-emerald-100/80 text-emerald-700 group-hover:bg-emerald-200 transition-colors">
+                          <MapPin className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900">Mapa & Entorno</p>
+                          <p className="text-xs text-slate-500">Distribución de domos y senderos</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          handleNavClick('home');
+                          setTimeout(() => {
+                            const el = document.getElementById('experiencia-section');
+                            el?.scrollIntoView({ behavior: 'smooth' });
+                          }, 150);
+                        }}
+                        className="w-full text-left px-4 py-2.5 hover:bg-emerald-50 flex items-start space-x-3 transition-colors group"
+                      >
+                        <div className="p-2 rounded-lg bg-teal-100/80 text-teal-700 group-hover:bg-teal-200 transition-colors">
+                          <Waves className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900">Jacuzzis & Clima</p>
+                          <p className="text-xs text-slate-500">Tinaja de cedro y clima templado</p>
+                        </div>
+                      </button>
+
+                      <div className="border-t border-slate-100 my-1" />
+
+                      <a
+                        href="https://wa.me/573213109331?text=Hola,%20deseo%20informaci%C3%B3n%20sobre%20Eco%20Glamping%20Chinauta"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full text-left px-4 py-2.5 hover:bg-emerald-50 flex items-start space-x-3 transition-colors group"
+                      >
+                        <div className="p-2 rounded-lg bg-emerald-500 text-white group-hover:bg-emerald-600 transition-colors">
+                          <MessageSquare className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900 flex items-center space-x-1">
+                            <span>WhatsApp Directo</span>
+                            <ExternalLink className="w-3 h-3 text-slate-400" />
+                          </p>
+                          <p className="text-xs text-slate-500">+57 321 310 9331</p>
+                        </div>
+                      </a>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <button
+                onClick={() => handleNavClick('contact')}
+                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === 'contact'
+                    ? 'bg-emerald-50 text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                }`}
+              >
+                Contacto
+              </button>
+            </nav>
+
+            {/* Desktop Actions */}
+            <div className="hidden sm:flex items-center space-x-2 sm:space-x-3">
+              <button
+                onClick={onOpenMyReservations}
+                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100/85 transition-colors border border-slate-200 shadow-2xs"
+              >
+                <Search className="w-4 h-4 text-emerald-600" />
+                <span>Mis Reservas</span>
+              </button>
+
+              <button
+                onClick={onOpenBooking}
+                className="px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-md shadow-emerald-600/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              >
+                Reservar
+              </button>
+
+              <button
+                onClick={onOpenAdminLogin}
+                title="Panel Administrativo"
+                className="p-2.5 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-slate-100 border border-slate-200 transition-colors"
+              >
+                <Shield className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Mobile & Tablet Hamburger Button */}
+            <div className="flex items-center space-x-2 lg:hidden">
+              <button
+                onClick={onOpenBooking}
+                className="px-3.5 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-700 shadow-sm"
+              >
+                Reservar
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú desplegable'}
+                className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors border border-slate-300/80 shadow-xs active:scale-95"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6 text-emerald-700" />
+                ) : (
+                  <Menu className="w-6 h-6 text-slate-800" />
+                )}
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Elegant Mobile / Tablet Full Dropdown Menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="lg:hidden border-t border-slate-200/90 bg-white/98 backdrop-blur-xl shadow-2xl overflow-hidden"
+            >
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-4">
+                
+                {/* Status Bar */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50/80 border border-emerald-200/60">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-semibold text-emerald-900">Recepción en línea • Chinauta</span>
+                  </div>
+                  <a
+                    href="https://wa.me/573213109331"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold text-emerald-700 hover:underline flex items-center space-x-1"
+                  >
+                    <span>WhatsApp</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+
+                {/* Primary Action Buttons */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onOpenBooking();
+                    }}
+                    className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-700 shadow-md shadow-emerald-700/20 flex items-center justify-center space-x-1.5 active:scale-98"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    <span>Reservar Ahora</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onOpenMyReservations();
+                    }}
+                    className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center space-x-1.5 active:scale-98"
+                  >
+                    <Search className="w-4 h-4 text-emerald-600" />
+                    <span>Mis Reservas</span>
+                  </button>
+                </div>
+
+                {/* Nav Links List */}
+                <div className="space-y-1 pt-1">
+                  <button
+                    onClick={() => handleNavClick('home')}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                      activeTab === 'home' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Home className="w-5 h-5 text-emerald-600" />
+                      <span>Inicio</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('availability')}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                      activeTab === 'availability' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="w-5 h-5 text-emerald-600" />
+                      <span>Consultar Disponibilidad</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('domes')}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                      activeTab === 'domes' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Compass className="w-5 h-5 text-emerald-600" />
+                      <span>Nuestros Domos (6 Domos con Jacuzzi)</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('menu')}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                      activeTab === 'menu' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Utensils className="w-5 h-5 text-emerald-600" />
+                      <span>Menú Gastronómico (Cenas & Almuerzos)</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('map')}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                      activeTab === 'map' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <MapPin className="w-5 h-5 text-emerald-600" />
+                      <span>Mapa Interactivo & Entorno</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('contact')}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                      activeTab === 'contact' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Phone className="w-5 h-5 text-emerald-600" />
+                      <span>Contacto & Cómo Llegar</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onOpenAdminLogin();
+                    }}
+                    className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Shield className="w-5 h-5 text-slate-500" />
+                      <span>Portal Administrativo</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                  </button>
+                </div>
+
+                {/* Direct Telephone Link */}
+                <div className="pt-2 border-t border-slate-200">
+                  <a
+                    href="tel:+573213109331"
+                    className="flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
+                  >
+                    <Phone className="w-4 h-4 text-emerald-400" />
+                    <span>Llamar a Recepción: +57 321 310 9331</span>
+                  </a>
+                </div>
+
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      {/* Mobile Bottom Navigation Bar for Mobile Phones */}
+      <nav aria-label="Navegación móvil inferior" className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-2 py-2 flex items-center justify-around shadow-xl">
+        <button
+          onClick={() => handleNavClick('home')}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'home' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
+        >
+          <Home className="w-5 h-5 mb-0.5" />
+          <span>Inicio</span>
+        </button>
+
+        <button
+          onClick={() => handleNavClick('availability')}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'availability' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
+        >
+          <Calendar className="w-5 h-5 mb-0.5" />
+          <span>Fechas</span>
+        </button>
+
+        <button
+          onClick={() => handleNavClick('domes')}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'domes' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
+        >
+          <Compass className="w-5 h-5 mb-0.5" />
+          <span>Domos</span>
+        </button>
+
+        <button
+          onClick={() => handleNavClick('menu')}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'menu' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
+        >
+          <Utensils className="w-5 h-5 mb-0.5 text-emerald-600" />
+          <span>Menú</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${isMobileMenuOpen ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
+        >
+          <Menu className="w-5 h-5 mb-0.5" />
+          <span>Menú</span>
+        </button>
+      </nav>
+    </>
+  );
+};
