@@ -129,15 +129,21 @@ if (domeCount.count === 0) {
   insertUser.run("reception", "admin123", "Ana Recepción", "reception@ecoglampingchinauta.com", "RECEPCION", "Activo");
   insertUser.run("finanzas", "admin123", "Pedro Finanzas", "finanzas@ecoglampingchinauta.com", "FINANCES", "Activo");
 
-  // Seed Domes
-  const insertDome = db.prepare(`INSERT INTO domes (name, code, description, capacity, price_per_night, image_url, status, features, policies) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+  // Seed Domes with authentic local assets
+  const insertDome = db.prepare(`INSERT INTO domes (name, code, description, capacity, price_per_night, image_url, images, status, features, policies) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
   insertDome.run(
     "Domo Huitaca",
     "DOMO-01",
-    "Romántico domo geodésico con jacuzzi privado al aire libre, malla de descanso y vista privilegiada sobre las montañas de Chinauta.",
+    "Romántico domo geodésico con jacuzzi privado al aire libre, malla de descanso y vista privileged sobre las montañas de Chinauta.",
     2,
     380000,
-    "https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80",
+    "/assets/images/chinauta_deck_asoleadoras.jpg",
+    JSON.stringify([
+      "/assets/images/chinauta_deck_asoleadoras.jpg",
+      "/assets/images/huitaca_deck_jacuzzi_1790621224807.jpg",
+      "/assets/images/huitaca_catamaran_mesh_1790621260604.jpg",
+      "/assets/images/huitaca_entrance_steps_1790621247333.jpg"
+    ]),
     "Disponible",
     "Jacuzzi privado, Wi-Fi Starlink, Baño privado, Cama King, Desayuno campesino incluido, Calefacción",
     "No se admiten mascotas. Check-in: 3:00 PM. Check-out: 12:00 PM."
@@ -148,7 +154,13 @@ if (domeCount.count === 0) {
     "Domo familiar de alta gama con cúpula transparente para observación de estrellas, terraza privada y zona BBQ.",
     4,
     450000,
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
+    "/assets/images/chinauta_romantic_dome_night.jpg",
+    JSON.stringify([
+      "/assets/images/chinauta_romantic_dome_night.jpg",
+      "/assets/images/bochica_romantic_decor_1790618007934.jpg",
+      "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg",
+      "/assets/images/bochica_sunset_view_1790617981274.jpg"
+    ]),
     "Disponible",
     "Cúpula cenital panorámica, 2 camas Queen, Terraza, Zona BBQ, Malla flotante, Desayuno incluido",
     "Ambiente familiar. Prohibido fumar dentro del domo. Check-in: 3:00 PM."
@@ -159,7 +171,13 @@ if (domeCount.count === 0) {
     "Acogedor domo inmerso en el bosque nativo con tina de madera de cedro caliente y hamaca de descanso.",
     2,
     350000,
-    "https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1200&q=80",
+    "/assets/images/chinauta_romantic_dome_night.jpg",
+    JSON.stringify([
+      "/assets/images/chinauta_romantic_dome_night.jpg",
+      "/assets/images/chinauta_deck_asoleadoras.jpg",
+      "/assets/images/huitaca_deck_jacuzzi_1790621224807.jpg",
+      "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg"
+    ]),
     "Disponible",
     "Tina de cedro japonesa, Wi-Fi, Estufa a leña ecológica, Desayuno artesanal, Vista al bosque",
     "Ideal para parejas en desconexión total. Check-in: 3:00 PM."
@@ -170,7 +188,13 @@ if (domeCount.count === 0) {
     "Lujoso domo luminoso con fogata privada exterior, telescopio y vista panorámica al valle de Fusagasugá.",
     3,
     420000,
-    "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80",
+    "/assets/images/chinauta_deck_asoleadoras.jpg",
+    JSON.stringify([
+      "/assets/images/chinauta_deck_asoleadoras.jpg",
+      "/assets/images/chinauta_romantic_dome_night.jpg",
+      "/assets/images/huitaca_entrance_steps_1790621247333.jpg",
+      "/assets/images/bochica_sunset_view_1790617981274.jpg"
+    ]),
     "Disponible",
     "Fogata privada, Telescopio astronómico, Cama Queen + sofá cama, Jacuzzi hidromasaje, Desayuno",
     "Pet-friendly (bajo solicitud). Check-in: 3:00 PM."
@@ -181,7 +205,13 @@ if (domeCount.count === 0) {
     "Domo de eco-lujo con ducha de hidromasaje vertical, balcón privado y ambiente místico rodeado de naturaleza.",
     2,
     390000,
-    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+    "/assets/images/chinauta_romantic_dome_night.jpg",
+    JSON.stringify([
+      "/assets/images/chinauta_romantic_dome_night.jpg",
+      "/assets/images/huitaca_catamaran_mesh_1790621260604.jpg",
+      "/assets/images/bochica_romantic_decor_1790618007934.jpg",
+      "/assets/images/chinauta_deck_asoleadoras.jpg"
+    ]),
     "Disponible",
     "Ducha de hidromasaje, Balcón privado, Minibar ecológico, Cama King, Desayuno de la casa",
     "Prohibido fiestas o música a alto volumen. Check-in: 3:00 PM."
@@ -192,7 +222,13 @@ if (domeCount.count === 0) {
     "Domo VIP Máster con piscina privada climatizada, sala exterior flotante y máxima exclusividad.",
     4,
     480000,
-    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg",
+    JSON.stringify([
+      "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg",
+      "/assets/images/chinauta_romantic_dome_night.jpg",
+      "/assets/images/chinauta_deck_asoleadoras.jpg",
+      "/assets/images/huitaca_deck_jacuzzi_1790621224807.jpg"
+    ]),
     "Disponible",
     "Piscina privada climatizada, Sala exterior, Cama King + 2 camas sencillas, Cafetera Nespresso, VIP",
     "Experiencia exclusiva para adultos y familias. Check-in: 3:00 PM."
@@ -243,6 +279,76 @@ if (domeCount.count === 0) {
   );
 
   console.log("Database seeded successfully.");
+}
+
+// Ensure database domes always have authentic local image URLs rather than old generic stock photos
+try {
+  const existingDomes = db.prepare("SELECT id, image_url, images FROM domes").all() as any[];
+  const localMap: Record<number, { url: string; gallery: string[] }> = {
+    1: {
+      url: "/assets/images/chinauta_deck_asoleadoras.jpg",
+      gallery: [
+        "/assets/images/chinauta_deck_asoleadoras.jpg",
+        "/assets/images/huitaca_deck_jacuzzi_1790621224807.jpg",
+        "/assets/images/huitaca_catamaran_mesh_1790621260604.jpg",
+        "/assets/images/huitaca_entrance_steps_1790621247333.jpg"
+      ]
+    },
+    2: {
+      url: "/assets/images/chinauta_romantic_dome_night.jpg",
+      gallery: [
+        "/assets/images/chinauta_romantic_dome_night.jpg",
+        "/assets/images/bochica_romantic_decor_1790618007934.jpg",
+        "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg",
+        "/assets/images/bochica_sunset_view_1790617981274.jpg"
+      ]
+    },
+    3: {
+      url: "/assets/images/chinauta_romantic_dome_night.jpg",
+      gallery: [
+        "/assets/images/chinauta_romantic_dome_night.jpg",
+        "/assets/images/chinauta_deck_asoleadoras.jpg",
+        "/assets/images/huitaca_deck_jacuzzi_1790621224807.jpg",
+        "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg"
+      ]
+    },
+    4: {
+      url: "/assets/images/chinauta_deck_asoleadoras.jpg",
+      gallery: [
+        "/assets/images/chinauta_deck_asoleadoras.jpg",
+        "/assets/images/chinauta_romantic_dome_night.jpg",
+        "/assets/images/huitaca_entrance_steps_1790621247333.jpg",
+        "/assets/images/bochica_sunset_view_1790617981274.jpg"
+      ]
+    },
+    5: {
+      url: "/assets/images/chinauta_romantic_dome_night.jpg",
+      gallery: [
+        "/assets/images/chinauta_romantic_dome_night.jpg",
+        "/assets/images/huitaca_catamaran_mesh_1790621260604.jpg",
+        "/assets/images/bochica_romantic_decor_1790618007934.jpg",
+        "/assets/images/chinauta_deck_asoleadoras.jpg"
+      ]
+    },
+    6: {
+      url: "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg",
+      gallery: [
+        "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg",
+        "/assets/images/chinauta_romantic_dome_night.jpg",
+        "/assets/images/chinauta_deck_asoleadoras.jpg",
+        "/assets/images/huitaca_deck_jacuzzi_1790621224807.jpg"
+      ]
+    }
+  };
+
+  for (const dome of existingDomes) {
+    if (!dome.image_url || dome.image_url.includes("unsplash.com") || !dome.images || dome.images.includes("unsplash.com")) {
+      const info = localMap[dome.id] || localMap[1];
+      db.prepare("UPDATE domes SET image_url = ?, images = ? WHERE id = ?").run(info.url, JSON.stringify(info.gallery), dome.id);
+    }
+  }
+} catch (e) {
+  console.warn("Dome image sync notice:", e);
 }
 
 // Helper for logging audit

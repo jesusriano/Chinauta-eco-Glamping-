@@ -144,7 +144,7 @@ export function App() {
 
       {/* Footer */}
       <footer className="bg-slate-950 text-slate-400 py-12 border-t border-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center overflow-hidden border border-slate-800">
@@ -191,7 +191,7 @@ export function App() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-slate-900 text-center text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-8 border-t border-slate-900 text-center text-xs text-slate-500">
           © 2026 Eco Glamping Chinauta. Todos los derechos reservados. Sistema Integral de Reservas v2.5.
         </div>
       </footer>

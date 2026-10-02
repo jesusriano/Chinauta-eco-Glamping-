@@ -24,45 +24,48 @@ export const DEFAULT_DOME_GALLERIES: Record<number, string[]> = {
   3: [
     chinautaRomanticDomeNight,
     chinautaDeckAsoleadoras,
-    'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80'
+    huitacaDeckJacuzzi,
+    bochicaJacuzziDeck
   ],
   4: [
     chinautaDeckAsoleadoras,
     chinautaRomanticDomeNight,
-    'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80'
+    huitacaEntranceSteps,
+    bochicaSunsetView
   ],
   5: [
-    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1200&q=80'
+    chinautaRomanticDomeNight,
+    huitacaCatamaranMesh,
+    bochicaRomanticDecor,
+    chinautaDeckAsoleadoras
   ],
   6: [
-    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80'
+    bochicaJacuzziDeck,
+    chinautaRomanticDomeNight,
+    chinautaDeckAsoleadoras,
+    huitacaDeckJacuzzi
   ]
 };
 
 export function getDomeImages(dome: { id?: number; image_url?: string; images?: string[] }): string[] {
   const id = Number(dome.id);
-
-  if (id === 2) {
-    return [chinautaRomanticDomeNight, bochicaRomanticDecor, bochicaJacuzziDeck, bochicaSunsetView];
-  }
-
-  const defaults = DEFAULT_DOME_GALLERIES[id] || [];
+  const defaults = DEFAULT_DOME_GALLERIES[id] || [
+    chinautaRomanticDomeNight,
+    chinautaDeckAsoleadoras
+  ];
 
   if (Array.isArray(dome.images) && dome.images.length > 0) {
+    // Filter out generic unsplash fallback if local images exist
+    const nonUnsplash = dome.images.filter(img => !img.includes('unsplash.com'));
+    if (nonUnsplash.length > 0) {
+      return nonUnsplash;
+    }
     return dome.images;
   }
 
-  if (dome.image_url && !defaults.includes(dome.image_url)) {
+  if (dome.image_url && !dome.image_url.includes('unsplash.com') && !defaults.includes(dome.image_url)) {
     return [dome.image_url, ...defaults];
   }
 
-  return defaults.length > 0 ? defaults : [dome.image_url || 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80'];
+  return defaults;
 }
