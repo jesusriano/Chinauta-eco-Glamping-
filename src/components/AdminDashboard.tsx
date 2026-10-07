@@ -864,7 +864,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
-                {CHINAUTA_MENU_ITEMS.map(item => (
+                {CHINAUTA_MENU_ITEMS.map((item: any) => (
                   <div key={item.id} className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
                     <div className="relative h-40 rounded-xl overflow-hidden">
                       <img src={item.image} alt={item.title} className="w-full h-full object-cover" />

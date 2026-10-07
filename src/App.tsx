@@ -10,42 +10,47 @@ import { MyReservationsModal } from './components/MyReservationsModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { AdminDashboard } from './components/AdminDashboard';
 import { AiConciergeChat } from './components/AiConciergeChat';
-import { AdminUser, Dome } from './types';
-import { Compass, Sparkles, Shield, Phone, MapPin, CheckCircle2 } from 'lucide-react';
+import { AdminUser } from './types';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
-export function App() {
+function AppContent() {
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('home');
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
 
-  // Dynamic SEO meta-tag updater based on active tab
+  // Dynamic SEO meta-tag updater based on active tab and selected language
   useEffect(() => {
-    let title = 'Eco Glamping Chinauta | Domos de Lujo con Jacuzzi Privado';
-    let description = 'Vive una experiencia única de desconexión y naturaleza en Eco Glamping Chinauta, Cundinamarca. Domos geodésicos con jacuzzi, tina de cedro y clima templado.';
+    let title = language === 'en'
+      ? 'Eco Glamping Chinauta | Luxury Domes with Private Jacuzzi'
+      : 'Eco Glamping Chinauta | Domos de Lujo con Jacuzzi Privado';
+    let description = language === 'en'
+      ? 'Live a unique nature and relaxation experience at Eco Glamping Chinauta, Colombia. Geodesic domes with private jacuzzi, fire pit, and warm climate.'
+      : 'Vive una experiencia única de desconexión y naturaleza en Eco Glamping Chinauta, Cundinamarca. Domos geodésicos con jacuzzi privado, zona de fogatas y clima templado.';
 
     if (adminUser) {
-      title = 'Eco Glamping Chinauta | Panel Administrativo';
-      description = 'Gestión integral de reservas, domos, finanzas y operaciones de Eco Glamping Chinauta.';
+      title = language === 'en' ? 'Eco Glamping Chinauta | Admin Portal' : 'Eco Glamping Chinauta | Panel Administrativo';
+      description = language === 'en' ? 'Complete booking management, domes, and finance operations.' : 'Gestión integral de reservas, domos, finanzas y operaciones de Eco Glamping Chinauta.';
     } else {
       switch (activeTab) {
         case 'availability':
-          title = 'Eco Glamping Chinauta | Consultar Disponibilidad y Reservas';
-          description = 'Consulta tarifas en tiempo real, verifica disponibilidad de domos geodésicos y reserva tu estancia.';
+          title = language === 'en' ? 'Eco Glamping Chinauta | Check Availability & Rates' : 'Eco Glamping Chinauta | Consultar Disponibilidad y Reservas';
+          description = language === 'en' ? 'Check real-time rates, verify dome availability, and book your stay.' : 'Consulta tarifas en tiempo real, verifica disponibilidad de domos geodésicos y reserva tu estancia.';
           break;
         case 'domes':
-          title = 'Eco Glamping Chinauta | Domos Ancestrales y Cabañas VIP';
-          description = 'Explora nuestros exclusivos domos equipados con jacuzzi, fogata privada y vistas panorámicas.';
+          title = language === 'en' ? 'Eco Glamping Chinauta | Ancestral Domes & VIP Cabins' : 'Eco Glamping Chinauta | Domos Ancestrales y Cabañas VIP';
+          description = language === 'en' ? 'Explore our exclusive domes with private jacuzzi, fire pits, and scenic views.' : 'Explora nuestros exclusivos domos equipados con jacuzzi, fogata privada y vistas panorámicas.';
           break;
         case 'contact':
-          title = 'Eco Glamping Chinauta | Contacto y Ubicación';
-          description = 'Comunícate con nuestro equipo y conoce cómo llegar a Vía Principal Chinauta Km 4.5, Fusagasugá.';
+          title = language === 'en' ? 'Eco Glamping Chinauta | Contact & Location' : 'Eco Glamping Chinauta | Contacto y Ubicación';
+          description = language === 'en' ? 'Contact our team and learn how to reach Main Highway Chinauta Km 4.5, Fusagasugá.' : 'Comunícate con nuestro equipo y conoce cómo llegar a Vía Principal Chinauta Km 4.5, Fusagasugá.';
           break;
         case 'map':
-          title = 'Eco Glamping Chinauta | Mapa Interactivo y Entorno Natural';
-          description = 'Explora la distribución de los domos, zonas comunes, senderos y miradores en el bosque nativo.';
+          title = language === 'en' ? 'Eco Glamping Chinauta | Interactive Grounds & Map' : 'Eco Glamping Chinauta | Mapa Interactivo y Entorno Natural';
+          description = language === 'en' ? 'Explore dome distribution, common areas, nature trails, and scenic viewpoints.' : 'Explora la distribución de los domos, zonas comunes, senderos y miradores en el bosque nativo.';
           break;
         case 'menu':
-          title = 'Eco Glamping Chinauta | Menú de Cenas y Almuerzos';
-          description = 'Conoce nuestro exclusivo menú gastronómico de trucha, carne, cerdo, pechuga y hamburguesa artesanal con jugo natural.';
+          title = language === 'en' ? 'Eco Glamping Chinauta | Lunch & Dinner Menu' : 'Eco Glamping Chinauta | Menú de Cenas y Almuerzos';
+          description = language === 'en' ? 'Explore our artisan culinary menu: trout, beef, pork, chicken breast, and craft burgers.' : 'Conoce nuestro exclusivo menú gastronómico de trucha, carne, cerdo, pechuga y hamburguesa artesanal con jugo natural.';
           break;
         default:
           break;
@@ -60,7 +65,7 @@ export function App() {
       document.head.appendChild(metaDesc);
     }
     metaDesc.setAttribute('content', description);
-  }, [activeTab, adminUser]);
+  }, [activeTab, adminUser, language]);
 
   // Modals
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -98,7 +103,7 @@ export function App() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans antialiased">
       
-      {/* Navbar */}
+      {/* Navbar with Language Switcher */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -153,12 +158,12 @@ export function App() {
               <span className="font-bold text-white text-base">Eco Glamping Chinauta</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Plataforma tecnológica de alojamiento y turismo de naturaleza en Fusagasugá, Cundinamarca.
+              {t('footer.brand_desc')}
             </p>
           </div>
 
           <div>
-            <h4 className="font-bold text-white text-sm mb-3">Domos Ancestrales</h4>
+            <h4 className="font-bold text-white text-sm mb-3">{t('footer.domes_title')}</h4>
             <ul className="space-y-2 text-xs">
               <li>Domo 1 — Huitaca</li>
               <li>Domo 2 — Bochica</li>
@@ -170,29 +175,29 @@ export function App() {
           </div>
 
           <div>
-            <h4 className="font-bold text-white text-sm mb-3">Enlaces Rápidos</h4>
+            <h4 className="font-bold text-white text-sm mb-3">{t('footer.links_title')}</h4>
             <ul className="space-y-2 text-xs">
-              <li><button onClick={() => setActiveTab('home')} className="hover:text-emerald-400">Inicio</button></li>
-              <li><button onClick={() => setActiveTab('availability')} className="hover:text-emerald-400">Disponibilidad</button></li>
-              <li><button onClick={() => setActiveTab('map')} className="hover:text-emerald-400">Mapa & Entorno</button></li>
-              <li><button onClick={() => setIsMyReservationsOpen(true)} className="hover:text-emerald-400">Consultar Mis Reservas</button></li>
-              <li><button onClick={() => setIsAdminLoginOpen(true)} className="hover:text-emerald-400">Portal Administrativo</button></li>
+              <li><button onClick={() => setActiveTab('home')} className="hover:text-emerald-400">{t('nav.home')}</button></li>
+              <li><button onClick={() => setActiveTab('availability')} className="hover:text-emerald-400">{t('nav.availability')}</button></li>
+              <li><button onClick={() => setActiveTab('map')} className="hover:text-emerald-400">{t('nav.map')}</button></li>
+              <li><button onClick={() => setIsMyReservationsOpen(true)} className="hover:text-emerald-400">{t('nav.my_reservations')}</button></li>
+              <li><button onClick={() => setIsAdminLoginOpen(true)} className="hover:text-emerald-400">{t('nav.admin')}</button></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold text-white text-sm mb-3">Ubicación & Contacto</h4>
+            <h4 className="font-bold text-white text-sm mb-3">{t('footer.contact_title')}</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
               Vía Principal Chinauta Km 4.5<br />
               Fusagasugá, Cundinamarca, Colombia<br />
-              WhatsApp: +57 310 123 4567<br />
+              WhatsApp: +57 321 310 9331 / +57 310 123 4567<br />
               contacto@ecoglampingchinauta.com
             </p>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-8 border-t border-slate-900 text-center text-xs text-slate-500">
-          © 2026 Eco Glamping Chinauta. Todos los derechos reservados. Sistema Integral de Reservas v2.5.
+          {t('footer.copyright')}
         </div>
       </footer>
 
@@ -228,4 +233,13 @@ export function App() {
   );
 }
 
+export function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
+}
+
 export default App;
+

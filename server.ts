@@ -115,6 +115,49 @@ db.exec(`
     key TEXT PRIMARY KEY,
     value TEXT
   );
+
+  CREATE TABLE IF NOT EXISTS gallery_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    category TEXT NOT NULL,
+    media_type TEXT NOT NULL DEFAULT 'image',
+    media_url TEXT NOT NULL,
+    description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS menu_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_number INTEGER,
+    title TEXT NOT NULL,
+    title_en TEXT,
+    category TEXT NOT NULL,
+    description TEXT,
+    description_en TEXT,
+    preparations TEXT,
+    sides TEXT,
+    beverage TEXT,
+    price REAL NOT NULL,
+    image TEXT,
+    images TEXT,
+    video_url TEXT,
+    badge TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS testimonials (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    location TEXT NOT NULL,
+    dome TEXT NOT NULL,
+    rating INTEGER DEFAULT 5,
+    date TEXT NOT NULL,
+    comment TEXT NOT NULL,
+    avatar TEXT NOT NULL,
+    image TEXT,
+    video_url TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Seed initial data if empty
@@ -129,12 +172,12 @@ if (domeCount.count === 0) {
   insertUser.run("reception", "admin123", "Ana Recepción", "reception@ecoglampingchinauta.com", "RECEPCION", "Activo");
   insertUser.run("finanzas", "admin123", "Pedro Finanzas", "finanzas@ecoglampingchinauta.com", "FINANCES", "Activo");
 
-  // Seed Domes with authentic local assets
+  // Seed Domes with authentic local assets and real configurations
   const insertDome = db.prepare(`INSERT INTO domes (name, code, description, capacity, price_per_night, image_url, images, status, features, policies) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
   insertDome.run(
     "Domo Huitaca",
     "DOMO-01",
-    "Romántico domo geodésico con jacuzzi privado al aire libre, malla de descanso y vista privileged sobre las montañas de Chinauta.",
+    "Romántico domo geodésico con jacuzzi privado de hidromasaje al aire libre, malla de descanso tipo catamarán, baño privado y vista privilegiada sobre las montañas de Chinauta.",
     2,
     380000,
     "/assets/images/chinauta_deck_asoleadoras.jpg",
@@ -145,14 +188,14 @@ if (domeCount.count === 0) {
       "/assets/images/huitaca_entrance_steps_1790621247333.jpg"
     ]),
     "Disponible",
-    "Jacuzzi privado, Wi-Fi Starlink, Baño privado, Cama King, Desayuno campesino incluido, Calefacción",
+    "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Desayuno campesino incluido, Zona de fogata, Malla de descanso",
     "No se admiten mascotas. Check-in: 3:00 PM. Check-out: 12:00 PM."
   );
   insertDome.run(
     "Domo Bochica",
     "DOMO-02",
-    "Domo familiar de alta gama con cúpula transparente para observación de estrellas, terraza privada y zona BBQ.",
-    4,
+    "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, terraza, zona barbacoa (BBQ), malla flotante y zona de fogata.",
+    3,
     450000,
     "/assets/images/chinauta_romantic_dome_night.jpg",
     JSON.stringify([
@@ -162,13 +205,13 @@ if (domeCount.count === 0) {
       "/assets/images/bochica_sunset_view_1790617981274.jpg"
     ]),
     "Disponible",
-    "Cúpula cenital panorámica, 2 camas Queen, Terraza, Zona BBQ, Malla flotante, Desayuno incluido",
-    "Ambiente familiar. Prohibido fumar dentro del domo. Check-in: 3:00 PM."
+    "1 Cama King + 1 Cama Pequeña, Jacuzzi privado de hidromasaje, Terraza privada, Zona Barbacoa (BBQ), Malla flotante, Zona de fogata, Desayuno campesino incluido, Baño privado",
+    "Ambiente familiar y de descanso. Check-in: 3:00 PM."
   );
   insertDome.run(
     "Domo Bachué",
     "DOMO-03",
-    "Acogedor domo inmerso en el bosque nativo con tina de madera de cedro caliente y hamaca de descanso.",
+    "Acogedor domo inmerso en la naturaleza con jacuzzi privado de hidromasaje, zona barbacoa (BBQ), 1 cama King, baño privado, zona de fogata y vista al bosque nativo.",
     2,
     350000,
     "/assets/images/chinauta_romantic_dome_night.jpg",
@@ -179,14 +222,14 @@ if (domeCount.count === 0) {
       "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg"
     ]),
     "Disponible",
-    "Tina de cedro japonesa, Wi-Fi, Estufa a leña ecológica, Desayuno artesanal, Vista al bosque",
+    "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona Barbacoa (BBQ), Zona de fogata, Desayuno campesino incluido, Vista al bosque",
     "Ideal para parejas en desconexión total. Check-in: 3:00 PM."
   );
   insertDome.run(
     "Domo Luna Chía",
     "DOMO-04",
-    "Lujoso domo luminoso con fogata privada exterior, telescopio y vista panorámica al valle de Fusagasugá.",
-    3,
+    "Luminoso domo con jacuzzi privado de hidromasaje, zona de fogata privada, 1 cama King, baño privado y vista panorámica al valle de Chinauta.",
+    2,
     420000,
     "/assets/images/chinauta_deck_asoleadoras.jpg",
     JSON.stringify([
@@ -196,13 +239,13 @@ if (domeCount.count === 0) {
       "/assets/images/bochica_sunset_view_1790617981274.jpg"
     ]),
     "Disponible",
-    "Fogata privada, Telescopio astronómico, Cama Queen + sofá cama, Jacuzzi hidromasaje, Desayuno",
-    "Pet-friendly (bajo solicitud). Check-in: 3:00 PM."
+    "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona de fogata privada, Desayuno campesino incluido, Vista panorámica",
+    "Ambiente romántico y de descanso. Check-in: 3:00 PM."
   );
   insertDome.run(
     "Domo Chiminichagua",
     "DOMO-05",
-    "Domo de eco-lujo con ducha de hidromasaje vertical, balcón privado y ambiente místico rodeado de naturaleza.",
+    "Domo de descanso con jacuzzi privado de hidromasaje, balcón privado, 1 cama King, baño privado, zona de fogata y desayuno campesino.",
     2,
     390000,
     "/assets/images/chinauta_romantic_dome_night.jpg",
@@ -213,14 +256,14 @@ if (domeCount.count === 0) {
       "/assets/images/chinauta_deck_asoleadoras.jpg"
     ]),
     "Disponible",
-    "Ducha de hidromasaje, Balcón privado, Minibar ecológico, Cama King, Desayuno de la casa",
+    "Jacuzzi privado de hidromasaje, Balcón privado, Baño privado, 1 Cama King, Zona de fogata, Desayuno campesino incluido",
     "Prohibido fiestas o música a alto volumen. Check-in: 3:00 PM."
   );
   insertDome.run(
     "Domo Xue Sol",
     "DOMO-06",
-    "Domo VIP Máster con piscina privada climatizada, sala exterior flotante y máxima exclusividad.",
-    4,
+    "Domo con jacuzzi privado de hidromasaje al aire libre, terraza con vista panorámica a la montaña, 1 cama King, baño privado, zona de fogata y desayuno campesino incluido.",
+    2,
     480000,
     "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg",
     JSON.stringify([
@@ -230,8 +273,8 @@ if (domeCount.count === 0) {
       "/assets/images/huitaca_deck_jacuzzi_1790621224807.jpg"
     ]),
     "Disponible",
-    "Piscina privada climatizada, Sala exterior, Cama King + 2 camas sencillas, Cafetera Nespresso, VIP",
-    "Experiencia exclusiva para adultos y familias. Check-in: 3:00 PM."
+    "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona de fogata privada, Malla de descanso, Desayuno campesino incluido",
+    "Experiencia exclusiva de descanso y naturaleza. Check-in: 3:00 PM."
   );
 
   // Seed sample Customers
@@ -347,8 +390,199 @@ try {
       db.prepare("UPDATE domes SET image_url = ?, images = ? WHERE id = ?").run(info.url, JSON.stringify(info.gallery), dome.id);
     }
   }
+
+  // Synchronize actual dome configurations (capacities, features, descriptions)
+  db.prepare(`UPDATE domes SET capacity = 2, description = ?, features = ? WHERE code = 'DOMO-01' OR id = 1`).run(
+    "Romántico domo geodésico con jacuzzi privado de hidromasaje al aire libre, malla de descanso tipo catamarán, baño privado y vista privilegiada sobre las montañas de Chinauta.",
+    "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Desayuno campesino incluido, Zona de fogata, Malla de descanso"
+  );
+  db.prepare(`UPDATE domes SET capacity = 3, description = ?, features = ? WHERE code = 'DOMO-02' OR id = 2`).run(
+    "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, terraza, zona barbacoa (BBQ), malla flotante y zona de fogata.",
+    "1 Cama King + 1 Cama Pequeña, Jacuzzi privado de hidromasaje, Terraza privada, Zona Barbacoa (BBQ), Malla flotante, Zona de fogata, Desayuno campesino incluido, Baño privado"
+  );
+  db.prepare(`UPDATE domes SET capacity = 2, description = ?, features = ? WHERE code = 'DOMO-03' OR id = 3`).run(
+    "Acogedor domo inmerso en la naturaleza con jacuzzi privado de hidromasaje, zona barbacoa (BBQ), 1 cama King, baño privado, zona de fogata y vista al bosque nativo.",
+    "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona Barbacoa (BBQ), Zona de fogata, Desayuno campesino incluido, Vista al bosque"
+  );
+  db.prepare(`UPDATE domes SET capacity = 2, description = ?, features = ? WHERE code = 'DOMO-04' OR id = 4`).run(
+    "Luminoso domo con jacuzzi privado de hidromasaje, zona de fogata privada, 1 cama King, baño privado y vista panorámica al valle de Chinauta.",
+    "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona de fogata privada, Desayuno campesino incluido, Vista panorámica"
+  );
+  db.prepare(`UPDATE domes SET capacity = 2, description = ?, features = ? WHERE code = 'DOMO-05' OR id = 5`).run(
+    "Domo de descanso con jacuzzi privado de hidromasaje, balcón privado, 1 cama King, baño privado, zona de fogata y desayuno campesino.",
+    "Jacuzzi privado de hidromasaje, Balcón privado, Baño privado, 1 Cama King, Zona de fogata, Desayuno campesino incluido"
+  );
+  db.prepare(`UPDATE domes SET capacity = 2, description = ?, features = ? WHERE code = 'DOMO-06' OR id = 6`).run(
+    "Domo con jacuzzi privado de hidromasaje al aire libre, terraza con vista panorámica a la montaña, 1 cama King, baño privado, zona de fogata y desayuno campesino incluido.",
+    "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona de fogata privada, Malla de descanso, Desayuno campesino incluido"
+  );
 } catch (e) {
   console.warn("Dome image sync notice:", e);
+}
+
+// Seed Gallery Items if empty
+try {
+  const gCount = db.prepare("SELECT COUNT(*) as count FROM gallery_items").get() as { count: number };
+  if (gCount.count === 0) {
+    const insertGallery = db.prepare(`INSERT INTO gallery_items (title, category, media_type, media_url, description) VALUES (?, ?, ?, ?, ?)`);
+    insertGallery.run("Deck Solárium con Asoleadoras & Sombrilla", "Jacuzzis & Vistas", "image", "/assets/images/chinauta_deck_asoleadoras.jpg", "Deck privado en madera con asoleadoras, sombrilla verde, zona BBQ y tina de hidromasaje en Chinauta.");
+    insertGallery.run("Domo Bochica — Decoración Romántica Interior", "Domos", "image", "/assets/images/bochica_romantic_decor_1790618007934.jpg", "Cama decorada para ocasiones especiales con rosas, globos y ambiente cálido acogedor.");
+    insertGallery.run("Domo Bochica — Jacuzzi en Deck al Atardecer", "Jacuzzis & Vistas", "image", "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg", "Jacuzzi privado exterior en plataforma de madera rodeado de naturaleza y luces cálidas.");
+    insertGallery.run("Domo 1 Huitaca — Video Tour del Domo y Jacuzzi", "Videos", "video", "/assets/videos/domo_1_huitaca.mp4", "Recorrido en video de alta definición por las instalaciones y jacuzzi del Domo Huitaca.");
+    insertGallery.run("Domo Bochica — Vista Panorámica al Ocaso", "Domos", "image", "/assets/images/bochica_sunset_view_1790617981274.jpg", "Vista privilegiada del atardecer a través de los ventanales triangulares geodésicos.");
+    insertGallery.run("Noche Mágica Bajo las Estrellas — Pareja en Domo", "Domos", "image", "/assets/images/chinauta_romantic_dome_night.jpg", "Cena romántica para parejas en bata blanca con vino tinto y vista estelar a través de los paneles geodésicos.");
+  }
+} catch (e) {
+  console.warn("Gallery seed notice:", e);
+}
+
+// Seed Testimonials if empty
+try {
+  const tCount = db.prepare("SELECT COUNT(*) as count FROM testimonials").get() as { count: number };
+  if (tCount.count === 0) {
+    const insertTestimonial = db.prepare(`INSERT INTO testimonials (name, location, dome, rating, date, comment, avatar, image, video_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    insertTestimonial.run(
+      "Camila & Alejandro",
+      "Bogotá, Colombia",
+      "Domo Huitaca",
+      5,
+      "Septiembre 2026",
+      "Una experiencia inolvidable. El jacuzzi privado bajo las estrellas y la atención superaron todas nuestras expectativas. El clima de Chinauta es mágico y el desayuno campesino delicioso.",
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+      "/assets/images/chinauta_romantic_dome_night.jpg",
+      null
+    );
+    insertTestimonial.run(
+      "Felipe Restrepo",
+      "Medellín, Colombia",
+      "Domo Bochica",
+      5,
+      "Agosto 2026",
+      "La vista desde la cúpula es increíble. Pudimos ver las estrellas en la noche y desconectarnos por completo del ruido de la ciudad. 100% recomendado para parejas.",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+      "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg",
+      null
+    );
+    insertTestimonial.run(
+      "Valentina Gómez",
+      "Cali, Colombia",
+      "Domo Bachué",
+      5,
+      "Agosto 2026",
+      "Todo impecable. Desde la vía de acceso hasta la comodidad de la cama y la tina de cedro. El personal es sumamente atento y servicial.",
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+      "/assets/images/chinauta_deck_asoleadoras.jpg",
+      null
+    );
+  }
+} catch (e) {
+  console.warn("Testimonials seed notice:", e);
+}
+
+// Seed Menu Items if empty
+try {
+  const mCount = db.prepare("SELECT COUNT(*) as count FROM menu_items").get() as { count: number };
+  if (mCount.count === 0) {
+    const insertMenu = db.prepare(`INSERT INTO menu_items (item_number, title, title_en, category, description, description_en, preparations, sides, beverage, price, image, images, video_url, badge) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    insertMenu.run(
+      1,
+      "Trucha Gratinada o en Salsa de Champiñones",
+      "Gratin / Mushroom Sauce Rainbow Trout",
+      "Almuerzos y Comidas",
+      "Trucha fresca marinada en hierbas nativas y preparada a tu preferencia (gratinada al horno, en cremosa salsa de champiñones o asada a la parrilla).",
+      "Fresh Andean trout seasoned with local herbs, cooked to your preference (baked au gratin, creamy mushroom sauce, or charbroiled).",
+      JSON.stringify(["Gratinada", "En salsa de champiñones", "Asada a la parrilla"]),
+      JSON.stringify(["Papas a la francesa", "Ensalada fresca de la casa"]),
+      "Jugo natural de fruta de estación",
+      38000,
+      "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=1000&q=80",
+      JSON.stringify(["https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=1000&q=80"]),
+      null,
+      "Plato Especialidad"
+    );
+    insertMenu.run(
+      2,
+      "Carne de Res Gratinada o Asada",
+      "Grilled or Au Gratin Beef Tenderloin",
+      "Almuerzos y Comidas",
+      "Jugoso corte de carne de res madurada, sazonada al estilo campestre y terminada según tu preferencia.",
+      "Juicy aged beef steak, seasoned in rustic style and prepared to your liking (grilled or with rich au gratin mushrooms).",
+      JSON.stringify(["Gratinada con queso", "En salsa de champiñones", "Asada a la parrilla"]),
+      JSON.stringify(["Papas a la francesa", "Ensalada fresca"]),
+      "Jugo natural de fruta de estación",
+      38000,
+      "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1000&q=80",
+      JSON.stringify(["https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1000&q=80"]),
+      null,
+      "Favorito del Huésped"
+    );
+    insertMenu.run(
+      3,
+      "Combo Hamburguesa Artesanal",
+      "Artisan Burger Meal Combo",
+      "Snacks",
+      "Hamburguesa gourmet artesanal con carne selecta 100% de res, queso fundido, vegetales frescos y pan artesanal dorado.",
+      "Gourmet artisan 100% beef burger with melted artisan cheese, bacon, and crisp vegetables on a brioche bun.",
+      JSON.stringify(["Término Medio", "Bien Asada", "Con Queso Extra"]),
+      JSON.stringify(["Papas a la francesa crujientes"]),
+      "Gaseosa Postobón de 400ml",
+      30000,
+      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=80",
+      JSON.stringify(["https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=80"]),
+      null,
+      "Combo Rápido"
+    );
+    insertMenu.run(
+      4,
+      "Picada Campesina Chinauta (Para Compartir)",
+      "Chinauta Farmer Platter (To Share)",
+      "Snacks",
+      "Generosa picada tradicional con trozos de lomo de res, cerdo, pechuga, chorizo santandereano, papa criolla dorada y arepitas.",
+      "Hearty traditional Colombian sharing platter with beef, pork, chicken, artisanal chorizo, golden creole potatoes, and corn arepas.",
+      JSON.stringify(["Para 2 Personas", "Para 4 Personas"]),
+      JSON.stringify(["Papa criolla", "Arepitas de queso", "Guacamole casero"]),
+      "2 Bebidas a elección (Gaseosa o Jugo Natural)",
+      65000,
+      "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1000&q=80",
+      JSON.stringify(["https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1000&q=80"]),
+      null,
+      "Especial Para Parejas"
+    );
+    insertMenu.run(
+      5,
+      "Vino Tinto / Blanco & Tabla de Quesos",
+      "Fine Wine Bottle & Artisan Cheese Board",
+      "Bebidas",
+      "Botella de vino reserva seleccionada (Cabernet / Sauvignon Blanc) acompañada de frutos secos, quesos madurados y uvas para la fogata.",
+      "Bottle of premium reserve wine accompanied by artisanal cheeses, nuts, and fresh grapes perfect for the fire pit.",
+      JSON.stringify(["Vino Tinto Cabernet", "Vino Blanco Sauvignon", "Vino Rosado"]),
+      JSON.stringify(["Tabla de quesos y jamones", "Frutos secos"]),
+      "Botella 750ml",
+      75000,
+      "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1000&q=80",
+      JSON.stringify(["https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1000&q=80"]),
+      null,
+      "Noche Romántica"
+    );
+    insertMenu.run(
+      6,
+      "Cócteles de la Casa & Jugos Naturales",
+      "House Cocktails & Tropical Natural Juices",
+      "Bebidas",
+      "Mojitos refrescantes de maracuyá y menta, Piña Colada artesanal o jugos tropicales en agua o leche.",
+      "Refreshing passionfruit and mint mojitos, artisanal Piña Colada, or fresh tropical fruit juices in water/milk.",
+      JSON.stringify(["Mojito Maracuyá", "Piña Colada", "Margarita Glamping", "Jugo Mango / Mora / Lulo"]),
+      JSON.stringify(["Copas escarchadas con fruta fresca"]),
+      "Preparación al instante",
+      22000,
+      "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1000&q=80",
+      JSON.stringify(["https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1000&q=80"]),
+      null,
+      null
+    );
+  }
+} catch (e) {
+  console.warn("Menu seed notice:", e);
 }
 
 // Helper for logging audit
@@ -502,6 +736,167 @@ app.post("/api/upload-image", (req, res) => {
     res.json({ success: true, url: imageUrl });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Universal Media Upload for Photos and Videos (Gallery, Food Menu, Testimonials, Domes)
+app.post("/api/upload-media", (req, res) => {
+  try {
+    const { filename, mediaData, type } = req.body;
+    if (!mediaData) {
+      return res.status(400).json({ error: "No media data provided" });
+    }
+
+    const isVideo = type === 'video' || filename?.match(/\.(mp4|webm|mov|quicktime)$/i) || mediaData.startsWith("data:video");
+    const cleanBase64 = mediaData.replace(/^data:(image|video)\/\w+;base64,/, "");
+    const buffer = Buffer.from(cleanBase64, "base64");
+    
+    const folder = isVideo ? "videos" : "images";
+    const targetDir = path.join(process.cwd(), "public", "assets", folder);
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    const ext = filename?.split('.').pop() || (isVideo ? 'mp4' : 'jpg');
+    const safeName = `media_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+    const targetFile = path.join(targetDir, safeName);
+    fs.writeFileSync(targetFile, buffer);
+
+    try {
+      const srcDir = path.join(process.cwd(), "src", "assets", folder);
+      if (!fs.existsSync(srcDir)) fs.mkdirSync(srcDir, { recursive: true });
+      fs.writeFileSync(path.join(srcDir, safeName), buffer);
+    } catch (_) {}
+
+    const mediaUrl = `/assets/${folder}/${safeName}`;
+    res.json({ success: true, url: mediaUrl, media_type: isVideo ? 'video' : 'image' });
+  } catch (err: any) {
+    console.error("Upload media error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Gallery Endpoints
+app.get("/api/gallery", (req, res) => {
+  try {
+    const items = db.prepare("SELECT * FROM gallery_items ORDER BY id DESC").all();
+    res.json(items);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/gallery", (req, res) => {
+  try {
+    const { title, category, media_type, media_url, description, user_name } = req.body;
+    const stmt = db.prepare(`INSERT INTO gallery_items (title, category, media_type, media_url, description) VALUES (?, ?, ?, ?, ?)`);
+    const info = stmt.run(title || "Nueva Experiencia", category || "Domos", media_type || "image", media_url, description || "");
+    logAudit(user_name || "Admin", "CREAR_GALERIA", "Galeria", String(info.lastInsertRowid), `Nueva foto/video agregado a la galería: ${title}`);
+    res.json({ success: true, id: info.lastInsertRowid });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.delete("/api/gallery/:id", (req, res) => {
+  try {
+    const { id } = req.params;
+    db.prepare("DELETE FROM gallery_items WHERE id = ?").run(id);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Menu Endpoints
+app.get("/api/menu", (req, res) => {
+  try {
+    const items = db.prepare("SELECT * FROM menu_items ORDER BY id ASC").all();
+    res.json(items);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/menu", (req, res) => {
+  try {
+    const { item_number, title, title_en, category, description, description_en, preparations, sides, beverage, price, image, images, video_url, badge, user_name } = req.body;
+    const stmt = db.prepare(`INSERT INTO menu_items (item_number, title, title_en, category, description, description_en, preparations, sides, beverage, price, image, images, video_url, badge) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    const info = stmt.run(
+      item_number || 1,
+      title,
+      title_en || title,
+      category || "Almuerzos y Cenas",
+      description || "",
+      description_en || description || "",
+      typeof preparations === 'object' ? JSON.stringify(preparations) : preparations,
+      typeof sides === 'object' ? JSON.stringify(sides) : sides,
+      beverage || "",
+      price || 0,
+      image || "",
+      typeof images === 'object' ? JSON.stringify(images) : images,
+      video_url || null,
+      badge || null
+    );
+    logAudit(user_name || "Admin", "CREAR_PLATO_MENU", "Menu", String(info.lastInsertRowid), `Plato/Bebida agregado: ${title}`);
+    res.json({ success: true, id: info.lastInsertRowid });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.put("/api/menu/:id", (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, category, description, price, image, images, video_url, badge } = req.body;
+    const stmt = db.prepare(`UPDATE menu_items SET title = COALESCE(?, title), category = COALESCE(?, category), description = COALESCE(?, description), price = COALESCE(?, price), image = COALESCE(?, image), images = COALESCE(?, images), video_url = COALESCE(?, video_url), badge = COALESCE(?, badge) WHERE id = ?`);
+    stmt.run(title, category, description, price, image, typeof images === 'object' ? JSON.stringify(images) : images, video_url, badge, id);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Testimonials Endpoints
+app.get("/api/testimonials", (req, res) => {
+  try {
+    const items = db.prepare("SELECT * FROM testimonials ORDER BY id DESC").all();
+    res.json(items);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/testimonials", (req, res) => {
+  try {
+    const { name, location, dome, rating, date, comment, avatar, image, video_url, user_name } = req.body;
+    const stmt = db.prepare(`INSERT INTO testimonials (name, location, dome, rating, date, comment, avatar, image, video_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    const info = stmt.run(
+      name || "Huésped Feliz",
+      location || "Colombia",
+      dome || "Domo Huitaca",
+      rating || 5,
+      date || "Reciente",
+      comment,
+      avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+      image || null,
+      video_url || null
+    );
+    logAudit(user_name || "Cliente", "CREAR_TESTIMONIO", "Testimonio", String(info.lastInsertRowid), `Testimonio agregado por ${name}`);
+    res.json({ success: true, id: info.lastInsertRowid });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.put("/api/testimonials/:id", (req, res) => {
+  try {
+    const { id } = req.params;
+    const { avatar, image, video_url } = req.body;
+    db.prepare("UPDATE testimonials SET avatar = COALESCE(?, avatar), image = COALESCE(?, image), video_url = COALESCE(?, video_url) WHERE id = ?").run(avatar, image, video_url, id);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
   }
 });
 

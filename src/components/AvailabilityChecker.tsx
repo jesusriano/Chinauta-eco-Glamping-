@@ -4,12 +4,14 @@ import { Dome } from '../types';
 import { motion } from 'motion/react';
 import { ImageCarousel } from './ImageCarousel';
 import { getDomeImages } from '../utils/domeImages';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AvailabilityCheckerProps {
   onOpenBookingWithDates: (checkIn: string, checkOut: string, domeId: number) => void;
 }
 
 export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpenBookingWithDates }) => {
+  const { t, language } = useLanguage();
   const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
   const dayAfter = new Date(); dayAfter.setDate(dayAfter.getDate() + 3);
 
@@ -23,7 +25,7 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
     e.preventDefault();
     if (!checkIn || !checkOut) return;
     if (checkIn >= checkOut) {
-      alert("La fecha de salida debe ser posterior a la fecha de entrada.");
+      alert(language === 'en' ? "Check-out date must be after check-in date." : "La fecha de salida debe ser posterior a la fecha de entrada.");
       return;
     }
 
@@ -50,10 +52,10 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
       className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12"
     >
       <div className="text-center max-w-2xl mx-auto space-y-4">
-        <h2 className="text-xs uppercase tracking-widest text-emerald-600 font-bold">Verificador en Tiempo Real</h2>
-        <h3 className="text-3xl sm:text-4xl font-bold text-slate-900">Consulta de Disponibilidad</h3>
+        <h2 className="text-xs uppercase tracking-widest text-emerald-600 font-bold">{t('avail.tag')}</h2>
+        <h3 className="text-3xl sm:text-4xl font-bold text-slate-900">{t('avail.title')}</h3>
         <p className="text-slate-600">
-          Selecciona tus fechas de interés para verificar en tiempo real qué domos se encuentran disponibles en Eco Glamping Chinauta.
+          {t('avail.desc')}
         </p>
       </div>
 
@@ -61,7 +63,7 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
       <div className="glass-card max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200">
         <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-end">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">Fecha de Entrada</label>
+            <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">{t('avail.checkin')}</label>
             <div className="relative">
               <Calendar className="absolute left-3.5 top-3.5 w-5 h-5 text-emerald-600" />
               <input
@@ -76,7 +78,7 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">Fecha de Salida</label>
+            <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">{t('avail.checkout')}</label>
             <div className="relative">
               <Calendar className="absolute left-3.5 top-3.5 w-5 h-5 text-emerald-600" />
               <input
@@ -97,7 +99,7 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
               className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-semibold shadow-lg shadow-emerald-700/20 hover:from-emerald-700 hover:to-teal-800 transition-all flex items-center justify-center space-x-2"
             >
               <Search className="w-5 h-5" />
-              <span>{loading ? 'Consultando...' : 'Verificar Disponibilidad'}</span>
+              <span>{loading ? t('avail.searching') : t('avail.search_btn')}</span>
             </button>
           </div>
         </form>

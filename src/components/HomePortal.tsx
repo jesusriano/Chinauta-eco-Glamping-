@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Dome } from '../types';
-import { Compass, Calendar, MapPin, Sparkles, Wifi, Coffee, Waves, Flame, Star, ChevronRight, CheckCircle2, X, ChevronLeft, Maximize2, Camera } from 'lucide-react';
+import { 
+  Compass, Calendar, MapPin, Sparkles, Wifi, Coffee, Waves, Flame, 
+  Star, ChevronRight, CheckCircle2, X, ChevronLeft, Maximize2, Camera, 
+  Plus, Play, ImagePlus, CheckCircle, Users, Heart, ShieldCheck
+} from 'lucide-react';
 import { TestimonialsSection } from './TestimonialsSection';
 import { WeatherWidget } from './WeatherWidget';
 import { FoodMenuSection } from './FoodMenuSection';
@@ -8,8 +12,10 @@ import { ImageCarousel } from './ImageCarousel';
 import { BochicaCarousel } from './BochicaCarousel';
 import { HuitacaVideoCard } from './HuitacaVideoCard';
 import { DomeMediaCard } from './DomeMediaCard';
-import { getDomeImages } from '../utils/domeImages';
-import { motion } from 'motion/react';
+import { MediaGallery } from './MediaGallery';
+import { getDomeImages, DEFAULT_DOMES } from '../utils/domeImages';
+import { useLanguage } from '../context/LanguageContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import regeneratedDome2Image from '../assets/images/regenerated_image_1790617455020.jpg';
 import bochicaRomanticDecor from '../assets/images/bochica_romantic_decor_1790618007934.jpg';
 import bochicaJacuzziDeck from '../assets/images/bochica_jacuzzi_deck_1790618019311.jpg';
@@ -23,8 +29,21 @@ interface HomePortalProps {
 }
 
 export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigateTab }) => {
-  const [domes, setDomes] = useState<Dome[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { t, language } = useLanguage();
+  const [domes, setDomes] = useState<Dome[]>(DEFAULT_DOMES);
+  const [loading, setLoading] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScroll > 0) {
+        setScrollProgress((window.scrollY / totalScroll) * 100);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Custom video for Domes (defaulting dome 3 to a high quality glamping video, with custom upload support)
   const [domeVideos, setDomeVideos] = useState<Record<number, string>>({
@@ -40,95 +59,25 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
     }
   };
 
-  // Gallery state
-  const [galleryCategory, setGalleryCategory] = useState('Todos');
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-
-  // Scroll reading progress
-  const [scrollProgress, setScrollProgress] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      if (totalScroll > 0) {
-        const currentProgress = (window.scrollY / totalScroll) * 100;
-        setScrollProgress(currentProgress);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const galleryItems = [
-    {
-      id: 1,
-      title: 'Deck Solárium con Asoleadoras & Sombrilla',
-      category: 'Jacuzzis & Vistas',
-      image: chinautaDeckAsoleadoras,
-      description: 'Deck privado en madera con asoleadoras, sombrilla verde, zona BBQ y tina de hidromasaje en Chinauta.'
-    },
-    {
-      id: 2,
-      title: 'Domo Bochica — Decoración Romántica Interior',
-      category: 'Domos',
-      image: bochicaRomanticDecor,
-      description: 'Cama decorada para ocasiones especiales con rosas, globos y ambiente cálido acogedor.'
-    },
-    {
-      id: 7,
-      title: 'Domo Bochica — Jacuzzi en Deck al Atardecer',
-      category: 'Jacuzzis & Vistas',
-      image: bochicaJacuzziDeck,
-      description: 'Jacuzzi privado exterior en plataforma de madera rodeado de naturaleza y luces cálidas.'
-    },
-    {
-      id: 8,
-      title: 'Domo Bochica — Vista Panorámica al Ocaso',
-      category: 'Domos',
-      image: bochicaSunsetView,
-      description: 'Vista privilegiada del atardecer a través de los ventanales triangulares geodésicos.'
-    },
-    {
-      id: 3,
-      title: 'Noche Mágica Bajo las Estrellas — Pareja en Domo',
-      category: 'Domos',
-      image: chinautaRomanticDomeNight,
-      description: 'Cena romántica para parejas en bata blanca con vino tinto y vista estelar a través de los paneles geodésicos.'
-    },
-    {
-      id: 4,
-      title: 'Atardecer en Fusagasugá',
-      category: 'Naturaleza',
-      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-      description: 'Puestas de sol mágicas y clima templado perfecto todo el año.'
-    },
-    {
-      id: 5,
-      title: 'Zona Fogata & Estrellas',
-      category: 'Comodidades',
-      image: 'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80',
-      description: 'Espacios privados para fogata nocturna, vino y marshmallows.'
-    },
-    {
-      id: 6,
-      title: 'Desayuno Campesino Artesanal',
-      category: 'Comodidades',
-      image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
-      description: 'Servicio incluido todas las mañanas con café de origen y arepas de choclo.'
-    }
-  ];
-
-  const categories = ['Todos', 'Domos', 'Jacuzzis & Vistas', 'Naturaleza', 'Comodidades'];
-
-  const filteredGallery = galleryCategory === 'Todos' 
-    ? galleryItems 
-    : galleryItems.filter(item => item.category === galleryCategory);
-
   useEffect(() => {
     fetch('/api/domes')
       .then(res => res.json())
       .then(data => {
-        if (Array.isArray(data)) setDomes(data);
+        if (Array.isArray(data) && data.length > 0) {
+          // Merge API data with default domes to ensure complete fields
+          const merged = DEFAULT_DOMES.map(def => {
+            const serverDome = data.find((d: any) => d.id === def.id || d.code === def.code);
+            if (!serverDome) return def;
+            return {
+              ...def,
+              ...serverDome,
+              images: Array.isArray(serverDome.images) && serverDome.images.length > 0 
+                ? serverDome.images 
+                : def.images
+            };
+          });
+          setDomes(merged);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -164,18 +113,18 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
         <div className="relative z-10 max-w-5xl mx-auto px-4 text-center space-y-8 pt-12">
           <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs sm:text-sm font-medium backdrop-blur-md">
             <Sparkles className="w-4 h-4 text-emerald-400" />
-            <span>Experiencia de Lujo Natural en Fusagasugá</span>
+            <span>{t('hero.badge')}</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white">
-            Conexión Mística <br />
+            {t('hero.title_p1')} <br />
             <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-              Entre Montañas y Estrellas
+              {t('hero.title_p2')}
             </span>
           </h1>
 
           <p className="max-w-2xl mx-auto text-base sm:text-xl text-slate-300 font-normal leading-relaxed">
-            Descubre Eco Glamping Chinauta. Domos geodésicos exclusivos equipados con jacuzzi privado, mallas flotantes y vistas panorámicas incomparables.
+            {t('hero.desc')}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
@@ -183,33 +132,33 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
               onClick={() => onOpenBooking()}
               className="w-full sm:w-auto px-8 py-4 rounded-2xl text-base font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-xl shadow-emerald-900/40 transition-all transform hover:-translate-y-0.5"
             >
-              Reservar Mi Domo
+              {t('hero.book_btn')}
             </button>
             <button
               onClick={() => onNavigateTab('availability')}
               className="w-full sm:w-auto px-8 py-4 rounded-2xl text-base font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all"
             >
-              Consultar Disponibilidad
+              {t('hero.check_btn')}
             </button>
           </div>
 
           {/* Quick stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-12 max-w-3xl mx-auto border-t border-white/10">
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-emerald-400">6</p>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">Domos Exclusivos</p>
+              <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{t('stats.domes_count')}</p>
+              <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">{t('stats.domes_label')}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-teal-400">100%</p>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">Naturaleza & Confort</p>
+              <p className="text-2xl sm:text-3xl font-bold text-teal-400">{t('stats.nature_count')}</p>
+              <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">{t('stats.nature_label')}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-emerald-400">4.9</p>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">Calificación de Huéspedes</p>
+              <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{t('stats.rating_count')}</p>
+              <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">{t('stats.rating_label')}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-teal-400">24/7</p>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">Atención Personalizada</p>
+              <p className="text-2xl sm:text-3xl font-bold text-teal-400">{t('stats.service_count')}</p>
+              <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">{t('stats.service_label')}</p>
             </div>
           </div>
         </div>
@@ -223,45 +172,96 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
       {/* Domes Showcase */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <h2 className="text-xs uppercase tracking-widest text-emerald-600 font-bold">Nuestros Alojamientos</h2>
-          <h3 className="text-3xl sm:text-4xl font-bold text-slate-900">Nuestros 6 Domos Ancestrales</h3>
-          <p className="text-slate-600 text-base">
-            Cada domo lleva el nombre de deidades y leyendas ancestrales, diseñado con arquitectura bioclimática y acabados de lujo.
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold tracking-wide uppercase">
+            <Sparkles className="w-4 h-4 text-emerald-600" />
+            <span>{language === 'en' ? 'Exclusive Stays' : 'Hospedaje Exclusivo'}</span>
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+            {language === 'en' ? 'Our Six Ancestral Domes' : 'Nuestros Seis Domos Ancestrales'}
+          </h2>
+          <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+            {language === 'en'
+              ? 'Inspired by the sacred forces of nature and Muisca mythology. Each dome features a private open-air hot jacuzzi, solarium deck, romantic decor, and panoramic mountain views.'
+              : 'Inspirados en las fuerzas sagradas de la naturaleza y la mitología muisca. Cada domo cuenta con jacuzzi privado al aire libre, deck solárium, ambiente romántico y vista panorámica a las montañas de Chinauta.'}
           </p>
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-slate-500">Cargando domos...</div>
+          <div className="text-center py-12 text-slate-500 font-medium">{t('domes.loading')}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {domes.map(dome => (
-              <div key={dome.id} className="glass-card rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 flex flex-col hover:shadow-xl transition-all group">
+              <div key={dome.id} className="glass-card rounded-3xl overflow-hidden shadow-lg border border-slate-200/90 flex flex-col hover:shadow-2xl transition-all duration-300 group bg-white">
                 <DomeMediaCard
                   dome={dome}
                   onOpenBooking={() => onOpenBooking(dome.id)}
                 />
 
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-xl font-bold text-slate-900">{dome.name}</h4>
-                      <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md font-medium">{dome.code}</span>
+                <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-5">
+                  <div className="space-y-3">
+                    {/* Header: Name, Code, Capacity */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">
+                          {dome.code}
+                        </span>
+                        <h4 className="text-2xl font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                          {dome.name}
+                        </h4>
+                      </div>
+                      <span className="inline-flex items-center space-x-1 text-xs font-semibold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200/80 whitespace-nowrap">
+                        <Users className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>{dome.capacity} {dome.capacity === 1 ? (language === 'en' ? 'Guest' : 'Persona') : (language === 'en' ? 'Guests' : 'Personas')}</span>
+                      </span>
                     </div>
-                    <p className="text-slate-600 text-sm line-clamp-2 leading-relaxed">{dome.description}</p>
-                    <p className="text-xs text-slate-500 mt-2 font-medium">✨ {dome.features}</p>
+
+                    {/* Price */}
+                    <div className="flex items-baseline space-x-1.5 pt-1">
+                      <span className="text-2xl font-black text-emerald-600">
+                        ${dome.price_per_night?.toLocaleString('es-CO')}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-500">
+                        COP / {language === 'en' ? 'night' : 'noche'}
+                      </span>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-slate-600 text-sm leading-relaxed">
+                      {dome.description}
+                    </p>
+
+                    {/* Amenities & Features */}
+                    <div className="pt-2">
+                      <div className="text-xs text-slate-500 flex flex-wrap gap-1.5">
+                        {dome.features.split(',').map((feature, idx) => (
+                          <span
+                            key={idx}
+                            className="bg-emerald-50/80 text-emerald-800 text-[11px] font-medium px-2.5 py-1 rounded-lg border border-emerald-100"
+                          >
+                            ✨ {feature.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                      dome.status === 'Disponible' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                  {/* Footer Actions: Availability & Book CTA */}
+                  <div className="pt-5 border-t border-slate-100 flex items-center justify-between gap-3">
+                    <span className={`text-xs px-3 py-1.5 rounded-full font-bold flex items-center space-x-1.5 ${
+                      dome.status === 'Disponible' 
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
+                        : 'bg-rose-100 text-rose-800 border border-rose-200'
                     }`}>
-                      {dome.status}
+                      <span className={`w-2 h-2 rounded-full ${dome.status === 'Disponible' ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></span>
+                      <span>{dome.status === 'Disponible' ? (language === 'en' ? 'Available' : 'Disponible') : (language === 'en' ? 'Unavailable' : dome.status)}</span>
                     </span>
+
                     <button
+                      type="button"
                       onClick={() => onOpenBooking(dome.id)}
-                      className="inline-flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors"
+                      className="inline-flex items-center space-x-1.5 px-4 sm:px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 transition-all shadow-md shadow-emerald-700/20 active:scale-95 cursor-pointer"
                     >
-                      <span>Reservar</span>
+                      <span>{language === 'en' ? 'Book Dome' : 'Reservar Domo'}</span>
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
@@ -272,126 +272,10 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
         )}
       </section>
 
-      {/* Interactive Photo Gallery Component */}
+      {/* Dedicated Interactive Photo & Video Gallery Component */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-10">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold">
-            <Camera className="w-4 h-4 text-emerald-600" />
-            <span>Galería Visual</span>
-          </div>
-          <h3 className="text-3xl sm:text-4xl font-bold text-slate-900">Explora Nuestra Experiencia en Imágenes</h3>
-          <p className="text-slate-600 text-base">
-            Sumérgete en los paisajes, domos y rincones mágicos diseñados para tu desconexión total.
-          </p>
-
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setGalleryCategory(cat)}
-                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
-                  galleryCategory === cat
-                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredGallery.map((item, idx) => (
-            <div
-              key={item.id}
-              onClick={() => setLightboxIndex(galleryItems.findIndex(g => g.id === item.id))}
-              className="group relative h-72 rounded-2xl overflow-hidden shadow-md cursor-pointer border border-slate-200 bg-slate-900"
-            >
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-80 group-hover:opacity-95 transition-opacity"></div>
-              
-              <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                <Maximize2 className="w-4 h-4" />
-              </div>
-
-              <div className="absolute bottom-0 inset-x-0 p-6 space-y-1 text-white transform transition-transform">
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500 text-white inline-block mb-1">
-                  {item.category}
-                </span>
-                <h4 className="text-lg font-bold">{item.title}</h4>
-                <p className="text-xs text-slate-300 line-clamp-1">{item.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <MediaGallery onOpenBooking={onOpenBooking} />
       </section>
-
-      {/* Lightbox Slideshow Modal */}
-      {lightboxIndex !== null && (
-        <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-4">
-          <button
-            onClick={() => setLightboxIndex(null)}
-            className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors z-10"
-          >
-            <X className="w-6 h-6" />
-          </button>
-
-          <button
-            onClick={() => setLightboxIndex((lightboxIndex - 1 + galleryItems.length) % galleryItems.length)}
-            className="absolute left-4 sm:left-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors z-10"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-
-          <button
-            onClick={() => setLightboxIndex((lightboxIndex + 1) % galleryItems.length)}
-            className="absolute right-4 sm:right-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors z-10"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-
-          <div className="max-w-4xl w-full bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
-            <div className="md:w-3/5 h-80 md:h-[500px] relative">
-              <img
-                src={galleryItems[lightboxIndex].image}
-                alt={galleryItems[lightboxIndex].title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="md:w-2/5 p-8 flex flex-col justify-between space-y-6 bg-slate-900 text-white">
-              <div className="space-y-4">
-                <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  {galleryItems[lightboxIndex].category}
-                </span>
-                <h3 className="text-2xl font-bold">{galleryItems[lightboxIndex].title}</h3>
-                <p className="text-slate-300 text-sm leading-relaxed">
-                  {galleryItems[lightboxIndex].description}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between pt-6 border-t border-slate-800 text-xs text-slate-400">
-                <span>Foto {lightboxIndex + 1} de {galleryItems.length}</span>
-                <button
-                  onClick={() => {
-                    setLightboxIndex(null);
-                    onOpenBooking();
-                  }}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors"
-                >
-                  Reservar Ahora
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Food Menu Section */}
       <section className="bg-slate-50/50 py-12 border-y border-slate-200/60">
@@ -405,7 +289,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
             <h2 className="text-xs uppercase tracking-widest text-emerald-400 font-bold">Comodidades</h2>
             <h3 className="text-3xl sm:text-4xl font-bold text-white">Una Experiencia Todo Incluido</h3>
             <p className="text-slate-300 text-base">
-              Diseñado para ofrecer el máximo confort en medio de la naturaleza de Cundinamarca.
+              Diseñado para ofrecer el máximo descanso, privacidad y desconexión en medio de la naturaleza de Chinauta.
             </p>
           </div>
 
@@ -414,8 +298,8 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
               <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
                 <Waves className="w-6 h-6" />
               </div>
-              <h4 className="text-lg font-bold text-white">Jacuzzi & Tinamú</h4>
-              <p className="text-slate-400 text-sm">Disfruta de tinas de hidromasaje y agua caliente privadas con vista al atardecer.</p>
+              <h4 className="text-lg font-bold text-white">Jacuzzis de Hidromasaje</h4>
+              <p className="text-slate-400 text-sm">Jacuzzis privados de hidromasaje en deck al aire libre con vista a las montañas.</p>
             </div>
 
             <div className="glass-dark p-6 rounded-2xl border border-slate-800 space-y-4">
@@ -430,16 +314,16 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
               <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
                 <Flame className="w-6 h-6" />
               </div>
-              <h4 className="text-lg font-bold text-white">Fogatas & Astronomía</h4>
-              <p className="text-slate-400 text-sm">Zonas de fogata privadas y telescopios para avistamiento nocturno.</p>
+              <h4 className="text-lg font-bold text-white">Zona de Fogatas Privada</h4>
+              <p className="text-slate-400 text-sm">Espacios privados para encender fogata nocturna, compartir vino y malvaviscos.</p>
             </div>
 
             <div className="glass-dark p-6 rounded-2xl border border-slate-800 space-y-4">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                <Wifi className="w-6 h-6" />
+                <Sparkles className="w-6 h-6" />
               </div>
-              <h4 className="text-lg font-bold text-white">Wi-Fi Starlink</h4>
-              <p className="text-slate-400 text-sm">Conectividad satelital de alta velocidad por si necesitas trabajar o compartir.</p>
+              <h4 className="text-lg font-bold text-white">Zona Barbacoa & Desconexión</h4>
+              <p className="text-slate-400 text-sm">Zona BBQ y descanso total en medio de la naturaleza (cabañas libres de wifi).</p>
             </div>
           </div>
         </div>

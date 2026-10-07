@@ -5,6 +5,8 @@ import {
   MessageSquare, ChevronRight, ExternalLink
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface NavbarProps {
   activeTab: string;
@@ -21,6 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAdminLogin,
   onOpenMyReservations
 }) => {
+  const { t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isExplorarDropdownOpen, setIsExplorarDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -99,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
                 }`}
               >
-                Inicio
+                {t('nav.home')}
               </button>
 
               <button
@@ -110,7 +113,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
                 }`}
               >
-                Disponibilidad
+                {t('nav.availability')}
               </button>
 
               <button
@@ -121,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
                 }`}
               >
-                <span>Nuestros Domos</span>
+                <span>{t('nav.domes')}</span>
                 <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800">6</span>
               </button>
 
@@ -134,7 +137,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <Utensils className="w-4 h-4 text-emerald-600" />
-                <span>Menú Comidas</span>
+                <span>{t('nav.menu')}</span>
               </button>
 
               {/* Elegant Dropdown: Explorar */}
@@ -148,7 +151,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
                   }`}
                 >
-                  <span>Explorar</span>
+                  <span>{t('nav.explore')}</span>
                   <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isExplorarDropdownOpen ? 'rotate-180 text-emerald-600' : ''}`} />
                 </button>
 
@@ -169,8 +172,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <MapPin className="w-4 h-4" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-slate-900">Mapa & Entorno</p>
-                          <p className="text-xs text-slate-500">Distribución de domos y senderos</p>
+                          <p className="text-sm font-bold text-slate-900">{t('nav.map')}</p>
+                          <p className="text-xs text-slate-500">{t('nav.map_desc')}</p>
                         </div>
                       </button>
 
@@ -188,8 +191,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <Waves className="w-4 h-4" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-slate-900">Jacuzzis & Clima</p>
-                          <p className="text-xs text-slate-500">Tinaja de cedro y clima templado</p>
+                          <p className="text-sm font-bold text-slate-900">{t('nav.jacuzzi_climate')}</p>
+                          <p className="text-xs text-slate-500">{t('nav.jacuzzi_desc')}</p>
                         </div>
                       </button>
 
@@ -206,7 +209,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         </div>
                         <div>
                           <p className="text-sm font-bold text-slate-900 flex items-center space-x-1">
-                            <span>WhatsApp Directo</span>
+                            <span>{t('nav.whatsapp_direct')}</span>
                             <ExternalLink className="w-3 h-3 text-slate-400" />
                           </p>
                           <p className="text-xs text-slate-500">+57 321 310 9331</p>
@@ -225,55 +228,60 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
                 }`}
               >
-                Contacto
+                {t('nav.contact')}
               </button>
             </nav>
 
             {/* Desktop Actions */}
             <div className="hidden sm:flex items-center space-x-2 sm:space-x-3">
+              {/* Language Switcher */}
+              <LanguageSwitcher variant="compact" />
+
               <button
                 onClick={onOpenMyReservations}
-                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100/85 transition-colors border border-slate-200 shadow-2xs"
+                className="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-700 hover:bg-slate-100/85 transition-colors border border-slate-200 shadow-2xs"
               >
                 <Search className="w-4 h-4 text-emerald-600" />
-                <span>Mis Reservas</span>
+                <span className="hidden xl:inline">{t('nav.my_reservations')}</span>
               </button>
 
               <button
                 onClick={onOpenBooking}
-                className="px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-md shadow-emerald-600/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                className="px-4 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-md shadow-emerald-600/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
               >
-                Reservar
+                {t('nav.book')}
               </button>
 
               <button
                 onClick={onOpenAdminLogin}
-                title="Panel Administrativo"
-                className="p-2.5 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-slate-100 border border-slate-200 transition-colors"
+                title={t('nav.admin')}
+                className="p-2 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-slate-100 border border-slate-200 transition-colors"
               >
-                <Shield className="w-5 h-5" />
+                <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
             {/* Mobile & Tablet Hamburger Button */}
             <div className="flex items-center space-x-2 lg:hidden">
+              <LanguageSwitcher variant="compact" className="scale-90 origin-right" />
+
               <button
                 onClick={onOpenBooking}
-                className="px-3.5 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-700 shadow-sm"
+                className="px-3 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-700 shadow-sm"
               >
-                Reservar
+                {t('nav.book')}
               </button>
 
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú desplegable'}
-                className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors border border-slate-300/80 shadow-xs active:scale-95"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors border border-slate-300/80 shadow-xs active:scale-95"
               >
                 {isMobileMenuOpen ? (
-                  <X className="w-6 h-6 text-emerald-700" />
+                  <X className="w-5 h-5 text-emerald-700" />
                 ) : (
-                  <Menu className="w-6 h-6 text-slate-800" />
+                  <Menu className="w-5 h-5 text-slate-800" />
                 )}
               </button>
             </div>
@@ -297,7 +305,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50/80 border border-emerald-200/60">
                   <div className="flex items-center space-x-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs font-semibold text-emerald-900">Recepción en línea • Chinauta</span>
+                    <span className="text-xs font-semibold text-emerald-900">{t('nav.online_reception')}</span>
                   </div>
                   <a
                     href="https://wa.me/573213109331"
@@ -310,6 +318,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </a>
                 </div>
 
+                {/* Mobile Language Switcher Full */}
+                <LanguageSwitcher variant="full" />
+
                 {/* Primary Action Buttons */}
                 <div className="grid grid-cols-2 gap-2.5">
                   <button
@@ -320,7 +331,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-700 shadow-md shadow-emerald-700/20 flex items-center justify-center space-x-1.5 active:scale-98"
                   >
                     <Calendar className="w-4 h-4" />
-                    <span>Reservar Ahora</span>
+                    <span>{t('nav.book_now')}</span>
                   </button>
 
                   <button
@@ -331,7 +342,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center space-x-1.5 active:scale-98"
                   >
                     <Search className="w-4 h-4 text-emerald-600" />
-                    <span>Mis Reservas</span>
+                    <span>{t('nav.my_reservations')}</span>
                   </button>
                 </div>
 
@@ -345,7 +356,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <div className="flex items-center space-x-3">
                       <Home className="w-5 h-5 text-emerald-600" />
-                      <span>Inicio</span>
+                      <span>{t('nav.home')}</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-400" />
                   </button>
@@ -358,7 +369,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <div className="flex items-center space-x-3">
                       <Calendar className="w-5 h-5 text-emerald-600" />
-                      <span>Consultar Disponibilidad</span>
+                      <span>{t('nav.availability')}</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-400" />
                   </button>
@@ -371,7 +382,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <div className="flex items-center space-x-3">
                       <Compass className="w-5 h-5 text-emerald-600" />
-                      <span>Nuestros Domos (6 Domos con Jacuzzi)</span>
+                      <span>{t('nav.domes')}</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-400" />
                   </button>
@@ -384,7 +395,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <div className="flex items-center space-x-3">
                       <Utensils className="w-5 h-5 text-emerald-600" />
-                      <span>Menú Gastronómico (Cenas & Almuerzos)</span>
+                      <span>{t('nav.menu')}</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-400" />
                   </button>
@@ -397,7 +408,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <div className="flex items-center space-x-3">
                       <MapPin className="w-5 h-5 text-emerald-600" />
-                      <span>Mapa Interactivo & Entorno</span>
+                      <span>{t('nav.map')}</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-400" />
                   </button>
@@ -410,7 +421,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <div className="flex items-center space-x-3">
                       <Phone className="w-5 h-5 text-emerald-600" />
-                      <span>Contacto & Cómo Llegar</span>
+                      <span>{t('nav.contact')}</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-400" />
                   </button>
@@ -424,7 +435,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <div className="flex items-center space-x-3">
                       <Shield className="w-5 h-5 text-slate-500" />
-                      <span>Portal Administrativo</span>
+                      <span>{t('nav.admin')}</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-400" />
                   </button>
@@ -437,7 +448,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
                   >
                     <Phone className="w-4 h-4 text-emerald-400" />
-                    <span>Llamar a Recepción: +57 321 310 9331</span>
+                    <span>{t('nav.call_reception')}</span>
                   </a>
                 </div>
 
@@ -454,7 +465,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'home' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
         >
           <Home className="w-5 h-5 mb-0.5" />
-          <span>Inicio</span>
+          <span>{t('nav.home')}</span>
         </button>
 
         <button
@@ -462,7 +473,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'availability' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
         >
           <Calendar className="w-5 h-5 mb-0.5" />
-          <span>Fechas</span>
+          <span>{t('nav.dates')}</span>
         </button>
 
         <button
@@ -470,7 +481,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'domes' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
         >
           <Compass className="w-5 h-5 mb-0.5" />
-          <span>Domos</span>
+          <span>{t('nav.domes')}</span>
         </button>
 
         <button
@@ -478,7 +489,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'menu' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
         >
           <Utensils className="w-5 h-5 mb-0.5 text-emerald-600" />
-          <span>Menú</span>
+          <span>{t('nav.menu_short')}</span>
         </button>
 
         <button
@@ -487,9 +498,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${isMobileMenuOpen ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
         >
           <Menu className="w-5 h-5 mb-0.5" />
-          <span>Menú</span>
+          <span>{t('nav.menu_short')}</span>
         </button>
       </nav>
     </>
   );
 };
+

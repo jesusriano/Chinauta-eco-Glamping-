@@ -65,6 +65,22 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
   const [isFullscreenPhoto, setIsFullscreenPhoto] = useState(false);
 
+  // Sync images when dome prop changes
+  useEffect(() => {
+    const baseImages = getDomeImages(dome);
+    try {
+      const stored = localStorage.getItem(`dome_${domeId}_custom_images`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setImages(Array.from(new Set([...parsed, ...baseImages])));
+          return;
+        }
+      }
+    } catch (_) {}
+    setImages(baseImages);
+  }, [dome.id, dome.images, dome.image_url]);
+
   // Upload Feedback
   const [isUploading, setIsUploading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -324,7 +340,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
             </span>
           </div>
 
-          {/* Top Right Controls: Subir Video, Mute, Fullscreen */}
+          {/* Top Right Controls: Subir Video, Subir Foto, Mute, Fullscreen */}
           <div className="absolute top-3 right-3 z-20 flex items-center space-x-1.5 pointer-events-auto">
             <button
               type="button"
@@ -333,17 +349,30 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                 videoInputRef.current?.click();
               }}
               title={`Subir o cambiar video para ${dome.name}`}
-              className="px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-emerald-600 text-white text-[11px] font-medium backdrop-blur-md border border-white/20 transition-all flex items-center space-x-1 shadow-sm active:scale-95"
+              className="px-2.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-emerald-600 text-white text-[11px] font-semibold backdrop-blur-md border border-white/25 transition-all flex items-center space-x-1 shadow-md active:scale-95 cursor-pointer"
             >
-              <Upload className="w-3 h-3 text-emerald-400" />
-              <span className="hidden sm:inline">Subir video</span>
+              <Upload className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Subir video</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                imageInputRef.current?.click();
+              }}
+              title={`Subir fotos para ${dome.name}`}
+              className="px-2.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-teal-600 text-white text-[11px] font-semibold backdrop-blur-md border border-white/25 transition-all flex items-center space-x-1 shadow-md active:scale-95 cursor-pointer"
+            >
+              <ImagePlus className="w-3.5 h-3.5 text-teal-300" />
+              <span className="hidden sm:inline">Subir foto</span>
             </button>
 
             <button
               type="button"
               onClick={toggleMute}
               aria-label={isMuted ? 'Activar sonido' : 'Silenciar sonido'}
-              className="p-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white backdrop-blur-md border border-white/20 transition-transform active:scale-95 shadow-sm"
+              className="p-2 rounded-full bg-slate-900/90 hover:bg-slate-800 text-white backdrop-blur-md border border-white/25 transition-transform active:scale-95 shadow-md cursor-pointer"
             >
               {isMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-300" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-400" />}
             </button>
@@ -352,7 +381,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
               type="button"
               onClick={toggleFullscreen}
               aria-label="Pantalla completa"
-              className="p-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white backdrop-blur-md border border-white/20 transition-transform active:scale-95 shadow-sm"
+              className="p-2 rounded-full bg-slate-900/90 hover:bg-slate-800 text-white backdrop-blur-md border border-white/25 transition-transform active:scale-95 shadow-md cursor-pointer"
             >
               <Maximize2 className="w-3.5 h-3.5 text-white" />
             </button>
@@ -396,7 +425,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
             </span>
           </div>
 
-          {/* Top Right: Subir Imagen, Borrar & Expand */}
+          {/* Top Right: Subir Imagen, Subir Video, Borrar & Expand */}
           <div className="absolute top-3 right-3 z-20 flex items-center space-x-1.5 pointer-events-auto">
             <button
               type="button"
@@ -405,10 +434,23 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                 imageInputRef.current?.click();
               }}
               title={`Agregar nueva foto para ${dome.name}`}
-              className="px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-emerald-600 text-white text-[11px] font-medium backdrop-blur-md border border-white/20 transition-all flex items-center space-x-1 shadow-sm active:scale-95"
+              className="px-2.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-emerald-600 text-white text-[11px] font-semibold backdrop-blur-md border border-white/25 transition-all flex items-center space-x-1 shadow-md active:scale-95 cursor-pointer"
             >
-              <ImagePlus className="w-3 h-3 text-emerald-400" />
-              <span className="hidden sm:inline">Subir imagen</span>
+              <ImagePlus className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Subir foto</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                videoInputRef.current?.click();
+              }}
+              title={`Subir video para ${dome.name}`}
+              className="px-2.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-teal-600 text-white text-[11px] font-semibold backdrop-blur-md border border-white/25 transition-all flex items-center space-x-1 shadow-md active:scale-95 cursor-pointer"
+            >
+              <Upload className="w-3.5 h-3.5 text-teal-300" />
+              <span className="hidden sm:inline">Subir video</span>
             </button>
 
             {images.length > 1 && (
@@ -416,7 +458,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                 type="button"
                 onClick={handleDeleteCurrentPhoto}
                 title="Eliminar esta foto de la galería"
-                className="p-1.5 rounded-full bg-slate-900/80 hover:bg-rose-600 text-slate-300 hover:text-white backdrop-blur-md border border-white/20 transition-all active:scale-95 shadow-sm"
+                className="p-2 rounded-full bg-slate-900/90 hover:bg-rose-600 text-slate-300 hover:text-white backdrop-blur-md border border-white/25 transition-all active:scale-95 shadow-md cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -429,7 +471,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                 setIsFullscreenPhoto(true);
               }}
               title="Ver imagen en tamaño completo"
-              className="p-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white backdrop-blur-md border border-white/20 transition-transform active:scale-95 shadow-sm"
+              className="p-2 rounded-full bg-slate-900/90 hover:bg-slate-800 text-white backdrop-blur-md border border-white/25 transition-transform active:scale-95 shadow-md cursor-pointer"
             >
               <Maximize2 className="w-3.5 h-3.5 text-white" />
             </button>
