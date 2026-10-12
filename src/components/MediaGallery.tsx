@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Camera, Video, Plus, X, UploadCloud, Play, Pause, Maximize2, 
   ChevronLeft, ChevronRight, CheckCircle, Sparkles, ImagePlus, 
-  Volume2, VolumeX, Eye, Download, Trash2, Heart, Share2
+  Volume2, VolumeX, Eye, Download, Trash2, Heart, Share2,
+  Smartphone, LayoutGrid
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
+import { getResponsiveImageData } from '../utils/imageUtils';
 
 // Import default bundled assets as fallback
 import chinautaDeckAsoleadoras from '../assets/images/chinauta_deck_asoleadoras_1790624838157.jpg';
@@ -109,6 +111,12 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
   const [items, setItems] = useState<GalleryMediaItem[]>(DEFAULT_GALLERY_ITEMS);
   const [activeCategory, setActiveCategory] = useState<string>('Todos');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Mobile Touch Slider & View Mode State
+  const [viewMode, setViewMode] = useState<'slider' | 'grid'>('slider');
+  const [sliderIndex, setSliderIndex] = useState<number>(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
   
   // Drag & Drop / Upload modal state
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -309,6 +317,45 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lightboxIndex, filteredItems.length]);
 
+  // Reset slider index when active category changes
+  useEffect(() => {
+    setSliderIndex(0);
+  }, [activeCategory]);
+
+  const paginateSlider = (direction: number) => {
+    if (filteredItems.length === 0) return;
+    setSliderIndex((prev) => {
+      const next = prev + direction;
+      if (next < 0) return filteredItems.length - 1;
+      if (next >= filteredItems.length) return 0;
+      return next;
+    });
+  };
+
+  // Lightbox touch swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX !== null && touchEndX !== null) {
+      const diff = touchStartX - touchEndX;
+      if (diff > 50) {
+        // Swiped left -> next item
+        setLightboxIndex((prev) => (prev !== null && prev < filteredItems.length - 1 ? prev + 1 : 0));
+      } else if (diff < -50) {
+        // Swiped right -> prev item
+        setLightboxIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : filteredItems.length - 1));
+      }
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
+  };
+
   return (
     <div 
       className="space-y-10 relative"
@@ -374,7 +421,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
         <button
           type="button"
           onClick={() => setIsUploadModalOpen(true)}
-          className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs sm:text-sm flex items-center space-x-2.5 shadow-xl shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 active:scale-95 whitespace-nowrap cursor-pointer"
+          className="w-full sm:w-auto justify-center px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs sm:text-sm flex items-center space-x-2.5 shadow-xl shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
         >
           <UploadCloud className="w-5 h-5 text-emerald-200" />
           <span>{language === 'en' ? '+ Upload Photo or Video' : '+ Subir Foto o Video a la Galería'}</span>
@@ -412,76 +459,291 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
         })}
       </div>
 
-      {/* Gallery Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredItems.map((item, index) => {
-          const isVideo = item.media_type === 'video';
+      {/* View Mode Switcher & Counter */}
+      <div className="flex items-center justify-between pt-2 pb-1">
+        <p className="text-xs sm:text-sm text-slate-500 font-medium">
+          {language === 'en' 
+            ? `Showing ${filteredItems.length} experience${filteredItems.length === 1 ? '' : 's'}` 
+            : `Mostrando ${filteredItems.length} experiencia${filteredItems.length === 1 ? '' : 's'}`}
+        </p>
 
-          return (
-            <motion.div
-              layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.25 }}
-              key={item.id}
-              onClick={() => setLightboxIndex(index)}
-              className="group relative h-80 rounded-3xl overflow-hidden shadow-md cursor-pointer border border-slate-200/90 bg-slate-950 hover:shadow-2xl transition-all duration-500"
-            >
-              {isVideo ? (
-                <div className="relative w-full h-full bg-slate-950 flex items-center justify-center overflow-hidden">
-                  <video
-                    src={item.media_url}
-                    muted
-                    loop
-                    autoPlay
-                    playsInline
-                    className="w-full h-full object-cover opacity-85 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-14 h-14 rounded-full bg-emerald-600/90 text-white flex items-center justify-center shadow-xl backdrop-blur-xs group-hover:scale-110 group-hover:bg-emerald-500 transition-all">
-                      <Play className="w-7 h-7 text-white fill-current ml-1" />
+        <div className="inline-flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200/80 shadow-xs">
+          <button
+            type="button"
+            onClick={() => setViewMode('slider')}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              viewMode === 'slider'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+            title="Vista Deslizable con Gestos Táctiles"
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>{language === 'en' ? 'Touch Slider' : 'Deslizar'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('grid')}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              viewMode === 'grid'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+            title="Vista en Cuadrícula"
+          >
+            <LayoutGrid className="w-3.5 h-3.5" />
+            <span>{language === 'en' ? 'Grid' : 'Cuadrícula'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Touch-Friendly Slider Mode (Optimized for Mobile Gestures) */}
+      {viewMode === 'slider' && filteredItems.length > 0 && (
+        <div className="relative w-full overflow-hidden rounded-3xl bg-slate-950 border border-slate-200/90 shadow-xl">
+          {(() => {
+            const safeIdx = Math.min(Math.max(sliderIndex, 0), filteredItems.length - 1);
+            const activeItem = filteredItems[safeIdx];
+            const isVideo = activeItem.media_type === 'video';
+            const imgData = getResponsiveImageData(activeItem.image || activeItem.media_url, '(max-width: 640px) 100vw, 900px');
+
+            return (
+              <div className="relative flex flex-col justify-between min-h-[380px] sm:min-h-[460px] md:min-h-[500px]">
+                {/* Active Slide Canvas with Framer Motion Drag Gestures */}
+                <div className="absolute inset-0 overflow-hidden">
+                  <AnimatePresence initial={false} mode="wait">
+                    <motion.div
+                      key={activeItem.id}
+                      initial={{ opacity: 0, x: 40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -40 }}
+                      transition={{ duration: 0.25 }}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      dragElastic={0.2}
+                      onDragEnd={(_, { offset, velocity }) => {
+                        const swipe = Math.abs(offset.x) * velocity.x;
+                        if (swipe < -80 || offset.x < -50) {
+                          paginateSlider(1);
+                        } else if (swipe > 80 || offset.x > 50) {
+                          paginateSlider(-1);
+                        }
+                      }}
+                      className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing select-none"
+                    >
+                      {isVideo ? (
+                        <div className="relative w-full h-full bg-slate-950 flex items-center justify-center">
+                          <video
+                            src={activeItem.media_url}
+                            muted
+                            loop
+                            autoPlay
+                            playsInline
+                            preload="metadata"
+                            className="w-full h-full object-cover"
+                          />
+                          <div 
+                            onClick={() => setLightboxIndex(safeIdx)}
+                            className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/10 transition-colors cursor-pointer"
+                          >
+                            <div className="w-16 h-16 rounded-full bg-emerald-600/90 hover:bg-emerald-500 text-white flex items-center justify-center shadow-2xl backdrop-blur-xs transition-transform transform active:scale-95">
+                              <Play className="w-8 h-8 text-white fill-current ml-1" />
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <img
+                          src={imgData.webpSrc || activeItem.image || activeItem.media_url}
+                          srcSet={imgData.webpSrcSet || undefined}
+                          sizes={imgData.sizes || undefined}
+                          alt={activeItem.title}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover pointer-events-none"
+                        />
+                      )}
+
+                      {/* Gradient Scrim for readable text */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/30 to-slate-950/40 pointer-events-none" />
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Top Overlay Bar */}
+                <div className="relative z-20 p-4 sm:p-6 flex items-center justify-between pointer-events-auto">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-emerald-300 border border-white/20 shadow-md">
+                      {isVideo ? '🎥 Video Tour HD' : activeItem.category}
+                    </span>
+                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-slate-300 border border-white/10">
+                      {safeIdx + 1} / {filteredItems.length}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => setLightboxIndex(safeIdx)}
+                      className="p-2 sm:p-2.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-md"
+                      title="Ver en pantalla completa"
+                      aria-label="Ver en pantalla completa"
+                    >
+                      <Maximize2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Navigation Arrows for touch or click */}
+                <div className="relative z-20 flex items-center justify-between px-3 sm:px-5 pointer-events-none">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      paginateSlider(-1);
+                    }}
+                    className="pointer-events-auto p-3 sm:p-3.5 rounded-full bg-slate-900/85 hover:bg-emerald-600 text-white backdrop-blur-md border border-white/20 transition-all transform active:scale-90 shadow-xl cursor-pointer"
+                    aria-label="Experiencia anterior"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      paginateSlider(1);
+                    }}
+                    className="pointer-events-auto p-3 sm:p-3.5 rounded-full bg-slate-900/85 hover:bg-emerald-600 text-white backdrop-blur-md border border-white/20 transition-all transform active:scale-90 shadow-xl cursor-pointer"
+                    aria-label="Siguiente experiencia"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Bottom Content Area & Dots */}
+                <div className="relative z-20 p-5 sm:p-6 space-y-3 pointer-events-auto">
+                  <div 
+                    onClick={() => setLightboxIndex(safeIdx)}
+                    className="cursor-pointer space-y-1.5"
+                  >
+                    <h3 className="text-xl sm:text-2xl font-black text-white hover:text-emerald-300 transition-colors">
+                      {activeItem.title}
+                    </h3>
+                    {activeItem.description && (
+                      <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 leading-relaxed">
+                        {activeItem.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Dot Indicators & Swipe Hint */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-white/10">
+                    {/* Swipe Instruction Hint */}
+                    <div className="flex items-center space-x-1.5 text-[11px] text-slate-400 font-medium">
+                      <Smartphone className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                      <span>{language === 'en' ? 'Swipe left or right to explore' : 'Desliza con el dedo para explorar'}</span>
+                    </div>
+
+                    {/* Dots */}
+                    <div className="flex items-center space-x-1.5 overflow-x-auto max-w-full py-1">
+                      {filteredItems.slice(0, 12).map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setSliderIndex(idx)}
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            safeIdx === idx
+                              ? 'w-6 bg-emerald-400 shadow-xs'
+                              : 'w-2 bg-white/40 hover:bg-white/80'
+                          }`}
+                          aria-label={`Ir a experiencia ${idx + 1}`}
+                        />
+                      ))}
                     </div>
                   </div>
                 </div>
-              ) : (
-                <img
-                  src={item.image || item.media_url}
-                  alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
-                />
-              )}
-
-              {/* Gradient Scrim */}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/30 to-transparent opacity-85 group-hover:opacity-95 transition-opacity pointer-events-none"></div>
-
-              {/* Top badges */}
-              <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10 pointer-events-none">
-                <span className="text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-emerald-300 border border-white/20 shadow-md">
-                  {isVideo ? '🎥 Video Tour' : item.category}
-                </span>
-
-                <div className="bg-white/20 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Maximize2 className="w-4 h-4" />
-                </div>
               </div>
+            );
+          })()}
+        </div>
+      )}
 
-              {/* Bottom text */}
-              <div className="absolute bottom-0 inset-x-0 p-6 space-y-1.5 text-white transform transition-transform pointer-events-none z-10">
-                <h4 className="text-lg font-extrabold leading-snug group-hover:text-emerald-300 transition-colors">
-                  {item.title}
-                </h4>
-                {item.description && (
-                  <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
-                    {item.description}
-                  </p>
+      {/* Gallery Grid Mode (Responsive WebP Images) */}
+      {(viewMode === 'grid' || filteredItems.length === 0) && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredItems.map((item, index) => {
+            const isVideo = item.media_type === 'video';
+            const imgData = getResponsiveImageData(item.image || item.media_url, '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw');
+
+            return (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.25 }}
+                key={item.id}
+                onClick={() => setLightboxIndex(index)}
+                className="group relative h-80 rounded-3xl overflow-hidden shadow-md cursor-pointer border border-slate-200/90 bg-slate-950 hover:shadow-2xl transition-all duration-500"
+              >
+                {isVideo ? (
+                  <div className="relative w-full h-full bg-slate-950 flex items-center justify-center overflow-hidden">
+                    <video
+                      src={item.media_url}
+                      muted
+                      loop
+                      preload="metadata"
+                      playsInline
+                      className="w-full h-full object-cover opacity-85 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-14 h-14 rounded-full bg-emerald-600/90 text-white flex items-center justify-center shadow-xl backdrop-blur-xs group-hover:scale-110 group-hover:bg-emerald-500 transition-all">
+                        <Play className="w-7 h-7 text-white fill-current ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <img
+                    src={imgData.webpSrc || item.image || item.media_url}
+                    srcSet={imgData.webpSrcSet || undefined}
+                    sizes={imgData.sizes || undefined}
+                    alt={item.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                  />
                 )}
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
 
-      {/* Lightbox Viewer Modal */}
+                {/* Gradient Scrim */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/30 to-transparent opacity-85 group-hover:opacity-95 transition-opacity pointer-events-none"></div>
+
+                {/* Top badges */}
+                <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10 pointer-events-none">
+                  <span className="text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-emerald-300 border border-white/20 shadow-md">
+                    {isVideo ? '🎥 Video Tour' : item.category}
+                  </span>
+
+                  <div className="bg-white/20 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Maximize2 className="w-4 h-4" />
+                  </div>
+                </div>
+
+                {/* Bottom text */}
+                <div className="absolute bottom-0 inset-x-0 p-6 space-y-1.5 text-white transform transition-transform pointer-events-none z-10">
+                  <h4 className="text-lg font-extrabold leading-snug group-hover:text-emerald-300 transition-colors">
+                    {item.title}
+                  </h4>
+                  {item.description && (
+                    <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
+                      {item.description}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Lightbox Viewer Modal with Touch Gestures */}
       <AnimatePresence>
         {lightboxIndex !== null && filteredItems[lightboxIndex] && (
           <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex flex-col justify-between p-4 sm:p-6 overflow-hidden">
@@ -507,8 +769,13 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
               </div>
             </div>
 
-            {/* Main Center Area with Nav Buttons */}
-            <div className="relative flex-1 flex items-center justify-center my-4 overflow-hidden">
+            {/* Main Center Area with Nav Buttons and Touch Swipe Handlers */}
+            <div 
+              className="relative flex-1 flex items-center justify-center my-4 overflow-hidden touch-pan-y"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               {/* Previous Button */}
               <button
                 onClick={(e) => {
@@ -516,7 +783,8 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
                   setLightboxIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : filteredItems.length - 1));
                 }}
                 className="absolute left-2 sm:left-4 z-20 p-3 sm:p-4 rounded-full bg-slate-900/80 hover:bg-emerald-600 text-white backdrop-blur-md border border-white/20 transition-all transform hover:scale-110 active:scale-95 cursor-pointer shadow-2xl"
-                title="Anterior (Flecha Izquierda)"
+                title="Anterior (Flecha Izquierda o Deslizar)"
+                aria-label="Anterior"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
@@ -536,11 +804,21 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
                     />
                   </div>
                 ) : (
-                  <img
-                    src={filteredItems[lightboxIndex].image || filteredItems[lightboxIndex].media_url}
-                    alt={filteredItems[lightboxIndex].title}
-                    className="max-h-[70vh] max-w-full object-contain rounded-2xl shadow-2xl"
-                  />
+                  (() => {
+                    const lbData = getResponsiveImageData(
+                      filteredItems[lightboxIndex].image || filteredItems[lightboxIndex].media_url, 
+                      '(max-width: 1024px) 100vw, 1200px'
+                    );
+                    return (
+                      <img
+                        src={lbData.webpSrc || filteredItems[lightboxIndex].image || filteredItems[lightboxIndex].media_url}
+                        srcSet={lbData.webpSrcSet || undefined}
+                        sizes={lbData.sizes || undefined}
+                        alt={filteredItems[lightboxIndex].title}
+                        className="max-h-[70vh] max-w-full object-contain rounded-2xl shadow-2xl"
+                      />
+                    );
+                  })()
                 )}
               </div>
 
@@ -551,7 +829,8 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
                   setLightboxIndex((prev) => (prev !== null && prev < filteredItems.length - 1 ? prev + 1 : 0));
                 }}
                 className="absolute right-2 sm:right-4 z-20 p-3 sm:p-4 rounded-full bg-slate-900/80 hover:bg-emerald-600 text-white backdrop-blur-md border border-white/20 transition-all transform hover:scale-110 active:scale-95 cursor-pointer shadow-2xl"
-                title="Siguiente (Flecha Derecha)"
+                title="Siguiente (Flecha Derecha o Deslizar)"
+                aria-label="Siguiente"
               >
                 <ChevronRight className="w-6 h-6" />
               </button>

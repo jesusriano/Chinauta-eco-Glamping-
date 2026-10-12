@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Search, CheckCircle2, XCircle, AlertCircle, Compass } from 'lucide-react';
 import { Dome } from '../types';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { ImageCarousel } from './ImageCarousel';
 import { getDomeImages } from '../utils/domeImages';
 import { useLanguage } from '../context/LanguageContext';
@@ -20,12 +20,14 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
   const [results, setResults] = useState<any[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [dateError, setDateError] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+    setDateError(null);
     if (!checkIn || !checkOut) return;
     if (checkIn >= checkOut) {
-      alert(language === 'en' ? "Check-out date must be after check-in date." : "La fecha de salida debe ser posterior a la fecha de entrada.");
+      setDateError(language === 'en' ? "Check-out date must be after check-in date." : "La fecha de salida debe ser posterior a la fecha de entrada.");
       return;
     }
 
@@ -61,6 +63,12 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
 
       {/* Search Form Card */}
       <div className="glass-card max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200">
+        {dateError && (
+          <div className="mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm font-semibold flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{dateError}</span>
+          </div>
+        )}
         <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-end">
           <div>
             <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">{t('avail.checkin')}</label>

@@ -676,29 +676,29 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-          {step > 1 && step < 8 && (
+        <div className="p-4 sm:p-6 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          {step > 1 && step < 8 ? (
             <button
               onClick={() => setStep(prev => prev - 1)}
-              className="px-5 py-2.5 rounded-xl border border-slate-300 font-medium text-slate-700 hover:bg-slate-100 flex items-center space-x-2 text-sm"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-300 font-medium text-slate-700 hover:bg-slate-100 flex items-center justify-center space-x-2 text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Anterior</span>
             </button>
-          )}
+          ) : <div />}
 
-          <div className="ml-auto">
+          <div className="w-full sm:w-auto flex justify-end">
             {step < 7 && (
               <button
                 onClick={() => {
                   if (step === 2 && !validateStep2()) return;
                   if (step === 3 && !selectedDomeId) {
-                    alert("Por favor selecciona un domo disponible.");
+                    setErrorMsg("Por favor selecciona un domo disponible.");
                     return;
                   }
                   setStep(prev => prev + 1);
                 }}
-                className="px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 flex items-center space-x-2 text-sm shadow-md shadow-emerald-600/20"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 flex items-center justify-center space-x-2 text-sm shadow-md shadow-emerald-600/20"
               >
                 <span>Siguiente</span>
                 <ArrowRight className="w-4 h-4" />
@@ -709,17 +709,17 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
               <button
                 onClick={handleConfirmBooking}
                 disabled={submitting}
-                className="px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold hover:from-emerald-700 hover:to-teal-800 shadow-lg shadow-emerald-700/30 flex items-center space-x-2 text-sm disabled:opacity-50"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold hover:from-emerald-700 hover:to-teal-800 shadow-lg shadow-emerald-700/30 flex items-center justify-center space-x-2 text-xs sm:text-sm disabled:opacity-50"
               >
                 <span>{submitting ? 'Confirmando Reserva...' : `Confirmar Reserva ($${totalAmount.toLocaleString('es-CO')} COP)`}</span>
-                <ShieldCheck className="w-5 h-5" />
+                <ShieldCheck className="w-5 h-5 shrink-0" />
               </button>
             )}
 
             {step === 8 && (
               <button
                 onClick={onClose}
-                className="px-8 py-3 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 text-sm"
+                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 text-sm"
               >
                 Cerrar y Volver al Inicio
               </button>

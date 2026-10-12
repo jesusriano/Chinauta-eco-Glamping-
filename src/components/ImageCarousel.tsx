@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Maximize2, Camera, Image as ImageIcon } from 'lucide-react';
+import { getResponsiveImageData } from '../utils/imageUtils';
 
 interface ImageCarouselProps {
   images: string[];
@@ -71,6 +72,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
 
   const currentImage = validImages[currentIndex];
   const isFailed = imageError[currentIndex];
+  const imgData = getResponsiveImageData(currentImage);
 
   return (
     <div
@@ -88,8 +90,12 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
           <AnimatePresence initial={false} custom={direction}>
             <motion.img
               key={page}
-              src={currentImage}
+              src={imgData.webpSrc || currentImage}
+              srcSet={imgData.webpSrcSet || undefined}
+              sizes={imgData.sizes || undefined}
               alt={`${alt} - Foto ${currentIndex + 1}`}
+              loading="lazy"
+              decoding="async"
               onError={() => setImageError((prev) => ({ ...prev, [currentIndex]: true }))}
               referrerPolicy="no-referrer"
               custom={direction}

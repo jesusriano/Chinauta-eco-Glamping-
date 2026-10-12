@@ -70,12 +70,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => handleNavClick('home')}
             >
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white flex items-center justify-center shadow-md shadow-slate-300/40 relative overflow-hidden border border-slate-200 group-hover:scale-105 transition-transform">
-                <img 
-                  src="/logo.jpg" 
-                  alt="Eco Glamping Chinauta Logo" 
-                  className="w-full h-full object-cover" 
-                  referrerPolicy="no-referrer"
-                />
+                <picture>
+                  <source srcSet="/logo.webp" type="image/webp" />
+                  <img 
+                    src="/logo.webp" 
+                    alt="Eco Glamping Chinauta Logo" 
+                    className="w-full h-full object-cover" 
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/logo.jpg';
+                    }}
+                  />
+                </picture>
               </div>
               <div>
                 <div className="flex items-center space-x-1.5">
@@ -93,7 +99,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2">
+            <nav className="hidden md:flex items-center space-x-1 lg:space-x-1.5 xl:space-x-2">
               <button
                 onClick={() => handleNavClick('home')}
                 className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -232,8 +238,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </nav>
 
-            {/* Desktop Actions */}
-            <div className="hidden sm:flex items-center space-x-2 sm:space-x-3">
+            {/* Desktop Actions (visible on md+) */}
+            <div className="hidden md:flex items-center space-x-2 lg:space-x-3">
               {/* Language Switcher */}
               <LanguageSwitcher variant="compact" />
 
@@ -261,8 +267,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </div>
 
-            {/* Mobile & Tablet Hamburger Button */}
-            <div className="flex items-center space-x-2 lg:hidden">
+            {/* Mobile & Tablet Hamburger Button (visible below md) */}
+            <div className="flex items-center space-x-2 md:hidden">
               <LanguageSwitcher variant="compact" className="scale-90 origin-right" />
 
               <button
@@ -297,7 +303,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="lg:hidden border-t border-slate-200/90 bg-white/98 backdrop-blur-xl shadow-2xl overflow-hidden"
+              className="md:hidden border-t border-slate-200/90 bg-white/98 backdrop-blur-xl shadow-2xl overflow-y-auto max-h-[calc(100vh-5rem)]"
             >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-4">
                 
@@ -459,7 +465,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </header>
 
       {/* Mobile Bottom Navigation Bar for Mobile Phones */}
-      <nav aria-label="Navegación móvil inferior" className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-2 py-2 flex items-center justify-around shadow-xl">
+      <nav aria-label="Navegación móvil inferior" className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-2 py-2 flex items-center justify-around shadow-xl">
         <button
           onClick={() => handleNavClick('home')}
           className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'home' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
@@ -478,7 +484,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         <button
           onClick={() => handleNavClick('domes')}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'domes' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
+          className={`flex flex-col items-center justify-center py-1.5 px-2 min-h-[44px] min-w-[44px] rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'domes' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
         >
           <Compass className="w-5 h-5 mb-0.5" />
           <span>{t('nav.domes')}</span>
@@ -486,7 +492,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         <button
           onClick={() => handleNavClick('menu')}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'menu' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
+          className={`flex flex-col items-center justify-center py-1.5 px-2 min-h-[44px] min-w-[44px] rounded-xl text-[11px] font-semibold transition-colors ${activeTab === 'menu' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
         >
           <Utensils className="w-5 h-5 mb-0.5 text-emerald-600" />
           <span>{t('nav.menu_short')}</span>
@@ -495,10 +501,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[11px] font-semibold transition-colors ${isMobileMenuOpen ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
+          className={`flex flex-col items-center justify-center py-1.5 px-2 min-h-[44px] min-w-[44px] rounded-xl text-[11px] font-semibold transition-colors ${isMobileMenuOpen ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600'}`}
         >
           <Menu className="w-5 h-5 mb-0.5" />
-          <span>{t('nav.menu_short')}</span>
+          <span>{t('nav.more') || (activeTab === 'home' ? 'Más' : 'Menú')}</span>
         </button>
       </nav>
     </>

@@ -28,6 +28,7 @@ const translations: Record<Language, Translations> = {
     'nav.call_reception': 'Llamar a Recepción: +57 321 310 9331',
     'nav.dates': 'Fechas',
     'nav.menu_short': 'Menú',
+    'nav.more': 'Más',
 
     // Hero
     'hero.badge': 'Experiencia de Lujo Natural en Fusagasugá',
@@ -129,6 +130,7 @@ const translations: Record<Language, Translations> = {
     'nav.call_reception': 'Call Front Desk: +57 321 310 9331',
     'nav.dates': 'Dates',
     'nav.menu_short': 'Menu',
+    'nav.more': 'More',
 
     // Hero
     'hero.badge': 'Luxury Nature Retreat in Fusagasugá',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { MapPin, Phone, Mail, MessageSquare, Clock, HelpCircle, Compass } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { ImageCarousel } from './ImageCarousel';
 
 export const ContactView: React.FC = () => {

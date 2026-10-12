@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Star, CheckCircle2, Quote, Upload, Camera, Plus, X, ImagePlus, Video, CheckCircle, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
+import { getResponsiveImageData } from '../utils/imageUtils';
 
 export interface Testimonial {
   id: string | number;
@@ -253,7 +254,7 @@ export const TestimonialsSection: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-lg shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
+            className="w-full sm:w-auto justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-lg shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>{language === 'en' ? '+ Post Review & Upload Photo' : '+ Subir Mi Foto & Testimonio'}</span>
@@ -290,6 +291,8 @@ export const TestimonialsSection: React.FC = () => {
                     <video
                       src={item.video_url}
                       controls
+                      playsInline
+                      preload="none"
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute top-2 right-2 bg-slate-900/80 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur-md">
@@ -298,11 +301,20 @@ export const TestimonialsSection: React.FC = () => {
                   </div>
                 ) : item.image ? (
                   <div className="h-52 rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative group/img">
-                    <img
-                      src={item.image}
-                      alt={item.dome}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    {(() => {
+                      const testImg = getResponsiveImageData(item.image, '(max-width: 640px) 100vw, 400px');
+                      return (
+                        <img
+                          src={testImg.webpSrc || item.image}
+                          srcSet={testImg.webpSrcSet || undefined}
+                          sizes={testImg.sizes || undefined}
+                          alt={item.dome}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      );
+                    })()}
                   </div>
                 ) : null}
 

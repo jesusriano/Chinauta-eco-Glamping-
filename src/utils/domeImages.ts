@@ -18,9 +18,12 @@ export const DEFAULT_DOMES: Dome[] = [
     description: "Romántico domo geodésico con jacuzzi privado de hidromasaje al aire libre, malla de descanso tipo catamarán, baño privado y vista privilegiada sobre las montañas de Chinauta.",
     capacity: 2,
     price_per_night: 380000,
-    image_url: chinautaDeckAsoleadoras,
+    image_url: "/assets/images/dome_1_1791403584294.jpg",
     images: [
-      chinautaDeckAsoleadoras,
+      "/assets/images/dome_1_1791403584294.jpg",
+      "/assets/images/dome_1_1791403455449.jpg",
+      "/assets/images/dome_1_1791403422738.jpg",
+      "/assets/images/dome_1_1790625768325.jpg",
       huitacaDeckJacuzzi,
       huitacaCatamaranMesh,
       huitacaEntranceSteps
@@ -36,9 +39,12 @@ export const DEFAULT_DOMES: Dome[] = [
     description: "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, terraza, zona barbacoa (BBQ), malla flotante y zona de fogata.",
     capacity: 3,
     price_per_night: 450000,
-    image_url: chinautaRomanticDomeNight,
+    image_url: "/assets/images/dome_2_1791404907620.jpg",
     images: [
-      chinautaRomanticDomeNight,
+      "/assets/images/dome_2_1791404907620.jpg",
+      "/assets/images/dome_2_1791404871963.jpg",
+      "/assets/images/dome_2_1791404839607.jpg",
+      "/assets/images/dome_2_1791404802997.jpg",
       bochicaRomanticDecor,
       bochicaJacuzziDeck,
       bochicaSunsetView
@@ -72,12 +78,14 @@ export const DEFAULT_DOMES: Dome[] = [
     description: "Luminoso domo con jacuzzi privado de hidromasaje, zona de fogata privada, 1 cama King, baño privado y vista panorámica al valle de Chinauta.",
     capacity: 2,
     price_per_night: 420000,
-    image_url: chinautaDeckAsoleadoras,
+    image_url: "/assets/images/dome_4_1791404275513.jpg",
     images: [
-      chinautaDeckAsoleadoras,
-      chinautaRomanticDomeNight,
-      huitacaEntranceSteps,
-      bochicaSunsetView
+      "/assets/images/dome_4_1791404275513.jpg",
+      "/assets/images/dome_4_1791404266017.jpg",
+      "/assets/images/dome_4_1791404251064.jpg",
+      "/assets/images/dome_4_1791404236234.jpg",
+      "/assets/images/dome_4_1791404217055.jpg",
+      chinautaRomanticDomeNight
     ],
     status: "Disponible",
     features: "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona de fogata privada, Desayuno campesino incluido, Vista panorámica",
@@ -90,12 +98,14 @@ export const DEFAULT_DOMES: Dome[] = [
     description: "Domo de descanso con jacuzzi privado de hidromasaje, balcón privado, 1 cama King, baño privado, zona de fogata y desayuno campesino.",
     capacity: 2,
     price_per_night: 390000,
-    image_url: chinautaRomanticDomeNight,
+    image_url: "/assets/images/dome_5_1791404612181.jpg",
     images: [
+      "/assets/images/dome_5_1791404612181.jpg",
+      "/assets/images/dome_5_1791404605043.jpg",
+      "/assets/images/dome_5_1791404596425.jpg",
       chinautaRomanticDomeNight,
       huitacaCatamaranMesh,
-      bochicaRomanticDecor,
-      chinautaDeckAsoleadoras
+      bochicaRomanticDecor
     ],
     status: "Disponible",
     features: "Jacuzzi privado de hidromasaje, Balcón privado, Baño privado, 1 Cama King, Zona de fogata, Desayuno campesino incluido",
@@ -123,13 +133,19 @@ export const DEFAULT_DOMES: Dome[] = [
 
 export const DEFAULT_DOME_GALLERIES: Record<number, string[]> = {
   1: [
-    chinautaDeckAsoleadoras,
+    "/assets/images/dome_1_1791403584294.jpg",
+    "/assets/images/dome_1_1791403455449.jpg",
+    "/assets/images/dome_1_1791403422738.jpg",
+    "/assets/images/dome_1_1790625768325.jpg",
     huitacaDeckJacuzzi,
     huitacaCatamaranMesh,
     huitacaEntranceSteps
   ],
   2: [
-    chinautaRomanticDomeNight,
+    "/assets/images/dome_2_1791404907620.jpg",
+    "/assets/images/dome_2_1791404871963.jpg",
+    "/assets/images/dome_2_1791404839607.jpg",
+    "/assets/images/dome_2_1791404802997.jpg",
     bochicaRomanticDecor,
     bochicaJacuzziDeck,
     bochicaSunsetView
@@ -141,16 +157,20 @@ export const DEFAULT_DOME_GALLERIES: Record<number, string[]> = {
     bochicaJacuzziDeck
   ],
   4: [
-    chinautaDeckAsoleadoras,
-    chinautaRomanticDomeNight,
-    huitacaEntranceSteps,
-    bochicaSunsetView
+    "/assets/images/dome_4_1791404275513.jpg",
+    "/assets/images/dome_4_1791404266017.jpg",
+    "/assets/images/dome_4_1791404251064.jpg",
+    "/assets/images/dome_4_1791404236234.jpg",
+    "/assets/images/dome_4_1791404217055.jpg",
+    chinautaRomanticDomeNight
   ],
   5: [
+    "/assets/images/dome_5_1791404612181.jpg",
+    "/assets/images/dome_5_1791404605043.jpg",
+    "/assets/images/dome_5_1791404596425.jpg",
     chinautaRomanticDomeNight,
     huitacaCatamaranMesh,
-    bochicaRomanticDecor,
-    chinautaDeckAsoleadoras
+    bochicaRomanticDecor
   ],
   6: [
     bochicaJacuzziDeck,

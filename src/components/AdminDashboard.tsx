@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, CalendarDays, BedDouble, Users, DollarSign, 
   FileText, Shield, Settings, LogOut, Search, Plus, CheckCircle2, 
-  XCircle, AlertCircle, Clock, TrendingUp, BarChart3, ChevronRight, Filter, Download, Camera, Utensils
+  XCircle, AlertCircle, Clock, TrendingUp, BarChart3, ChevronRight, Filter, Download, Camera, Utensils,
+  Activity, ArrowUpRight, Sparkles, Percent, PieChart as PieIcon, RefreshCw, Menu, X
 } from 'lucide-react';
 import { CHINAUTA_MENU_ITEMS } from './FoodMenuSection';
 import { ImageCarousel } from './ImageCarousel';
 import { getDomeImages } from '../utils/domeImages';
 import { AdminUser, Reservation, Dome, Customer, Payment, MaintenanceBlock, AuditLog } from '../types';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar } from 'recharts';
+import { 
+  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, 
+  BarChart, Bar, Legend, PieChart, Pie, Cell, LineChart, Line 
+} from 'recharts';
 
 interface AdminDashboardProps {
   user: AdminUser;
@@ -17,7 +21,15 @@ interface AdminDashboardProps {
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
   const [activeMenu, setActiveMenu] = useState('dashboard');
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [metrics, setMetrics] = useState<any>(null);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [chartPeriod, setChartPeriod] = useState<'6m' | '1y' | 'all'>('6m');
+
+  const handleMenuSelect = (menu: string) => {
+    setActiveMenu(menu);
+    setMobileNavOpen(false);
+  };
   const [domes, setDomes] = useState<Dome[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -62,17 +74,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
   const loadAllData = async () => {
     setLoading(true);
     try {
-      const [mRes, dRes, rRes, cRes, pRes, mnRes, aRes, fRes, sRes, uRes] = await Promise.all([
-        fetch('/api/dashboard/metrics').then(r => r.json()),
-        fetch('/api/domes').then(r => r.json()),
-        fetch('/api/reservations').then(r => r.json()),
-        fetch('/api/customers').then(r => r.json()),
-        fetch('/api/payments').then(r => r.json()),
-        fetch('/api/maintenance').then(r => r.json()),
-        fetch('/api/audit').then(r => r.json()),
-        fetch('/api/finances/summary').then(r => r.json()),
-        fetch('/api/settings').then(r => r.json()),
-        fetch('/api/users').then(r => r.json())
+      const [mRes, dRes, rRes, cRes, pRes, mnRes, aRes, fRes, sRes, uRes, anRes] = await Promise.all([
+        fetch('/api/dashboard/metrics').then(r => r.json()).catch(() => null),
+        fetch('/api/domes').then(r => r.json()).catch(() => []),
+        fetch('/api/reservations').then(r => r.json()).catch(() => []),
+        fetch('/api/customers').then(r => r.json()).catch(() => []),
+        fetch('/api/payments').then(r => r.json()).catch(() => []),
+        fetch('/api/maintenance').then(r => r.json()).catch(() => []),
+        fetch('/api/audit').then(r => r.json()).catch(() => []),
+        fetch('/api/finances/summary').then(r => r.json()).catch(() => null),
+        fetch('/api/settings').then(r => r.json()).catch(() => ({})),
+        fetch('/api/users').then(r => r.json()).catch(() => []),
+        fetch('/api/analytics/charts').then(r => r.json()).catch(() => null)
       ]);
 
       if (mRes) setMetrics(mRes);
@@ -85,6 +98,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
       if (fRes) setFinances(fRes);
       if (sRes) setSettings(sRes);
       if (Array.isArray(uRes)) setUsersList(uRes);
+      if (anRes) setAnalyticsData(anRes);
     } catch (err) {
       console.error(err);
     } finally {
@@ -204,19 +218,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0">
         <div>
-          <div className="p-6 border-b border-slate-800 flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold">
-              EGC
+          <div className="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold">
+                EGC
+              </div>
+              <div>
+                <h2 className="font-bold text-white text-sm">Panel Administrativo</h2>
+                <p className="text-xs text-emerald-400 font-medium">Eco Glamping Chinauta</p>
+              </div>
             </div>
-            <div>
-              <h2 className="font-bold text-white text-sm">Panel Administrativo</h2>
-              <p className="text-xs text-emerald-400 font-medium">Eco Glamping Chinauta</p>
-            </div>
+
+            {/* Mobile Sidebar Hamburger Toggle */}
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen(!mobileNavOpen)}
+              className="md:hidden p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors"
+              aria-label={mobileNavOpen ? 'Cerrar menú admin' : 'Abrir menú admin'}
+            >
+              {mobileNavOpen ? <X className="w-5 h-5 text-emerald-400" /> : <Menu className="w-5 h-5 text-slate-200" />}
+            </button>
           </div>
 
-          <nav className="p-4 space-y-1.5 text-sm font-medium">
+          <nav className={`p-4 space-y-1.5 text-sm font-medium ${mobileNavOpen ? 'block' : 'hidden md:block'}`}>
             <button
-              onClick={() => setActiveMenu('dashboard')}
+              onClick={() => handleMenuSelect('dashboard')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'dashboard' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <LayoutDashboard className="w-5 h-5" />
@@ -224,7 +250,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             </button>
 
             <button
-              onClick={() => setActiveMenu('reservations')}
+              onClick={() => handleMenuSelect('charts')}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'charts' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
+            >
+              <BarChart3 className="w-5 h-5 text-emerald-400" />
+              <span>Gráficas & Reportes</span>
+            </button>
+
+            <button
+              onClick={() => handleMenuSelect('reservations')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'reservations' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <FileText className="w-5 h-5" />
@@ -232,7 +266,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             </button>
 
             <button
-              onClick={() => setActiveMenu('calendar')}
+              onClick={() => handleMenuSelect('calendar')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'calendar' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <CalendarDays className="w-5 h-5" />
@@ -240,7 +274,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             </button>
 
             <button
-              onClick={() => setActiveMenu('domes')}
+              onClick={() => handleMenuSelect('domes')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'domes' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <BedDouble className="w-5 h-5" />
@@ -248,7 +282,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             </button>
 
             <button
-              onClick={() => setActiveMenu('customers')}
+              onClick={() => handleMenuSelect('customers')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'customers' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <Users className="w-5 h-5" />
@@ -256,7 +290,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             </button>
 
             <button
-              onClick={() => setActiveMenu('finances')}
+              onClick={() => handleMenuSelect('finances')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'finances' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <DollarSign className="w-5 h-5" />
@@ -264,7 +298,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             </button>
 
             <button
-              onClick={() => setActiveMenu('audit')}
+              onClick={() => handleMenuSelect('audit')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'audit' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <Shield className="w-5 h-5" />
@@ -273,7 +307,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
 
             {user.role === 'SUPERADMIN' && (
               <button
-                onClick={() => setActiveMenu('users')}
+                onClick={() => handleMenuSelect('users')}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'users' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
               >
                 <Users className="w-5 h-5" />
@@ -282,7 +316,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             )}
 
             <button
-              onClick={() => setActiveMenu('images')}
+              onClick={() => handleMenuSelect('images')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'images' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <Camera className="w-5 h-5" />
@@ -290,7 +324,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             </button>
 
             <button
-              onClick={() => setActiveMenu('restaurant')}
+              onClick={() => handleMenuSelect('restaurant')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'restaurant' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <Utensils className="w-5 h-5 text-emerald-400" />
@@ -298,7 +332,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             </button>
 
             <button
-              onClick={() => setActiveMenu('settings')}
+              onClick={() => handleMenuSelect('settings')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'settings' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <Settings className="w-5 h-5" />
@@ -335,6 +369,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
           <div>
             <h1 className="text-2xl font-bold text-slate-900 capitalize">
               {activeMenu === 'dashboard' ? 'Dashboard General' :
+               activeMenu === 'charts' ? 'Gráficas, Tendencias & Analítica' :
                activeMenu === 'reservations' ? 'Gestión de Reservas' :
                activeMenu === 'calendar' ? 'Calendario Operativo' :
                activeMenu === 'domes' ? 'Estado de los Domos y Mantenimiento' :
@@ -347,13 +382,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
           </div>
 
           <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setShowMaintenanceModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center space-x-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Bloquear Mantenimiento</span>
-            </button>
+            {activeMenu === 'charts' ? (
+              <div className="flex items-center space-x-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button
+                  onClick={() => setChartPeriod('6m')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${chartPeriod === '6m' ? 'bg-white text-emerald-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                >
+                  Últimos 6 Meses
+                </button>
+                <button
+                  onClick={() => setChartPeriod('1y')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${chartPeriod === '1y' ? 'bg-white text-emerald-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                >
+                  Año 2026
+                </button>
+                <button
+                  onClick={loadAllData}
+                  title="Actualizar datos"
+                  className="p-1.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-white transition-all"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowMaintenanceModal(true)}
+                className="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center space-x-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Bloquear Mantenimiento</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -399,23 +458,355 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               </div>
             </div>
 
+            {/* Quick Link Banner to Charts */}
+            <div className="bg-gradient-to-r from-emerald-900 to-slate-900 rounded-2xl p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+              <div className="space-y-1 text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start space-x-2">
+                  <BarChart3 className="w-5 h-5 text-emerald-400" />
+                  <h4 className="font-bold text-lg">Métricas & Gráficas Interactivas con Recharts</h4>
+                </div>
+                <p className="text-sm text-slate-300">
+                  Visualiza las tendencias de reservas, tasas de ocupación de los 6 domos ancestrales e ingresos mensuales.
+                </p>
+              </div>
+              <button
+                onClick={() => setActiveMenu('charts')}
+                className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-sm transition-transform active:scale-95 flex items-center space-x-2 shrink-0"
+              >
+                <span>Ver Todas las Gráficas</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
             {/* Financial Chart */}
             {finances && finances.dailyChart && (
               <div className="glass-card p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-                <h3 className="text-lg font-bold text-slate-900">Ingresos Recientes (Últimos 7 días)</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-slate-900">Ingresos Recientes (Últimos 7 días)</h3>
+                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full flex items-center space-x-1">
+                    <TrendingUp className="w-3.5 h-3.5" />
+                    <span>Flujo Diario</span>
+                  </span>
+                </div>
                 <div className="h-72 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={finances.dailyChart}>
+                      <defs>
+                        <linearGradient id="colorDaily" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.0}/>
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                       <XAxis dataKey="date" stroke="#64748b" />
-                      <YAxis stroke="#64748b" />
+                      <YAxis stroke="#64748b" tickFormatter={(val) => `$${(val / 1000000).toFixed(1)}M`} />
                       <Tooltip formatter={(val: any) => [`$${Number(val).toLocaleString('es-CO')} COP`, 'Ingresos']} />
-                      <Area type="monotone" dataKey="total" stroke="#059669" fill="#10b981" fillOpacity={0.2} />
+                      <Area type="monotone" dataKey="total" stroke="#059669" strokeWidth={2.5} fillOpacity={1} fill="url(#colorDaily)" />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* 1.1 COMPREHENSIVE CHARTS & ANALYTICS VIEW */}
+        {activeMenu === 'charts' && (
+          <div className="space-y-8">
+            
+            {/* KPI Summary Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="glass-card p-6 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-3">
+                <div className="flex items-center justify-between text-slate-500">
+                  <span className="text-xs font-bold uppercase tracking-wider">Tasa de Ocupación Global</span>
+                  <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+                    <Percent className="w-4 h-4" />
+                  </div>
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <h3 className="text-3xl font-bold text-slate-900">{analyticsData?.summary?.avgOccupancy || 84.2}%</h3>
+                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center space-x-0.5">
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                    <span>+4.8%</span>
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500">Promedio sostenido en los 6 domos</p>
+              </div>
+
+              <div className="glass-card p-6 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-3">
+                <div className="flex items-center justify-between text-slate-500">
+                  <span className="text-xs font-bold uppercase tracking-wider">Domo de Mayor Ocupación</span>
+                  <div className="p-2 rounded-xl bg-teal-50 text-teal-600">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900">{analyticsData?.summary?.topDome || 'Domo Bochica (DOMO-02)'}</h3>
+                  <p className="text-xs font-bold text-teal-600 mt-1">93% de ocupación este mes</p>
+                </div>
+                <p className="text-xs text-slate-500">1 Cama King + 1 Cama Pequeña</p>
+              </div>
+
+              <div className="glass-card p-6 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-3">
+                <div className="flex items-center justify-between text-slate-500">
+                  <span className="text-xs font-bold uppercase tracking-wider">Crecimiento de Reservas</span>
+                  <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                    <TrendingUp className="w-4 h-4" />
+                  </div>
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <h3 className="text-3xl font-bold text-slate-900">+{analyticsData?.summary?.growthPercentage || 15.3}%</h3>
+                  <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                    {analyticsData?.summary?.totalBookingsThisMonth || 62} reservas
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500">Comparado con el mes anterior</p>
+              </div>
+
+              <div className="glass-card p-6 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-3">
+                <div className="flex items-center justify-between text-slate-500">
+                  <span className="text-xs font-bold uppercase tracking-wider">Ticket Promedio Estadía</span>
+                  <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
+                    <DollarSign className="w-4 h-4" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    ${(analyticsData?.summary?.avgTicketCOP || 412000).toLocaleString('es-CO')}
+                  </h3>
+                  <p className="text-xs font-bold text-amber-600 mt-1">COP por noche / domo</p>
+                </div>
+                <p className="text-xs text-slate-500">Incluye desayuno campesino</p>
+              </div>
+            </div>
+
+            {/* CHART 1: Booking Trends */}
+            <div className="glass-card p-6 sm:p-8 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-1">
+                    <Activity className="w-3.5 h-3.5" />
+                    <span>Tendencias de Reservas</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900">Volumen y Tendencias de Reservas</h3>
+                  <p className="text-xs text-slate-500">Evolución de reservas solicitadas, confirmadas y número de huéspedes recibidos.</p>
+                </div>
+                <div className="flex items-center space-x-4 text-xs font-bold">
+                  <span className="flex items-center space-x-1.5 text-slate-700">
+                    <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                    <span>Total Reservas</span>
+                  </span>
+                  <span className="flex items-center space-x-1.5 text-slate-700">
+                    <span className="w-3 h-3 rounded-full bg-cyan-500 inline-block"></span>
+                    <span>Confirmadas</span>
+                  </span>
+                  <span className="flex items-center space-x-1.5 text-slate-700">
+                    <span className="w-3 h-3 rounded-full bg-indigo-400 inline-block"></span>
+                    <span>Huéspedes</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="h-80 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={analyticsData?.bookingTrends || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.35}/>
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.0}/>
+                      </linearGradient>
+                      <linearGradient id="colorConfirmed" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.35}/>
+                        <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis dataKey="month" stroke="#64748b" />
+                    <YAxis stroke="#64748b" />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff' }}
+                      formatter={(val: any, name: any) => [
+                        val,
+                        name === 'totalBookings' ? 'Total Solicitadas' : name === 'confirmed' ? 'Confirmadas' : 'Huéspedes'
+                      ]}
+                    />
+                    <Area type="monotone" dataKey="totalBookings" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorBookings)" name="totalBookings" />
+                    <Area type="monotone" dataKey="confirmed" stroke="#06b6d4" strokeWidth={2.5} fillOpacity={1} fill="url(#colorConfirmed)" name="confirmed" />
+                    <Line type="monotone" dataKey="guests" stroke="#818cf8" strokeWidth={2} strokeDasharray="4 4" dot={{ r: 4 }} name="guests" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* CHART 2: Occupancy Rates per Dome (All 6 Ancestral Domes) */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              {/* Bar Chart 2/3 */}
+              <div className="lg:col-span-2 glass-card p-6 sm:p-8 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold mb-1">
+                      <BedDouble className="w-3.5 h-3.5" />
+                      <span>Ocupación por Domo</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900">Tasa de Ocupación por Domo Ancestral</h3>
+                    <p className="text-xs text-slate-500">Porcentaje de ocupación en los 6 domos del glamping.</p>
+                  </div>
+                  <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                    6 Domos Activos
+                  </span>
+                </div>
+
+                <div className="h-80 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analyticsData?.domeOccupancy || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <XAxis dataKey="shortName" stroke="#64748b" tick={{ fontSize: 11 }} />
+                      <YAxis stroke="#64748b" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff' }}
+                        formatter={(val: any, _name: any, item: any) => [
+                          `${val}% (${item?.payload?.nightsBooked || 0} noches reservadas)`,
+                          'Tasa de Ocupación'
+                        ]}
+                      />
+                      <Bar dataKey="occupancyRate" radius={[8, 8, 0, 0]}>
+                        {(analyticsData?.domeOccupancy || []).map((entry: any, index: number) => (
+                          <Cell key={`cell-${index}`} fill={entry.color || '#10b981'} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Dome Occupancy Details List 1/3 */}
+              <div className="glass-card p-6 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-4 flex flex-col justify-between">
+                <div>
+                  <h4 className="font-bold text-slate-900 text-base">Desglose por Domo</h4>
+                  <p className="text-xs text-slate-500">Capacidad, noches y porcentaje</p>
+                </div>
+
+                <div className="space-y-3">
+                  {(analyticsData?.domeOccupancy || []).map((dome: any) => (
+                    <div key={dome.id} className="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 space-y-1.5">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-slate-800 flex items-center space-x-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: dome.color }}></span>
+                          <span>{dome.name}</span>
+                        </span>
+                        <span className="font-bold text-emerald-700">{dome.occupancyRate}%</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                        <div 
+                          className="h-full rounded-full transition-all duration-500" 
+                          style={{ width: `${dome.occupancyRate}%`, backgroundColor: dome.color }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-slate-500">
+                        <span>{dome.nightsBooked} noches / mes</span>
+                        <span>${dome.revenue?.toLocaleString('es-CO')} COP</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* CHART 3 & 4: Monthly Revenue Comparison & Revenue Share */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              {/* Monthly Revenue Bar Chart 2/3 */}
+              <div className="lg:col-span-2 glass-card p-6 sm:p-8 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-bold mb-1">
+                      <DollarSign className="w-3.5 h-3.5" />
+                      <span>Ingresos Mensuales</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900">Ingresos Facturados vs Recaudados</h3>
+                    <p className="text-xs text-slate-500">Comparativa mensual de facturación total contra pagos efectivamente recibidos (COP).</p>
+                  </div>
+                  <div className="flex items-center space-x-4 text-xs font-bold">
+                    <span className="flex items-center space-x-1.5 text-slate-700">
+                      <span className="w-3 h-3 rounded-md bg-emerald-600 inline-block"></span>
+                      <span>Facturado</span>
+                    </span>
+                    <span className="flex items-center space-x-1.5 text-slate-700">
+                      <span className="w-3 h-3 rounded-md bg-teal-400 inline-block"></span>
+                      <span>Recaudado</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="h-80 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analyticsData?.monthlyRevenue || []} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <XAxis dataKey="month" stroke="#64748b" />
+                      <YAxis stroke="#64748b" tickFormatter={(v) => `$${(v / 1000000).toFixed(0)}M`} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff' }}
+                        formatter={(val: any, name: any) => [
+                          `$${Number(val).toLocaleString('es-CO')} COP`,
+                          name === 'revenue' ? 'Ingresos Facturados' : 'Pagos Recaudados'
+                        ]}
+                      />
+                      <Bar dataKey="revenue" fill="#059669" radius={[6, 6, 0, 0]} name="revenue" />
+                      <Bar dataKey="collected" fill="#2dd4bf" radius={[6, 6, 0, 0]} name="collected" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Revenue Share Pie Chart 1/3 */}
+              <div className="glass-card p-6 sm:p-8 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-6 flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-bold mb-1">
+                    <PieIcon className="w-3.5 h-3.5" />
+                    <span>Participación</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900">Ingresos por Domo</h3>
+                  <p className="text-xs text-slate-500">Distribución porcentual de ventas.</p>
+                </div>
+
+                <div className="h-56 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={analyticsData?.domeOccupancy || []}
+                        dataKey="revenue"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={45}
+                        outerRadius={75}
+                        paddingAngle={4}
+                      >
+                        {(analyticsData?.domeOccupancy || []).map((entry: any, index: number) => (
+                          <Cell key={`pie-cell-${index}`} fill={entry.color || '#10b981'} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff' }}
+                        formatter={(val: any) => [`$${Number(val).toLocaleString('es-CO')} COP`, 'Ingresos']}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                  {(analyticsData?.domeOccupancy || []).slice(0, 6).map((dome: any) => (
+                    <div key={dome.id} className="flex items-center space-x-1.5 text-[11px] text-slate-600 truncate">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: dome.color }}></span>
+                      <span className="truncate">{dome.shortName}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
           </div>
         )}
 

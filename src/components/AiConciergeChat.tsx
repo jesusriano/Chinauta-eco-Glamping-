@@ -39,7 +39,7 @@ export const AiConciergeChat: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50">
+    <div className="fixed bottom-[calc(4.25rem+16px)] md:bottom-6 right-4 sm:right-6 z-50">
       {!isOpen ? (
         <button
           onClick={() => setIsOpen(true)}
@@ -49,7 +49,7 @@ export const AiConciergeChat: React.FC = () => {
           <span className="font-semibold text-sm">Asistente Virtual</span>
         </button>
       ) : (
-        <div className="w-80 sm:w-96 glass-card rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col h-[500px]">
+        <div className="w-[calc(100vw-2rem)] max-w-sm sm:w-96 glass-card rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col h-[480px] max-h-[75vh]">
           {/* Header */}
           <div className="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">

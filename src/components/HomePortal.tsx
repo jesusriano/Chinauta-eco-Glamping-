@@ -13,9 +13,11 @@ import { BochicaCarousel } from './BochicaCarousel';
 import { HuitacaVideoCard } from './HuitacaVideoCard';
 import { DomeMediaCard } from './DomeMediaCard';
 import { MediaGallery } from './MediaGallery';
+import { ResponsivePicture } from './ResponsivePicture';
 import { getDomeImages, DEFAULT_DOMES } from '../utils/domeImages';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getResponsiveImageData } from '../utils/imageUtils';
 import regeneratedDome2Image from '../assets/images/regenerated_image_1790617455020.jpg';
 import bochicaRomanticDecor from '../assets/images/bochica_romantic_decor_1790618007934.jpg';
 import bochicaJacuzziDeck from '../assets/images/bochica_jacuzzi_deck_1790618019311.jpg';
@@ -45,9 +47,11 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Custom video for Domes (defaulting dome 3 to a high quality glamping video, with custom upload support)
+  // Real uploaded videos for Domes (Domos 1, 3, 5 and custom uploaded)
   const [domeVideos, setDomeVideos] = useState<Record<number, string>>({
-    3: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+    1: '/assets/videos/domo_1_user_video.mp4',
+    3: '/assets/videos/domo_3_user_video.mp4',
+    5: '/assets/videos/domo_5_user_video.mp4'
   });
   const [videoError, setVideoError] = useState(false);
 
@@ -64,6 +68,19 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
+          // Sync videos from server
+          const serverVideos: Record<number, string> = {
+            1: '/assets/videos/domo_1_user_video.mp4',
+            3: '/assets/videos/domo_3_user_video.mp4',
+            5: '/assets/videos/domo_5_user_video.mp4'
+          };
+          data.forEach((d: any) => {
+            if (d.video_url) {
+              serverVideos[d.id] = d.video_url;
+            }
+          });
+          setDomeVideos(serverVideos);
+
           // Merge API data with default domes to ensure complete fields
           const merged = DEFAULT_DOMES.map(def => {
             const serverDome = data.find((d: any) => d.id === def.id || d.code === def.code);
@@ -102,10 +119,15 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
       <section className="relative min-h-[85vh] flex items-center justify-center bg-slate-950 overflow-hidden">
         {/* Background image with subtle dark overlay */}
         <div className="absolute inset-0 z-0 opacity-55">
-          <img
+          <ResponsivePicture
             src={chinautaRomanticDomeNight}
             alt="Eco Glamping Chinauta - Pareja bajo las estrellas"
+            sizes="100vw"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="w-full h-full object-cover scale-105"
+            pictureClassName="w-full h-full block"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-0"></div>

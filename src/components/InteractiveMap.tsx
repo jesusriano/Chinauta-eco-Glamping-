@@ -121,13 +121,15 @@ export const InteractiveMap: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         {/* Interactive Simulated Map Canvas (2 columns) */}
-        <div className="lg:col-span-2 glass-card rounded-3xl overflow-hidden shadow-xl border border-slate-200 relative h-[500px] sm:h-[600px] bg-slate-900 flex items-center justify-center">
+        <div className="lg:col-span-2 glass-card rounded-3xl overflow-hidden shadow-xl border border-slate-200 relative h-[420px] sm:h-[500px] lg:h-[600px] bg-slate-900 flex items-center justify-center">
           
           {/* Topographic map background graphic */}
           <div className="absolute inset-0 opacity-40">
             <img
               src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1600&q=80"
               alt="Map Topography Background"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover filter brightness-75 contrast-125"
             />
           </div>
@@ -173,12 +175,12 @@ export const InteractiveMap: React.FC = () => {
           })}
 
           {/* Map Overlay Controls / Legend */}
-          <div className="absolute bottom-6 left-6 right-6 bg-slate-950/80 backdrop-blur-md p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs text-white">
-            <div className="flex items-center space-x-3">
-              <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="font-semibold">Eco Glamping Chinauta (Km 4.5 Vía Principal)</span>
+          <div className="absolute bottom-3 sm:bottom-6 left-3 sm:left-6 right-3 sm:right-6 bg-slate-950/85 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-2 sm:gap-4 text-[11px] sm:text-xs text-white">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="font-semibold truncate max-w-[200px] sm:max-w-none">Eco Glamping Chinauta (Km 4.5)</span>
             </div>
-            <div className="flex items-center space-x-4 text-slate-300">
+            <div className="flex items-center space-x-3 sm:space-x-4 text-slate-300">
               <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-emerald-400"></span><span>Glamping</span></span>
               <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-cyan-400"></span><span>Naturaleza</span></span>
               <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-amber-400"></span><span>Turismo</span></span>

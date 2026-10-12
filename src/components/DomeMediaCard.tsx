@@ -4,6 +4,7 @@ import { Play, Pause, Volume2, VolumeX, Maximize2, Film, Camera, Upload, CheckCi
 import { Dome } from '../types';
 import { getDomeImages } from '../utils/domeImages';
 import defaultDomo1Video from '../assets/videos/domo_1_huitaca.mp4';
+import { getResponsiveImageData } from '../utils/imageUtils';
 
 interface DomeMediaCardProps {
   dome: Dome;
@@ -398,19 +399,29 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
       ) : (
         /* Photos Carousel */
         <div className="absolute inset-0 overflow-hidden group/carousel">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={currentPhotoIdx}
-              src={images[currentPhotoIdx] || images[0]}
-              alt={`${dome.name} - Foto ${currentPhotoIdx + 1}`}
-              initial={{ opacity: 0.4 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0.2 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-full object-cover cursor-pointer"
-              onClick={() => setIsFullscreenPhoto(true)}
-            />
-          </AnimatePresence>
+          {(() => {
+            const rawPhoto = images[currentPhotoIdx] || images[0];
+            const resp = getResponsiveImageData(rawPhoto, '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw');
+            return (
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={currentPhotoIdx}
+                  src={resp.webpSrc || rawPhoto}
+                  srcSet={resp.webpSrcSet || undefined}
+                  sizes={resp.sizes || undefined}
+                  alt={`${dome.name} - Foto ${currentPhotoIdx + 1}`}
+                  loading="lazy"
+                  decoding="async"
+                  initial={{ opacity: 0.4 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0.2 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full h-full object-cover cursor-pointer"
+                  onClick={() => setIsFullscreenPhoto(true)}
+                />
+              </AnimatePresence>
+            );
+          })()}
 
           {/* Vignette Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-slate-950/40 pointer-events-none" />
@@ -600,11 +611,19 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
             </div>
 
             <div className="relative flex-1 flex items-center justify-center p-2">
-              <img
-                src={images[currentPhotoIdx]}
-                alt={`${dome.name} tamaño completo`}
-                className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl"
-              />
+              {(() => {
+                const fsPhoto = images[currentPhotoIdx];
+                const fsResp = getResponsiveImageData(fsPhoto, '(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 1200px');
+                return (
+                  <img
+                    src={fsResp.webpSrc || fsPhoto}
+                    srcSet={fsResp.webpSrcSet || undefined}
+                    sizes={fsResp.sizes || undefined}
+                    alt={`${dome.name} tamaño completo`}
+                    className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl"
+                  />
+                );
+              })()}
 
               {images.length > 1 && (
                 <>

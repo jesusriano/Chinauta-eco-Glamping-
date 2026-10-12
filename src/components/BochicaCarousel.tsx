@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Camera, Maximize2, Sparkles, X, Heart } from 'lucide-react';
+import { getResponsiveImageData } from '../utils/imageUtils';
 import bochicaRomanticDecor from '../assets/images/bochica_romantic_decor_1790618007934.jpg';
 import bochicaJacuzziDeck from '../assets/images/bochica_jacuzzi_deck_1790618019311.jpg';
 import bochicaSunsetView from '../assets/images/bochica_sunset_view_1790617981274.jpg';
@@ -79,6 +80,7 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
 
   const imageIndex = ((page % BOCHICA_IMAGES.length) + BOCHICA_IMAGES.length) % BOCHICA_IMAGES.length;
   const currentItem = BOCHICA_IMAGES[imageIndex];
+  const currentImgData = getResponsiveImageData(currentItem.url, '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw');
 
   const paginate = (newDirection: number, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -99,8 +101,12 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
         <AnimatePresence initial={false} custom={direction}>
           <motion.img
             key={page}
-            src={currentItem.url}
+            src={currentImgData.webpSrc || currentItem.url}
+            srcSet={currentImgData.webpSrcSet || undefined}
+            sizes={currentImgData.sizes || undefined}
             alt={currentItem.title}
+            loading="lazy"
+            decoding="async"
             custom={direction}
             variants={slideVariants}
             initial="enter"
@@ -241,11 +247,18 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
               onClick={(e) => e.stopPropagation()}
               className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center"
             >
-              <img
-                src={fullscreenImage.url}
-                alt={fullscreenImage.title}
-                className="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/10"
-              />
+              {(() => {
+                const modalImgData = getResponsiveImageData(fullscreenImage.url, '(max-width: 1024px) 100vw, 1200px');
+                return (
+                  <img
+                    src={modalImgData.webpSrc || fullscreenImage.url}
+                    srcSet={modalImgData.webpSrcSet || undefined}
+                    sizes={modalImgData.sizes || undefined}
+                    alt={fullscreenImage.title}
+                    className="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/10"
+                  />
+                );
+              })()}
 
               <div className="mt-4 text-center text-white space-y-1">
                 <h4 className="text-xl font-bold">{fullscreenImage.title}</h4>

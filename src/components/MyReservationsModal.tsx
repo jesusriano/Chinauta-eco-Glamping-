@@ -61,7 +61,7 @@ export const MyReservationsModal: React.FC<MyReservationsModalProps> = ({ isOpen
 
         {/* Content */}
         <div className="p-6 sm:p-8 space-y-6 max-h-[70vh] overflow-y-auto">
-          <form onSubmit={handleSearch} className="flex gap-3">
+          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
               value={searchTerm}
@@ -73,7 +73,7 @@ export const MyReservationsModal: React.FC<MyReservationsModalProps> = ({ isOpen
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-colors"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-colors cursor-pointer"
             >
               {loading ? 'Buscando...' : 'Buscar'}
             </button>

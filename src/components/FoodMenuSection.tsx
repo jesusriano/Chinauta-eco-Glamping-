@@ -457,7 +457,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
-          className="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-lg shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
+          className="w-full sm:w-auto justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-lg shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{language === 'en' ? '+ Add Dish / Beverage / Snack' : '+ Subir / Agregar Plato o Bebida'}</span>
@@ -506,6 +506,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                         src={item.video_url}
                         controls
                         playsInline
+                        preload="none"
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute top-3 left-3 z-10 bg-slate-900/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-slate-700/50 flex items-center space-x-1.5 shadow-md pointer-events-none">
