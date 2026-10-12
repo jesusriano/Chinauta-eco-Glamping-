@@ -3,8 +3,9 @@ import {
   LayoutDashboard, CalendarDays, BedDouble, Users, DollarSign, 
   FileText, Shield, Settings, LogOut, Search, Plus, CheckCircle2, 
   XCircle, AlertCircle, Clock, TrendingUp, BarChart3, ChevronRight, Filter, Download, Camera, Utensils,
-  Activity, ArrowUpRight, Sparkles, Percent, PieChart as PieIcon, RefreshCw, Menu, X
+  Activity, ArrowUpRight, Sparkles, Percent, PieChart as PieIcon, RefreshCw, Menu, X, Bell
 } from 'lucide-react';
+import { requestStaffNotificationPermission } from '../lib/firebase';
 import { CHINAUTA_MENU_ITEMS } from './FoodMenuSection';
 import { ImageCarousel } from './ImageCarousel';
 import { getDomeImages } from '../utils/domeImages';
@@ -360,6 +361,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               <LogOut className="w-4 h-4" />
             </button>
           </div>
+          <button
+            onClick={() => requestStaffNotificationPermission(user.username)}
+            title="Activar Notificaciones Push FCM"
+            className="w-full py-2 px-3 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 text-xs font-semibold flex items-center justify-center space-x-2 transition-colors border border-emerald-500/30"
+          >
+            <Bell className="w-3.5 h-3.5" />
+            <span>Activar Push FCM</span>
+          </button>
         </div>
       </aside>
 
