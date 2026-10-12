@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Search, CheckCircle2, XCircle, AlertCircle, Compass } from 'lucide-react';
-import { Dome } from '../types';
+import { Calendar, Search, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ImageCarousel } from './ImageCarousel';
 import { getDomeImages } from '../utils/domeImages';
@@ -11,7 +10,7 @@ interface AvailabilityCheckerProps {
 }
 
 export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpenBookingWithDates }) => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
   const dayAfter = new Date(); dayAfter.setDate(dayAfter.getDate() + 3);
 
@@ -27,7 +26,7 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
     setDateError(null);
     if (!checkIn || !checkOut) return;
     if (checkIn >= checkOut) {
-      setDateError(language === 'en' ? "Check-out date must be after check-in date." : "La fecha de salida debe ser posterior a la fecha de entrada.");
+      setDateError(t('avail.date_err'));
       return;
     }
 
@@ -118,10 +117,12 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
         <div className="space-y-6 pt-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-4">
             <h4 className="text-xl font-bold text-slate-900">
-              Disponibilidad para del {checkIn} al {checkOut}
+              {t('avail.results_title')} ({checkIn} {t('my_reservations.to')} {checkOut})
             </h4>
             <span className="text-sm text-slate-500">
-              {results.filter(r => r.isAvailable).length} de {results.length} domos disponibles
+              {t('avail.available_count')
+                .replace('{available}', String(results.filter(r => r.isAvailable).length))
+                .replace('{total}', String(results.length))}
             </span>
           </div>
 
@@ -142,11 +143,11 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
                       overlayBadge={
                         dome.isAvailable ? (
                           <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-600/90 text-white flex items-center gap-1 shadow-sm">
-                            🟢 DISPONIBLE
+                            {t('avail.available_tag')}
                           </span>
                         ) : (
                           <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-600/90 text-white flex items-center gap-1 shadow-sm">
-                            🔴 {dome.reason.toUpperCase()}
+                            {t('avail.unavailable_tag')}
                           </span>
                         )
                       }
@@ -155,13 +156,15 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
 
                   <div>
                     <h5 className="text-lg font-bold text-slate-900">{dome.name}</h5>
-                    <p className="text-xs text-slate-500">{dome.code} • Capacidad: {dome.capacity} huéspedes</p>
+                    <p className="text-xs text-slate-500">
+                      {dome.code} • {t('avail.capacity_guests').replace('{count}', String(dome.capacity))}
+                    </p>
                     <p className="text-sm text-slate-600 mt-2 line-clamp-2">{dome.description}</p>
                   </div>
 
                   <div className="flex items-center justify-between pt-2">
                     <span className="font-bold text-emerald-700 text-base">
-                      ${dome.price_per_night.toLocaleString('es-CO')} <span className="text-xs text-slate-500 font-normal">/ noche</span>
+                      ${dome.price_per_night.toLocaleString('es-CO')} <span className="text-xs text-slate-500 font-normal">{t('domes.night')}</span>
                     </span>
                   </div>
                 </div>
@@ -172,14 +175,14 @@ export const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({ onOpen
                       onClick={() => onOpenBookingWithDates(checkIn, checkOut, dome.id)}
                       className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
                     >
-                      Reservar Este Domo
+                      {t('avail.book_btn')}
                     </button>
                   ) : (
                     <button
                       disabled
                       className="w-full py-2.5 rounded-xl bg-slate-200 text-slate-500 font-medium cursor-not-allowed"
                     >
-                      No Disponible
+                      {t('avail.unavailable_btn')}
                     </button>
                   )}
                 </div>

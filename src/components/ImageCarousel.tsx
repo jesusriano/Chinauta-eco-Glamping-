@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Maximize2, Camera, Image as ImageIcon } from 'lucide-react';
 import { getResponsiveImageData } from '../utils/imageUtils';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ImageCarouselProps {
   images: string[];
@@ -52,6 +53,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
   overlayBadge,
   onImageClick
 }) => {
+  const { t } = useLanguage();
   const validImages = images.length > 0 ? images : ['https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80'];
   const [[page, direction], setPage] = useState<[number, number]>([0, 0]);
   const [imageError, setImageError] = useState<Record<number, boolean>>({});
@@ -93,7 +95,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
               src={imgData.webpSrc || currentImage}
               srcSet={imgData.webpSrcSet || undefined}
               sizes={imgData.sizes || undefined}
-              alt={`${alt} - Foto ${currentIndex + 1}`}
+              alt={`${alt} - ${currentIndex + 1}`}
               loading="lazy"
               decoding="async"
               onError={() => setImageError((prev) => ({ ...prev, [currentIndex]: true }))}
@@ -147,7 +149,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
             onClick={(e) => paginate(-1, e)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            aria-label="Foto anterior"
+            aria-label={t('domes.prev_photo')}
             className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-950/70 hover:bg-slate-900 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-colors opacity-90 sm:opacity-0 sm:group-hover:opacity-100 shadow-md"
           >
             <ChevronLeft className="w-4 h-4 text-white" />
@@ -157,7 +159,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
             onClick={(e) => paginate(1, e)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            aria-label="Siguiente foto"
+            aria-label={t('domes.next_photo')}
             className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-950/70 hover:bg-slate-900 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-colors opacity-90 sm:opacity-0 sm:group-hover:opacity-100 shadow-md"
           >
             <ChevronRight className="w-4 h-4 text-white" />
@@ -173,7 +175,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
               key={idx}
               type="button"
               onClick={(e) => goToSlide(idx, e)}
-              aria-label={`Ver foto ${idx + 1}`}
+              aria-label={`${t('domes.view_full')} ${idx + 1}`}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 currentIndex === idx
                   ? 'w-6 bg-emerald-400 shadow-sm'

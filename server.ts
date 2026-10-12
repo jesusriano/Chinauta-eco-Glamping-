@@ -1052,22 +1052,50 @@ app.get("/api/reservations", (req, res) => {
 });
 
 app.post("/api/reservations", (req, res) => {
-  const { customer, dome_id, check_in, check_out, guests, total_amount, notes, user_name } = req.body;
+  const { customer, dome_id, check_in, check_out, guests, notes, user_name } = req.body;
 
-  if (!customer || !customer.name || !dome_id || !check_in || !check_out || !total_amount) {
+  if (!customer || !customer.name || !dome_id || !check_in || !check_out) {
     return res.status(400).json({ error: "Faltan datos obligatorios para crear la reserva." });
+  }
+
+  // Validate dates format AAAA-MM-DD
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(check_in) || !dateRegex.test(check_out)) {
+    return res.status(400).json({ error: "Las fechas deben tener el formato AAAA-MM-DD." });
+  }
+
+  const inDate = new Date(`${check_in}T00:00:00Z`);
+  const outDate = new Date(`${check_out}T00:00:00Z`);
+  if (isNaN(inDate.getTime()) || isNaN(outDate.getTime()) || check_out <= check_in) {
+    return res.status(400).json({ error: "La fecha de salida debe ser posterior a la fecha de entrada." });
+  }
+
+  const diffMs = outDate.getTime() - inDate.getTime();
+  const nights = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  if (nights <= 0) {
+    return res.status(400).json({ error: "El rango de fechas debe tener al menos una noche." });
   }
 
   // BEGIN TRANSACTION & SERIALIZABLE ISOLATION (or strict SQLite transaction lock)
   try {
     db.exec("BEGIN EXCLUSIVE TRANSACTION;");
 
-    // 1. Check if dome is out of service or in maintenance
+    // 1. Check if dome exists and is available
     const dome = db.prepare("SELECT * FROM domes WHERE id = ?").get(dome_id) as any;
     if (!dome || dome.status === 'Fuera de servicio') {
       db.exec("ROLLBACK;");
       return res.status(400).json({ error: "El domo seleccionado no está disponible o se encuentra fuera de servicio." });
     }
+
+    // Check dome capacity
+    const numGuests = Number(guests) || 1;
+    if (numGuests > dome.capacity) {
+      db.exec("ROLLBACK;");
+      return res.status(400).json({ error: `El número de huéspedes (${numGuests}) supera la capacidad máxima del domo (${dome.capacity}).` });
+    }
+
+    // Server-calculated total (price_per_night * nights, ignoring client total_amount)
+    const serverTotal = dome.price_per_night * nights;
 
     // 2. Check for overlapping reservations: check_in < existingCheckOut AND check_out > existingCheckIn
     const overlap = db.prepare(`
@@ -1094,22 +1122,36 @@ app.post("/api/reservations", (req, res) => {
     }
 
     // 4. Find or create customer
+    const email = (customer.email || '').trim();
+    const phone = (customer.phone || '').trim();
+    let existingCust: any = null;
+    if (email && phone) {
+      existingCust = db.prepare("SELECT * FROM customers WHERE email = ? OR phone = ?").get(email, phone);
+    } else if (email) {
+      existingCust = db.prepare("SELECT * FROM customers WHERE email = ?").get(email);
+    } else if (phone) {
+      existingCust = db.prepare("SELECT * FROM customers WHERE phone = ?").get(phone);
+    }
+
     let customerId: number;
-    const existingCust = db.prepare("SELECT id FROM customers WHERE email = ? OR phone = ?").get(customer.email || '', customer.phone || '') as any;
-    
     if (existingCust) {
       customerId = existingCust.id;
-      db.prepare("UPDATE customers SET name = ?, phone = ?, whatsapp = ?, document_id = ? WHERE id = ?")
-        .run(customer.name, customer.phone, customer.whatsapp || customer.phone, customer.document_id || '', customerId);
+      const updatedName = customer.name?.trim() || existingCust.name;
+      const updatedPhone = phone || existingCust.phone;
+      const updatedWhatsapp = customer.whatsapp?.trim() || existingCust.whatsapp || updatedPhone;
+      const updatedDoc = customer.document_id?.trim() || existingCust.document_id || '';
+      const updatedEmail = email || existingCust.email || '';
+      db.prepare("UPDATE customers SET name = ?, phone = ?, whatsapp = ?, email = ?, document_id = ? WHERE id = ?")
+        .run(updatedName, updatedPhone, updatedWhatsapp, updatedEmail, updatedDoc, customerId);
     } else {
       const custStmt = db.prepare("INSERT INTO customers (name, phone, whatsapp, email, document_id, notes) VALUES (?, ?, ?, ?, ?, ?)");
       const custInfo = custStmt.run(
-        customer.name,
-        customer.phone || '',
-        customer.whatsapp || customer.phone || '',
-        customer.email || '',
-        customer.document_id || '',
-        customer.notes || ''
+        customer.name?.trim() || '',
+        phone,
+        customer.whatsapp?.trim() || phone,
+        email,
+        customer.document_id?.trim() || '',
+        customer.notes?.trim() || ''
       );
       customerId = Number(custInfo.lastInsertRowid);
     }
@@ -1117,7 +1159,7 @@ app.post("/api/reservations", (req, res) => {
     // 5. Generate unique reservation code
     const randomCode = "EGC-" + Math.floor(1000 + Math.random() * 9000);
 
-    // 6. Insert reservation
+    // 6. Insert reservation with server calculated total
     const resStmt = db.prepare(`
       INSERT INTO reservations (
         reservation_code, customer_id, dome_id, check_in, check_out, guests, 
@@ -1131,16 +1173,16 @@ app.post("/api/reservations", (req, res) => {
       dome_id,
       check_in,
       check_out,
-      guests || 2,
-      total_amount,
-      total_amount,
+      numGuests,
+      serverTotal,
+      serverTotal,
       notes || '',
       user_name || customer.name || 'Portal Web'
     );
 
     db.exec("COMMIT;");
 
-    logAudit(user_name || customer.name || 'Cliente', "CREAR_RESERVA", "Reserva", randomCode, `Reserva creada para Domo ID ${dome_id} (${check_in} al ${check_out})`);
+    logAudit(user_name || customer.name || 'Cliente', "CREAR_RESERVA", "Reserva", randomCode, `Reserva creada para Domo ID ${dome_id} (${check_in} al ${check_out}) por $${serverTotal}`);
 
     res.json({
       success: true,

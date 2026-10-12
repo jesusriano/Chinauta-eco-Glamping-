@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { MessageSquare, X, Send, Bot, Sparkles, User } from 'lucide-react';
+import { X, Send, Bot, Sparkles } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface Message {
   sender: 'ai' | 'user';
@@ -7,11 +8,12 @@ interface Message {
 }
 
 export const AiConciergeChat: React.FC = () => {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { sender: 'ai', text: '¡Hola! Soy el conserje virtual de Eco Glamping Chinauta. ¿En qué te puedo ayudar hoy sobre nuestros domos, reservas o la experiencia en Fusagasugá?' }
+    { sender: 'ai', text: t('chat.welcome_msg') }
   ]);
 
   const handleSend = async (e: React.FormEvent) => {
@@ -30,9 +32,9 @@ export const AiConciergeChat: React.FC = () => {
         body: JSON.stringify({ message: userMsg })
       });
       const data = await res.json();
-      setMessages(prev => [...prev, { sender: 'ai', text: data.reply || 'Gracias por tu mensaje. Te invitamos a contactarnos por WhatsApp.' }]);
+      setMessages(prev => [...prev, { sender: 'ai', text: data.reply || t('chat.fallback_msg') }]);
     } catch (err) {
-      setMessages(prev => [...prev, { sender: 'ai', text: 'Lo siento, ocurrió un error de conexión. Escríbenos por WhatsApp al +57 310 1234567.' }]);
+      setMessages(prev => [...prev, { sender: 'ai', text: t('chat.error_msg') }]);
     } finally {
       setLoading(false);
     }
@@ -46,7 +48,7 @@ export const AiConciergeChat: React.FC = () => {
           className="flex items-center space-x-2 px-5 py-3.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-xl shadow-emerald-700/30 hover:scale-105 transition-transform"
         >
           <Sparkles className="w-5 h-5 animate-pulse" />
-          <span className="font-semibold text-sm">Asistente Virtual</span>
+          <span className="font-semibold text-sm">{t('chat.virtual_assistant')}</span>
         </button>
       ) : (
         <div className="w-[calc(100vw-2rem)] max-w-sm sm:w-96 glass-card rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col h-[480px] max-h-[75vh]">
@@ -57,9 +59,9 @@ export const AiConciergeChat: React.FC = () => {
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-sm">Concierge Chinauta</h3>
+                <h3 className="font-semibold text-sm">{t('chat.concierge_title')}</h3>
                 <p className="text-xs text-emerald-200 flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> En línea
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> {t('chat.online')}
                 </p>
               </div>
             </div>
@@ -106,7 +108,7 @@ export const AiConciergeChat: React.FC = () => {
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder="Pregunta sobre domos, clima, reservas..."
+              placeholder={t('chat.input_placeholder')}
               className="flex-1 px-4 py-2 text-sm rounded-xl border border-slate-200 focus:outline-hidden focus:border-emerald-500"
             />
             <button

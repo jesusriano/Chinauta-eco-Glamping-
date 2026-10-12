@@ -1,9 +1,31 @@
 import React from 'react';
-import { MapPin, Phone, Mail, MessageSquare, Clock, HelpCircle, Compass } from 'lucide-react';
+import { MapPin, Phone, Mail, HelpCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ImageCarousel } from './ImageCarousel';
+import { useLanguage } from '../context/LanguageContext';
 
 export const ContactView: React.FC = () => {
+  const { t } = useLanguage();
+
+  const faqs = [
+    {
+      q: t('contact.faq1_q'),
+      a: t('contact.faq1_a')
+    },
+    {
+      q: t('contact.faq2_q'),
+      a: t('contact.faq2_a')
+    },
+    {
+      q: t('contact.faq3_q'),
+      a: t('contact.faq3_a')
+    },
+    {
+      q: t('contact.faq4_q'),
+      a: t('contact.faq4_a')
+    }
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -14,10 +36,10 @@ export const ContactView: React.FC = () => {
       
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto space-y-4">
-        <h2 className="text-xs uppercase tracking-widest text-emerald-600 font-bold">Atención al Huésped</h2>
-        <h3 className="text-3xl sm:text-4xl font-bold text-slate-900">Contacto & Preguntas Frecuentes</h3>
+        <h2 className="text-xs uppercase tracking-widest text-emerald-600 font-bold">{t('contact.badge')}</h2>
+        <h3 className="text-3xl sm:text-4xl font-bold text-slate-900">{t('contact.hero_title')}</h3>
         <p className="text-slate-600">
-          Estamos aquí para resolver todas tus inquietudes sobre tu próxima estadía en Eco Glamping Chinauta.
+          {t('contact.hero_desc')}
         </p>
       </div>
 
@@ -30,11 +52,11 @@ export const ContactView: React.FC = () => {
             'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
             'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80'
           ]}
-          alt="Acceso y Vía Principal Eco Glamping Chinauta"
+          alt={t('contact.carousel_alt')}
           className="h-72 sm:h-96"
           overlayBadge={
             <div className="bg-slate-900/80 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm">
-              Ruta y Acceso Pavimentado — Km 4.5
+              {t('contact.carousel_badge')}
             </div>
           }
         />
@@ -46,15 +68,15 @@ export const ContactView: React.FC = () => {
           <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
             <Phone className="w-7 h-7" />
           </div>
-          <h4 className="text-lg font-bold text-slate-900">Teléfono / WhatsApp</h4>
-          <p className="text-slate-600 text-sm">+57 310 123 4567</p>
+          <h4 className="text-lg font-bold text-slate-900">{t('contact.phone_title')}</h4>
+          <p className="text-slate-600 text-sm">+57 321 310 9331</p>
           <a
-            href="https://wa.me/573101234567"
+            href="https://wa.me/573213109331"
             target="_blank"
             rel="noreferrer"
             className="inline-block px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 transition-colors"
           >
-            Escribir por WhatsApp
+            {t('contact.whatsapp_btn')}
           </a>
         </div>
 
@@ -62,13 +84,13 @@ export const ContactView: React.FC = () => {
           <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
             <Mail className="w-7 h-7" />
           </div>
-          <h4 className="text-lg font-bold text-slate-900">Correo Electrónico</h4>
+          <h4 className="text-lg font-bold text-slate-900">{t('contact.email_card_title')}</h4>
           <p className="text-slate-600 text-sm">contacto@ecoglampingchinauta.com</p>
           <a
             href="mailto:contacto@ecoglampingchinauta.com"
             className="inline-block px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold text-xs hover:bg-slate-800 transition-colors"
           >
-            Enviar Correo
+            {t('contact.email_btn')}
           </a>
         </div>
 
@@ -76,34 +98,17 @@ export const ContactView: React.FC = () => {
           <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
             <MapPin className="w-7 h-7" />
           </div>
-          <h4 className="text-lg font-bold text-slate-900">Ubicación</h4>
+          <h4 className="text-lg font-bold text-slate-900">{t('contact.location_card_title')}</h4>
           <p className="text-slate-600 text-sm">Vía Principal Chinauta Km 4.5, Fusagasugá, Cundinamarca</p>
-          <span className="inline-block text-xs text-emerald-700 font-semibold">1.5 horas desde Bogotá</span>
+          <span className="inline-block text-xs text-emerald-700 font-semibold">{t('contact.location_travel_time')}</span>
         </div>
       </div>
 
       {/* FAQs */}
       <div className="max-w-4xl mx-auto space-y-6">
-        <h4 className="text-2xl font-bold text-slate-900 text-center mb-8">Preguntas Frecuentes</h4>
+        <h4 className="text-2xl font-bold text-slate-900 text-center mb-8">{t('contact.faq_heading')}</h4>
         
-        {[
-          {
-            q: "¿Cuál es el horario de Check-in y Check-out?",
-            a: "El ingreso (Check-in) es a partir de las 3:00 PM y la salida (Check-out) es hasta las 12:00 PM del mediodía."
-          },
-          {
-            q: "¿El desayuno está incluido en la tarifa?",
-            a: "Sí, todas nuestras tarifas incluyen un delicioso desayuno campesino artesanal para los huéspedes del domo."
-          },
-          {
-            q: "¿Se admiten mascotas?",
-            a: "Algunos de nuestros domos (como Domo Luna Chía) son pet-friendly bajo previa solicitud y acuerdo con administración."
-          },
-          {
-            q: "¿Cómo se confirma la reserva?",
-            a: "Una vez seleccionas tus fechas y realizas el pago del anticipo o transferencia bancaria, nuestro equipo verifica y confirma tu código único."
-          }
-        ].map((faq, idx) => (
+        {faqs.map((faq, idx) => (
           <div key={idx} className="glass-card p-6 rounded-2xl border border-slate-200 space-y-2">
             <h5 className="font-bold text-slate-900 flex items-center space-x-2">
               <HelpCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />

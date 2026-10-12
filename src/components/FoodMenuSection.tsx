@@ -263,10 +263,10 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
   };
 
   const categories = [
-    { id: 'Todos', label: language === 'en' ? 'All Menu' : 'Todo el Menú' },
-    { id: 'Almuerzos y Comidas', label: language === 'en' ? 'Lunches & Meals' : 'Almuerzos y Comidas' },
-    { id: 'Bebidas', label: language === 'en' ? 'Beverages & Drinks' : 'Bebidas' },
-    { id: 'Snacks', label: language === 'en' ? 'Snacks & Quick Bites' : 'Snacks' }
+    { id: 'Todos', label: t('food_menu.all_cat') },
+    { id: 'Almuerzos y Comidas', label: t('food_menu.lunch_cat') },
+    { id: 'Bebidas', label: t('food_menu.drinks_cat') },
+    { id: 'Snacks', label: t('food_menu.snacks_cat') }
   ];
 
   const filteredItems = activeCategory === 'Todos'
@@ -460,7 +460,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
           className="w-full sm:w-auto justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-lg shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>{language === 'en' ? '+ Add Dish / Beverage / Snack' : '+ Subir / Agregar Plato o Bebida'}</span>
+          <span>{t('food_menu.add_btn')}</span>
         </button>
       </div>
 
@@ -566,7 +566,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                 {/* Upload Buttons for each Dish / Drink / Snack */}
                 <div className="px-6 py-2.5 flex items-center justify-between border-b border-slate-100 bg-slate-50/80">
                   <span className="text-[11px] font-medium text-slate-500">
-                    {language === 'en' ? 'Update dish media:' : 'Subir contenido:'}
+                    {t('food_menu.update_media')}
                   </span>
                   <div className="flex items-center space-x-2">
                     <button
@@ -578,7 +578,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                       className="inline-flex items-center space-x-1 text-[11px] font-semibold text-slate-700 hover:text-emerald-700 bg-white hover:bg-emerald-50 px-2.5 py-1 rounded-lg border border-slate-200 transition-colors shadow-2xs"
                     >
                       <Camera className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>{language === 'en' ? 'Subir Foto' : 'Subir Foto'}</span>
+                      <span>{t('food_menu.upload_photo')}</span>
                     </button>
 
                     <button
@@ -590,7 +590,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                       className="inline-flex items-center space-x-1 text-[11px] font-semibold text-slate-700 hover:text-teal-700 bg-white hover:bg-teal-50 px-2.5 py-1 rounded-lg border border-slate-200 transition-colors shadow-2xs"
                     >
                       <Video className="w-3.5 h-3.5 text-teal-600" />
-                      <span>{language === 'en' ? 'Subir Video' : 'Subir Video'}</span>
+                      <span>{t('food_menu.upload_video')}</span>
                     </button>
                   </div>
                 </div>
@@ -609,7 +609,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                   {preps.length > 0 && (
                     <div className="space-y-2 pt-2 border-t border-slate-100">
                       <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">
-                        {language === 'en' ? 'Preparation choice:' : 'Opción de preparación:'}
+                        {t('food_menu.prep_choice')}
                       </span>
                       <div className="flex flex-wrap gap-1.5">
                         {preps.map((prep) => (
@@ -634,13 +634,13 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                     {sides.length > 0 && (
                       <div className="flex items-start space-x-2">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                        <span><strong className="text-slate-800">{language === 'en' ? 'Sides:' : 'Acompañamiento:'}</strong> {sides.join(' + ')}</span>
+                        <span><strong className="text-slate-800">{t('food_menu.sides')}</strong> {sides.join(' + ')}</span>
                       </div>
                     )}
                     {beverage && (
                       <div className="flex items-start space-x-2">
                         <Coffee className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                        <span><strong className="text-slate-800">{language === 'en' ? 'Beverage included:' : 'Bebida incluida:'}</strong> {beverage}</span>
+                        <span><strong className="text-slate-800">{t('food_menu.beverage_inc')}</strong> {beverage}</span>
                       </div>
                     )}
                   </div>
@@ -656,7 +656,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                   className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm flex items-center justify-center space-x-2 transition-all shadow-md group-hover:bg-emerald-700"
                 >
                   <ShoppingBag className="w-4 h-4 text-emerald-300" />
-                  <span>{language === 'en' ? 'Include in My Reservation' : 'Incluir en Mi Reserva'}</span>
+                  <span>{t('food_menu.order_stay')}</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>

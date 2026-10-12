@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Camera, Maximize2, Sparkles, X, Heart } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Camera, Maximize2, X, Heart } from 'lucide-react';
 import { getResponsiveImageData } from '../utils/imageUtils';
+import { useLanguage } from '../context/LanguageContext';
 import bochicaRomanticDecor from '../assets/images/bochica_romantic_decor_1790618007934.jpg';
 import bochicaJacuzziDeck from '../assets/images/bochica_jacuzzi_deck_1790618019311.jpg';
 import bochicaSunsetView from '../assets/images/bochica_sunset_view_1790617981274.jpg';
@@ -9,39 +10,9 @@ import bochicaSunsetView from '../assets/images/bochica_sunset_view_179061798127
 export interface BochicaImageItem {
   id: number;
   url: string;
-  title: string;
-  subtitle: string;
-  badge: string;
-}
-
-export const BOCHICA_IMAGES: BochicaImageItem[] = [
-  {
-    id: 1,
-    url: bochicaRomanticDecor,
-    title: 'Decoración Romántica Interior',
-    subtitle: 'Ambiente especial con letrero "Te Amo", rosas y globos',
-    badge: 'Interior Romántico'
-  },
-  {
-    id: 2,
-    url: bochicaJacuzziDeck,
-    title: 'Deck Exterior & Jacuzzi Privado',
-    subtitle: 'Tina de hidromasaje entre árboles con luces cálidas al atardecer',
-    badge: 'Jacuzzi & Deck'
-  },
-  {
-    id: 3,
-    url: bochicaSunsetView,
-    title: 'Atardecer Panorámico en Cúpula',
-    subtitle: 'Ventanales geodésicos triangulares con vista abierta al valle',
-    badge: 'Vista Panorámica'
-  }
-];
-
-interface BochicaCarouselProps {
-  className?: string;
-  overlayBadge?: React.ReactNode;
-  pricePerNight?: number;
+  titleKey: string;
+  subtitleKey: string;
+  badgeKey: string;
 }
 
 const slideVariants = {
@@ -70,16 +41,48 @@ const slideVariants = {
   })
 };
 
+interface BochicaCarouselProps {
+  className?: string;
+  overlayBadge?: React.ReactNode;
+  pricePerNight?: number;
+}
+
 export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
   className = 'h-72',
   overlayBadge,
   pricePerNight = 450000
 }) => {
+  const { t } = useLanguage();
+
+  const bochicaImages: BochicaImageItem[] = [
+    {
+      id: 1,
+      url: bochicaRomanticDecor,
+      titleKey: 'bochica.img1_title',
+      subtitleKey: 'bochica.img1_sub',
+      badgeKey: 'bochica.img1_badge'
+    },
+    {
+      id: 2,
+      url: bochicaJacuzziDeck,
+      titleKey: 'bochica.img2_title',
+      subtitleKey: 'bochica.img2_sub',
+      badgeKey: 'bochica.img2_badge'
+    },
+    {
+      id: 3,
+      url: bochicaSunsetView,
+      titleKey: 'bochica.img3_title',
+      subtitleKey: 'bochica.img3_sub',
+      badgeKey: 'bochica.img3_badge'
+    }
+  ];
+
   const [[page, direction], setPage] = useState<[number, number]>([0, 0]);
   const [fullscreenImage, setFullscreenImage] = useState<BochicaImageItem | null>(null);
 
-  const imageIndex = ((page % BOCHICA_IMAGES.length) + BOCHICA_IMAGES.length) % BOCHICA_IMAGES.length;
-  const currentItem = BOCHICA_IMAGES[imageIndex];
+  const imageIndex = ((page % bochicaImages.length) + bochicaImages.length) % bochicaImages.length;
+  const currentItem = bochicaImages[imageIndex];
   const currentImgData = getResponsiveImageData(currentItem.url, '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw');
 
   const paginate = (newDirection: number, e?: React.MouseEvent) => {
@@ -104,7 +107,7 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
             src={currentImgData.webpSrc || currentItem.url}
             srcSet={currentImgData.webpSrcSet || undefined}
             sizes={currentImgData.sizes || undefined}
-            alt={currentItem.title}
+            alt={t(currentItem.titleKey)}
             loading="lazy"
             decoding="async"
             custom={direction}
@@ -136,7 +139,7 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
         {overlayBadge}
         <span className="hidden sm:inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-rose-600/90 backdrop-blur-md text-white text-[11px] font-semibold shadow-sm">
           <Heart className="w-3 h-3 text-rose-200 fill-current" />
-          <span>Experiencia Romántica</span>
+          <span>{t('bochica.romantic_exp')}</span>
         </span>
       </div>
 
@@ -144,7 +147,7 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
       <div className="absolute top-3 right-3 z-20 flex items-center space-x-2">
         <div className="bg-slate-950/80 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-full border border-white/15 flex items-center space-x-1.5 shadow-sm">
           <Camera className="w-3 h-3 text-emerald-400" />
-          <span>{imageIndex + 1} / {BOCHICA_IMAGES.length}</span>
+          <span>{imageIndex + 1} / {bochicaImages.length}</span>
         </div>
         <button
           type="button"
@@ -152,7 +155,7 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
             e.stopPropagation();
             setFullscreenImage(currentItem);
           }}
-          aria-label="Ver imagen completa"
+          aria-label={t('bochica.view_full')}
           className="p-1.5 rounded-full bg-slate-950/70 hover:bg-slate-900 text-white backdrop-blur-md border border-white/15 transition-transform hover:scale-110 active:scale-95 shadow-sm"
         >
           <Maximize2 className="w-3.5 h-3.5" />
@@ -165,7 +168,7 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
         onClick={(e) => paginate(-1, e)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        aria-label="Foto anterior Domo Bochica"
+        aria-label={t('bochica.prev_photo')}
         className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-slate-950/75 hover:bg-emerald-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-colors shadow-lg group-hover:opacity-100 opacity-90 sm:opacity-80"
       >
         <ChevronLeft className="w-5 h-5 text-white" />
@@ -176,7 +179,7 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
         onClick={(e) => paginate(1, e)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        aria-label="Siguiente foto Domo Bochica"
+        aria-label={t('bochica.next_photo')}
         className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-slate-950/75 hover:bg-emerald-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-colors shadow-lg group-hover:opacity-100 opacity-90 sm:opacity-80"
       >
         <ChevronRight className="w-5 h-5 text-white" />
@@ -187,10 +190,10 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
         <div className="flex items-end justify-between">
           <div className="text-white space-y-0.5 max-w-[70%]">
             <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/30">
-              {currentItem.badge}
+              {t(currentItem.badgeKey)}
             </span>
             <p className="text-sm font-bold text-white drop-shadow truncate">
-              {currentItem.title}
+              {t(currentItem.titleKey)}
             </p>
           </div>
 
@@ -201,12 +204,12 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
 
         {/* Thumbnail Dots with Framer Motion layout animation */}
         <div className="flex items-center justify-center space-x-2 pt-1">
-          {BOCHICA_IMAGES.map((img, idx) => (
+          {bochicaImages.map((img, idx) => (
             <button
               key={img.id}
               type="button"
               onClick={(e) => goToIndex(idx, e)}
-              aria-label={`Ver ${img.title}`}
+              aria-label={`${t('bochica.view_full')} ${t(img.titleKey)}`}
               className="relative p-1 focus:outline-none"
             >
               <span
@@ -234,7 +237,7 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
             <button
               type="button"
               onClick={() => setFullscreenImage(null)}
-              aria-label="Cerrar vista completa"
+              aria-label={t('bochica.close_full')}
               className="absolute top-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
             >
               <X className="w-6 h-6" />
@@ -254,17 +257,17 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
                     src={modalImgData.webpSrc || fullscreenImage.url}
                     srcSet={modalImgData.webpSrcSet || undefined}
                     sizes={modalImgData.sizes || undefined}
-                    alt={fullscreenImage.title}
+                    alt={t(fullscreenImage.titleKey)}
                     className="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/10"
                   />
                 );
               })()}
 
               <div className="mt-4 text-center text-white space-y-1">
-                <h4 className="text-xl font-bold">{fullscreenImage.title}</h4>
-                <p className="text-sm text-slate-300">{fullscreenImage.subtitle}</p>
+                <h4 className="text-xl font-bold">{t(fullscreenImage.titleKey)}</h4>
+                <p className="text-sm text-slate-300">{t(fullscreenImage.subtitleKey)}</p>
                 <div className="flex items-center justify-center space-x-2 pt-2">
-                  {BOCHICA_IMAGES.map((img, idx) => (
+                  {bochicaImages.map((img, idx) => (
                     <button
                       key={img.id}
                       onClick={() => setFullscreenImage(img)}
@@ -274,7 +277,7 @@ export const BochicaCarousel: React.FC<BochicaCarouselProps> = ({
                           : 'bg-white/10 text-slate-300 hover:bg-white/20'
                       }`}
                     >
-                      {idx + 1}. {img.badge}
+                      {idx + 1}. {t(img.badgeKey)}
                     </button>
                   ))}
                 </div>

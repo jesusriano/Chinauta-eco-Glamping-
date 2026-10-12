@@ -5,6 +5,7 @@ import { Dome } from '../types';
 import { getDomeImages } from '../utils/domeImages';
 import defaultDomo1Video from '../assets/videos/domo_1_huitaca.mp4';
 import { getResponsiveImageData } from '../utils/imageUtils';
+import { useLanguage } from '../context/LanguageContext';
 
 interface DomeMediaCardProps {
   dome: Dome;
@@ -17,6 +18,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
   className = 'h-64 sm:h-72 md:h-80',
   onOpenBooking
 }) => {
+  const { t } = useLanguage();
   const domeId = Number(dome.id);
 
   // Tab State: 'video' | 'photos'
@@ -181,7 +183,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
       };
       reader.readAsDataURL(file);
 
-      showToast(`¡Video cargado para ${dome.name}!`);
+      showToast(`${t('domes.toast_video_loaded')} ${dome.name}!`);
       setTimeout(safePlay, 100);
     } catch (err) {
       console.error("Error al cargar video:", err);
@@ -229,7 +231,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
       };
       reader.readAsDataURL(file);
 
-      showToast(`¡Foto agregada a la galería de ${dome.name}!`);
+      showToast(`${t('domes.toast_photo_added')} ${dome.name}!`);
     } catch (err) {
       console.error("Error al cargar imagen:", err);
     } finally {
@@ -256,14 +258,14 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
   const handleDeleteCurrentPhoto = async (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (images.length <= 1) {
-      showToast("No se puede borrar la única foto del domo.");
+      showToast(t('domes.cannot_delete_only_photo'));
       return;
     }
     const newImages = images.filter((_, idx) => idx !== currentPhotoIdx);
     setImages(newImages);
     setCurrentPhotoIdx(prev => (prev >= newImages.length ? 0 : prev));
     localStorage.setItem(`dome_${domeId}_custom_images`, JSON.stringify(newImages));
-    showToast("¡Foto eliminada de la galería!");
+    showToast(t('domes.photo_deleted'));
 
     try {
       await fetch(`/api/domes/${domeId}/images`, {
@@ -333,11 +335,11 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
           {/* Top Left: Badges */}
           <div className="absolute top-3 left-3 z-20 flex flex-wrap items-center gap-1.5 pointer-events-auto">
             <span className="bg-slate-900/85 backdrop-blur-md text-white text-[11px] px-2.5 py-1 rounded-full font-medium shadow-sm border border-white/10">
-              Capacidad: {dome.capacity} personas
+              {t('domes.capacity_label')} {dome.capacity} {t('domes.people')}
             </span>
             <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-950/85 backdrop-blur-md text-emerald-300 text-[11px] font-semibold border border-emerald-500/30 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Video Tour</span>
+              <span>{t('domes.video_tour')}</span>
             </span>
           </div>
 
@@ -349,11 +351,11 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                 e.stopPropagation();
                 videoInputRef.current?.click();
               }}
-              title={`Subir o cambiar video para ${dome.name}`}
+              title={`${t('domes.upload_video')} - ${dome.name}`}
               className="px-2.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-emerald-600 text-white text-[11px] font-semibold backdrop-blur-md border border-white/25 transition-all flex items-center space-x-1 shadow-md active:scale-95 cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Subir video</span>
+              <span>{t('domes.upload_video')}</span>
             </button>
 
             <button
@@ -362,11 +364,11 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                 e.stopPropagation();
                 imageInputRef.current?.click();
               }}
-              title={`Subir fotos para ${dome.name}`}
+              title={`${t('domes.upload_photo')} - ${dome.name}`}
               className="px-2.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-teal-600 text-white text-[11px] font-semibold backdrop-blur-md border border-white/25 transition-all flex items-center space-x-1 shadow-md active:scale-95 cursor-pointer"
             >
               <ImagePlus className="w-3.5 h-3.5 text-teal-300" />
-              <span className="hidden sm:inline">Subir foto</span>
+              <span className="hidden sm:inline">{t('domes.upload_photo')}</span>
             </button>
 
             <button
@@ -429,7 +431,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
           {/* Top Left: Badges */}
           <div className="absolute top-3 left-3 z-20 flex flex-wrap items-center gap-1.5 pointer-events-auto">
             <span className="bg-slate-900/85 backdrop-blur-md text-white text-[11px] px-2.5 py-1 rounded-full font-medium shadow-sm border border-white/10">
-              Capacidad: {dome.capacity} personas
+              {t('domes.capacity_label')} {dome.capacity} {t('domes.people')}
             </span>
             <span className="bg-slate-900/85 backdrop-blur-md text-slate-300 text-[11px] px-2 py-1 rounded-full font-medium shadow-sm border border-white/10">
               {currentPhotoIdx + 1} / {images.length}
@@ -444,11 +446,11 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                 e.stopPropagation();
                 imageInputRef.current?.click();
               }}
-              title={`Agregar nueva foto para ${dome.name}`}
+              title={`${t('domes.upload_photo')} - ${dome.name}`}
               className="px-2.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-emerald-600 text-white text-[11px] font-semibold backdrop-blur-md border border-white/25 transition-all flex items-center space-x-1 shadow-md active:scale-95 cursor-pointer"
             >
               <ImagePlus className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Subir foto</span>
+              <span>{t('domes.upload_photo')}</span>
             </button>
 
             <button
@@ -457,11 +459,11 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                 e.stopPropagation();
                 videoInputRef.current?.click();
               }}
-              title={`Subir video para ${dome.name}`}
+              title={`${t('domes.upload_video')} - ${dome.name}`}
               className="px-2.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-teal-600 text-white text-[11px] font-semibold backdrop-blur-md border border-white/25 transition-all flex items-center space-x-1 shadow-md active:scale-95 cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5 text-teal-300" />
-              <span className="hidden sm:inline">Subir video</span>
+              <span className="hidden sm:inline">{t('domes.upload_video')}</span>
             </button>
 
             {images.length > 1 && (
@@ -528,7 +530,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
       <div className="relative z-20 p-3 sm:p-4 flex items-center justify-between pointer-events-auto">
         {/* Price Tag */}
         <div className="bg-emerald-600/95 text-white text-xs px-2.5 py-1 rounded-md font-bold shadow-md">
-          ${dome.price_per_night.toLocaleString('es-CO')} COP / noche
+          ${dome.price_per_night.toLocaleString('es-CO')} COP {t('domes.night')}
         </div>
 
         {/* Tab & Upload Switcher */}
@@ -548,7 +550,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
             }`}
           >
             <Film className="w-3.5 h-3.5" />
-            <span>Video</span>
+            <span>{t('domes.video_tab')}</span>
           </button>
 
           <button
@@ -564,7 +566,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
             }`}
           >
             <Camera className="w-3.5 h-3.5" />
-            <span>Fotos</span>
+            <span>{t('domes.photos_tab')}</span>
           </button>
         </div>
       </div>
@@ -576,7 +578,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
           onClick={() => (activeTab === 'video' ? videoInputRef.current?.click() : imageInputRef.current?.click())}
           className="text-[10px] text-emerald-300 underline font-medium"
         >
-          {activeTab === 'video' ? '+ Subir video' : '+ Subir imagen'}
+          {activeTab === 'video' ? `+ ${t('domes.upload_video')}` : `+ ${t('domes.upload_photo')}`}
         </button>
       </div>
 
@@ -600,7 +602,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
         {isFullscreenPhoto && (
           <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col justify-between p-4">
             <div className="flex items-center justify-between text-white z-10">
-              <span className="text-sm font-semibold">{dome.name} • Foto {currentPhotoIdx + 1} de {images.length}</span>
+              <span className="text-sm font-semibold">{dome.name} • {t('domes.photos_tab')} {currentPhotoIdx + 1} {t('domes.of')} {images.length}</span>
               <button
                 type="button"
                 onClick={() => setIsFullscreenPhoto(false)}
@@ -619,7 +621,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                     src={fsResp.webpSrc || fsPhoto}
                     srcSet={fsResp.webpSrcSet || undefined}
                     sizes={fsResp.sizes || undefined}
-                    alt={`${dome.name} tamaño completo`}
+                    alt={`${dome.name} full`}
                     className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl"
                   />
                 );
@@ -652,7 +654,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95"
               >
                 <ImagePlus className="w-4 h-4" />
-                <span>Subir otra imagen</span>
+                <span>{t('domes.upload_photo')}</span>
               </button>
 
               {images.length > 1 && (
@@ -662,7 +664,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                   className="px-4 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95"
                 >
                   <Trash2 className="w-4 h-4" />
-                  <span>Borrar esta foto</span>
+                  <span>{t('domes.delete_photo')}</span>
                 </button>
               )}
             </div>

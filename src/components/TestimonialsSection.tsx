@@ -54,7 +54,7 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
 ];
 
 export const TestimonialsSection: React.FC = () => {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const [testimonials, setTestimonials] = useState<Testimonial[]>(DEFAULT_TESTIMONIALS);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeUploadTarget, setActiveUploadTarget] = useState<{ id: string | number; type: 'image' | 'video' } | null>(null);
@@ -210,7 +210,7 @@ export const TestimonialsSection: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newTestimonial)
       });
-      showToast(language === 'en' ? 'Thank you! Your review was published.' : '¡Gracias! Tu testimonio fue publicado.');
+      showToast(t('testimonials.success_msg'));
     } catch (err) {
       console.warn("Server testimonial create notice:", err);
     }
@@ -239,15 +239,13 @@ export const TestimonialsSection: React.FC = () => {
           <div className="space-y-4 text-center md:text-left max-w-2xl">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold">
               <Star className="w-4 h-4 text-emerald-600 fill-emerald-600" />
-              <span>{language === 'en' ? 'Verified Guest Experiences' : 'Testimonios Verificados'}</span>
+              <span>{t('testimonials.tag')}</span>
             </div>
             <h3 className="text-3xl sm:text-4xl font-bold text-slate-900">
-              {language === 'en' ? 'What Our Guests Say' : 'Lo Que Dicen Nuestros Huéspedes'}
+              {t('testimonials.title')}
             </h3>
             <p className="text-slate-600 text-base">
-              {language === 'en' 
-                ? 'Real photos and reviews from travelers and couples who experienced the magic of Eco Glamping Chinauta.' 
-                : 'Historias y fotos reales de parejas y viajeros que han vivido la magia de Eco Glamping Chinauta.'}
+              {t('testimonials.desc')}
             </p>
           </div>
 
@@ -257,7 +255,7 @@ export const TestimonialsSection: React.FC = () => {
             className="w-full sm:w-auto justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-lg shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>{language === 'en' ? '+ Post Review & Upload Photo' : '+ Subir Mi Foto & Testimonio'}</span>
+            <span>{t('testimonials.add_btn')}</span>
           </button>
         </div>
 
@@ -296,7 +294,7 @@ export const TestimonialsSection: React.FC = () => {
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute top-2 right-2 bg-slate-900/80 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur-md">
-                      🎥 Video Huésped
+                      {t('testimonials.guest_video')}
                     </div>
                   </div>
                 ) : item.image ? (
@@ -329,7 +327,7 @@ export const TestimonialsSection: React.FC = () => {
                     className="inline-flex items-center space-x-1.5 text-xs text-emerald-700 font-semibold hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200/70 transition-all active:scale-95 cursor-pointer shadow-2xs"
                   >
                     <Camera className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{language === 'en' ? 'Subir Foto' : 'Subir Foto'}</span>
+                    <span>{t('testimonials.upload_photo_btn')}</span>
                   </button>
 
                   <button
@@ -341,7 +339,7 @@ export const TestimonialsSection: React.FC = () => {
                     className="inline-flex items-center space-x-1.5 text-xs text-teal-700 font-semibold hover:text-teal-900 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-xl border border-teal-200/70 transition-all active:scale-95 cursor-pointer shadow-2xs"
                   >
                     <Video className="w-3.5 h-3.5 text-teal-600" />
-                    <span>{language === 'en' ? 'Subir Video' : 'Subir Video'}</span>
+                    <span>{t('testimonials.upload_video_btn')}</span>
                   </button>
                 </div>
               </div>
@@ -423,7 +421,7 @@ export const TestimonialsSection: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Sparkles className="w-5 h-5 text-emerald-600" />
                   <h3 className="font-bold text-lg text-slate-900">
-                    {language === 'en' ? 'Share Your Experience' : 'Comparte Tu Experiencia'}
+                    {t('testimonials.modal_title')}
                   </h3>
                 </div>
                 <button
@@ -437,14 +435,14 @@ export const TestimonialsSection: React.FC = () => {
               <form onSubmit={handleCreateTestimonial} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                    {language === 'en' ? 'Your Name / Couple Name' : 'Tu Nombre o Pareja'}
+                    {t('testimonials.name_label')}
                   </label>
                   <input
                     type="text"
                     required
                     value={newName}
                     onChange={e => setNewName(e.target.value)}
-                    placeholder="Ej: Sofia & David"
+                    placeholder={t('testimonials.name_ph')}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-emerald-500 focus:outline-hidden"
                   />
                 </div>
@@ -452,20 +450,20 @@ export const TestimonialsSection: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                      {language === 'en' ? 'City / Country' : 'Ciudad o País'}
+                      {t('testimonials.city_label')}
                     </label>
                     <input
                       type="text"
                       value={newLocation}
                       onChange={e => setNewLocation(e.target.value)}
-                      placeholder="Ej: Bogotá, Colombia"
+                      placeholder={t('testimonials.city_ph')}
                       className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-emerald-500 focus:outline-hidden"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                      {language === 'en' ? 'Dome Stayed In' : 'Domo Hospedado'}
+                      {t('testimonials.dome_label')}
                     </label>
                     <select
                       value={newDome}
@@ -484,7 +482,7 @@ export const TestimonialsSection: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                    {language === 'en' ? 'Rating' : 'Calificación'}
+                    {t('testimonials.rating_label')}
                   </label>
                   <div className="flex items-center space-x-2">
                     {[1, 2, 3, 4, 5].map(star => (
@@ -502,14 +500,14 @@ export const TestimonialsSection: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                    {language === 'en' ? 'Your Comment & Memories' : 'Tu Comentario y Experiencia'}
+                    {t('testimonials.comment_label')}
                   </label>
                   <textarea
                     required
                     rows={3}
                     value={newComment}
                     onChange={e => setNewComment(e.target.value)}
-                    placeholder={language === 'en' ? 'Tell other travelers how your stay was...' : 'Cuéntanos cómo fue tu estadía, el jacuzzi, la vista, el servicio...'}
+                    placeholder={t('testimonials.comment_ph')}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-emerald-500 focus:outline-hidden"
                   />
                 </div>
@@ -517,7 +515,7 @@ export const TestimonialsSection: React.FC = () => {
                 {/* Upload Real Vacation Photo/Video */}
                 <div className="space-y-2 pt-2 border-t border-slate-100">
                   <label className="block text-xs font-semibold text-slate-700 uppercase">
-                    {language === 'en' ? 'Upload Vacation Photo or Video' : 'Subir Foto o Video de tu Estadía'}
+                    {t('testimonials.upload_photo_btn')} / {t('testimonials.upload_video_btn')}
                   </label>
 
                   <input
@@ -536,13 +534,13 @@ export const TestimonialsSection: React.FC = () => {
                       className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs flex items-center space-x-2 transition-colors border border-slate-300"
                     >
                       <ImagePlus className="w-4 h-4 text-emerald-600" />
-                      <span>{isUploading ? (language === 'en' ? 'Uploading...' : 'Subiendo archivo...') : (language === 'en' ? 'Choose Image / Video' : 'Elegir Foto / Video')}</span>
+                      <span>{isUploading ? '...' : t('testimonials.upload_photo_btn')}</span>
                     </button>
 
                     {newMediaUrl && (
                       <span className="text-xs text-emerald-700 font-medium flex items-center space-x-1">
                         <CheckCircle className="w-4 h-4" />
-                        <span>{language === 'en' ? 'File ready' : 'Archivo listo'}</span>
+                        <span>✓</span>
                       </span>
                     )}
                   </div>
@@ -564,13 +562,13 @@ export const TestimonialsSection: React.FC = () => {
                     onClick={() => setIsAddModalOpen(false)}
                     className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
                   >
-                    {language === 'en' ? 'Cancel' : 'Cancelar'}
+                    {t('testimonials.cancel')}
                   </button>
                   <button
                     type="submit"
                     className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs shadow-md"
                   >
-                    {language === 'en' ? 'Publish Review' : 'Publicar Testimonio'}
+                    {t('testimonials.submit')}
                   </button>
                 </div>
               </form>

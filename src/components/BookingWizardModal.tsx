@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Users, Compass, CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck, CreditCard, Sparkles, Heart, Sun, Clock, Dog, Wine } from 'lucide-react';
+import { X, Calendar, Compass, CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck, CreditCard, Sparkles, Heart, Sun, Clock, Dog, Wine } from 'lucide-react';
 import { Dome } from '../types';
 import { ImageCarousel } from './ImageCarousel';
 import { getDomeImages } from '../utils/domeImages';
+import { useLanguage } from '../context/LanguageContext';
 
 interface BookingWizardModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
   initialCheckOut,
   onSuccess
 }) => {
+  const { t, language } = useLanguage();
   const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
   const dayAfter = new Date(); dayAfter.setDate(dayAfter.getDate() + 3);
 
@@ -89,10 +91,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
   if (!isOpen) return null;
 
-  const selectedDome = domes.find(d => idMatch(d.id, selectedDomeId));
-  function idMatch(a: any, b: any) {
-    return Number(a) === Number(b);
-  }
+  const selectedDome = domes.find(d => Number(d.id) === Number(selectedDomeId));
 
   // Calculate nights & pricing
   const start = new Date(checkIn);
@@ -103,7 +102,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
   const baseRate = bookingType === 'pasadia' ? 250000 : (selectedDome ? selectedDome.price_per_night : 380000);
   const baseTotal = bookingType === 'pasadia' ? baseRate : nights * baseRate;
 
-  // Extra persons ($70,000 per extra person per night if guests > dome capacity or base 2)
+  // Extra persons ($70,000 per extra person per night)
   const baseCapacity = selectedDome ? (selectedDome.capacity || 2) : 2;
   const extraPersons = Math.max(0, guests - baseCapacity);
   const extraPersonsFee = extraPersons * 70000 * (bookingType === 'pasadia' ? 1 : nights);
@@ -119,11 +118,10 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
   const subtotal = baseTotal + extraPersonsFee + petsFee + addonsTotal;
 
-  // Check if check-in is between Monday (1) and Thursday (4)
+  // Weekday check
   const checkInDayOfWeek = new Date(checkIn).getDay();
   const isWeekday = checkInDayOfWeek >= 1 && checkInDayOfWeek <= 4;
 
-  // Automatic weekday discount calculation (10%, 15%, or 20% depending on services and consumption)
   let effectiveDiscountPercent = 0;
   if (isWeekday) {
     const activeServicesCount = Object.values(selectedAddons).filter(Boolean).length;
@@ -135,7 +133,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
       effectiveDiscountPercent = 10;
     }
   } else {
-    effectiveDiscountPercent = discountPercent; // Weekend manual promo code option if desired
+    effectiveDiscountPercent = discountPercent;
   }
 
   const discountAmount = (subtotal * effectiveDiscountPercent) / 100;
@@ -143,10 +141,9 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
   const validateStep2 = () => {
     if (bookingType === 'pasadia') {
-      const dayOfWeek = new Date(checkIn).getDay(); // 0 = Sun, 1 = Mon, ..., 5 = Fri, 6 = Sat
-      // Mon to Thu: 1, 2, 3, 4
+      const dayOfWeek = new Date(checkIn).getDay();
       if (dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6) {
-        setErrorMsg("⚠️ Las pasadías solo están disponibles de lunes a jueves. Por favor seleccione un día válido.");
+        setErrorMsg(t('wizard.daypass_restriction_err'));
         return false;
       }
     }
@@ -157,7 +154,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
   const handleConfirmBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDome || !name || !phone || !email) {
-      setErrorMsg("Por favor completa todos los campos obligatorios.");
+      setErrorMsg(t('wizard.required_fields_err'));
       return;
     }
 
@@ -175,7 +172,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           check_out: effectiveCheckOut,
           guests,
           total_amount: totalAmount,
-          notes: `[${bookingType.toUpperCase()}] Mascotas: ${hasPet ? petCount : 0}. Addons: ${Object.entries(selectedAddons).filter(([k,v]) => v).map(([k]) => k).join(', ')}. Mensaje decorativo: ${customMessage}. Notas: ${notes}`,
+          notes: `[${bookingType.toUpperCase()}] Mascotas: ${hasPet ? petCount : 0}. Addons: ${Object.entries(selectedAddons).filter(([_,v]) => v).map(([k]) => k).join(', ')}. Mensaje decorativo: ${customMessage}. Notas: ${notes}`,
           customer: {
             name,
             phone,
@@ -189,14 +186,14 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Error al procesar la reserva');
+        throw new Error(data.error || t('wizard.booking_process_err'));
       }
 
       setConfirmedCode(data.reservation_code);
-      setStep(8); // Confirmation step
+      setStep(8);
       onSuccess(data.reservation_code);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error de red o doble reserva detectada.');
+      setErrorMsg(err.message || t('wizard.booking_process_err'));
     } finally {
       setSubmitting(false);
     }
@@ -213,11 +210,11 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
               <Compass className="w-6 h-6 text-emerald-300" />
             </div>
             <div>
-              <h3 className="text-lg font-bold">Reserva • Eco Glamping Chinauta</h3>
-              <p className="text-xs text-emerald-200">Paso {step} de 8</p>
+              <h3 className="text-lg font-bold">{t('wizard.title')}</h3>
+              <p className="text-xs text-emerald-200">{t('wizard.step_counter').replace('{step}', String(step))}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl hover:bg-white/10 text-white transition-colors">
+          <button onClick={onClose} className="p-2 rounded-xl hover:bg-white/10 text-white transition-colors cursor-pointer">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -233,8 +230,8 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           {/* STEP 1: Choose Booking Type */}
           {step === 1 && (
             <div className="space-y-6">
-              <h4 className="text-xl font-bold text-slate-900">¿Qué tipo de experiencia deseas vivir?</h4>
-              <p className="text-sm text-slate-600">Selecciona la modalidad de tu visita en Eco Glamping Chinauta.</p>
+              <h4 className="text-xl font-bold text-slate-900">{t('wizard.step1_title')}</h4>
+              <p className="text-sm text-slate-600">{t('wizard.step1_desc')}</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div
@@ -247,10 +244,10 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                     <Compass className="w-6 h-6" />
                   </div>
                   <div>
-                    <h5 className="font-bold text-slate-900 text-base">Estadía en Domo</h5>
-                    <p className="text-xs text-slate-500 mt-1">Check-in: 3:00 p.m. • Check-out: 11:00 a.m. Disfruta de la noche con jacuzzi, fogata y estrellas.</p>
+                    <h5 className="font-bold text-slate-900 text-base">{t('wizard.stay_title')}</h5>
+                    <p className="text-xs text-slate-500 mt-1">{t('wizard.stay_desc')}</p>
                   </div>
-                  <span className="text-xs font-bold text-emerald-700">Disponible todos los días →</span>
+                  <span className="text-xs font-bold text-emerald-700">{t('wizard.stay_badge')}</span>
                 </div>
 
                 <div
@@ -263,10 +260,10 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                     <Sun className="w-6 h-6" />
                   </div>
                   <div>
-                    <h5 className="font-bold text-slate-900 text-base">Pasadía Exclusiva</h5>
-                    <p className="text-xs text-slate-500 mt-1">Horario: 8:00 a.m. a 4:00 p.m. Exclusivo de lunes a jueves. Desde $250.000 COP.</p>
+                    <h5 className="font-bold text-slate-900 text-base">{t('wizard.daypass_title')}</h5>
+                    <p className="text-xs text-slate-500 mt-1">{t('wizard.daypass_desc')}</p>
                   </div>
-                  <span className="text-xs font-bold text-teal-700">Lunes a Jueves →</span>
+                  <span className="text-xs font-bold text-teal-700">{t('wizard.daypass_badge')}</span>
                 </div>
               </div>
             </div>
@@ -276,16 +273,16 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           {step === 2 && (
             <div className="space-y-6">
               <h4 className="text-xl font-bold text-slate-900">
-                {bookingType === 'pasadia' ? 'Selecciona la Fecha de tu Pasadía (Lunes a Jueves)' : 'Selecciona tus Fechas de Estadía'}
+                {bookingType === 'pasadia' ? t('wizard.step2_daypass_title') : t('wizard.step2_stay_title')}
               </h4>
               <p className="text-sm text-slate-600">
-                {bookingType === 'pasadia' ? 'Horario de disfrute: 8:00 a.m. a 4:00 p.m.' : 'Check-in 3:00 p.m. | Check-out 11:00 a.m.'}
+                {bookingType === 'pasadia' ? t('wizard.step2_daypass_sub') : t('wizard.step2_stay_sub')}
               </p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">
-                    {bookingType === 'pasadia' ? 'Fecha de Pasadía' : 'Fecha de Entrada'}
+                    {bookingType === 'pasadia' ? t('wizard.daypass_date_label') : t('wizard.checkin_label')}
                   </label>
                   <input
                     type="date"
@@ -300,7 +297,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                 </div>
                 {bookingType === 'estadia' && (
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">Fecha de Salida</label>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">{t('wizard.checkout_label')}</label>
                     <input
                       type="date"
                       value={checkOut}
@@ -317,11 +314,11 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           {/* STEP 3: Select Dome */}
           {step === 3 && (
             <div className="space-y-6">
-              <h4 className="text-xl font-bold text-slate-900">Domos Disponibles</h4>
-              <p className="text-sm text-slate-600">Elige el espacio ideal para tu experiencia en Eco Glamping Chinauta.</p>
+              <h4 className="text-xl font-bold text-slate-900">{t('wizard.step3_title')}</h4>
+              <p className="text-sm text-slate-600">{t('wizard.step3_sub')}</p>
 
               {loadingAvailability ? (
-                <div className="text-center py-8 text-slate-500">Verificando disponibilidad en tiempo real...</div>
+                <div className="text-center py-8 text-slate-500">{t('wizard.loading_avail')}</div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {domes.map(dome => (
@@ -346,7 +343,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shadow-xs ${
                               dome.isAvailable ? 'bg-emerald-100/95 text-emerald-800' : 'bg-rose-100/95 text-rose-800'
                             }`}>
-                              {dome.isAvailable ? 'Disponible' : dome.reason}
+                              {dome.isAvailable ? t('wizard.available') : dome.reason}
                             </span>
                           }
                         />
@@ -357,12 +354,12 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                           <span className="text-xs text-slate-500 font-medium">{dome.code}</span>
                         </div>
                         <p className="text-xs text-emerald-700 font-bold mt-1">
-                          ${(bookingType === 'pasadia' ? 250000 : dome.price_per_night).toLocaleString('es-CO')} {bookingType === 'pasadia' ? 'pasadía' : '/ noche'}
+                          ${(bookingType === 'pasadia' ? 250000 : dome.price_per_night).toLocaleString('es-CO')} {bookingType === 'pasadia' ? (language === 'en' ? 'day pass' : 'pasadía') : t('domes.night')}
                         </p>
                         <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{dome.description}</p>
                       </div>
                       <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded-lg">
-                        ✨ Capacidad: hasta {dome.capacity || 2} huéspedes {dome.id === 1 ? '• Con Jacuzzi pequeño' : dome.id === 2 ? '• Permite cama adicional' : ''}
+                        {t('wizard.capacity_desc').replace('{count}', String(dome.capacity || 2))} {dome.id === 1 ? t('wizard.small_jacuzzi') : dome.id === 2 ? t('wizard.extra_bed') : ''}
                       </div>
                     </div>
                   ))}
@@ -374,28 +371,28 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           {/* STEP 4: Guests & Extra Persons */}
           {step === 4 && (
             <div className="space-y-6">
-              <h4 className="text-xl font-bold text-slate-900">Número de Huéspedes</h4>
+              <h4 className="text-xl font-bold text-slate-900">{t('wizard.step4_title')}</h4>
               <p className="text-sm text-slate-600">
-                El domo seleccionado tiene capacidad base para {selectedDome?.capacity || 2} personas. Personas adicionales tienen un costo de $70.000 COP por persona.
+                {t('wizard.step4_sub').replace('{cap}', String(selectedDome?.capacity || 2))}
               </p>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">Cantidad de Huéspedes</label>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">{t('wizard.guests_label')}</label>
                 <select
                   value={guests}
                   onChange={e => setGuests(Number(e.target.value))}
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 font-medium focus:outline-hidden focus:border-emerald-500 bg-white text-sm"
                 >
-                  <option value={1}>1 Huésped</option>
-                  <option value={2}>2 Huéspedes (Incluido en base)</option>
-                  <option value={3}>3 Huéspedes {selectedDome?.id === 2 ? '(Permite cama adicional)' : ''}</option>
-                  <option value={4}>4 Huéspedes (Familiar)</option>
+                  <option value={1}>{t('wizard.guest_1')}</option>
+                  <option value={2}>{t('wizard.guest_2')}</option>
+                  <option value={3}>{t('wizard.guest_3')} {selectedDome?.id === 2 ? t('wizard.extra_bed') : ''}</option>
+                  <option value={4}>{t('wizard.guest_4')}</option>
                 </select>
               </div>
 
               {extraPersons > 0 && (
                 <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
-                  💡 Se han agregado {extraPersons} {extraPersons === 1 ? 'persona adicional' : 'personas adicionales'} (+${extraPersonsFee.toLocaleString('es-CO')} COP).
+                  {t('wizard.extra_persons_added').replace('{count}', String(extraPersons)).replace('{fee}', extraPersonsFee.toLocaleString('es-CO'))}
                 </div>
               )}
             </div>
@@ -404,8 +401,8 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           {/* STEP 5: Pets */}
           {step === 5 && (
             <div className="space-y-6">
-              <h4 className="text-xl font-bold text-slate-900">¿Traerás mascotas?</h4>
-              <p className="text-sm text-slate-600">En Eco Glamping Chinauta amamos a tus peluditos. El costo por mascota es de $30.000 COP.</p>
+              <h4 className="text-xl font-bold text-slate-900">{t('wizard.step5_title')}</h4>
+              <p className="text-sm text-slate-600">{t('wizard.step5_sub')}</p>
 
               <div className="grid grid-cols-2 gap-4">
                 <div
@@ -414,7 +411,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                     !hasPet ? 'border-emerald-600 bg-emerald-50 text-emerald-800' : 'border-slate-200 text-slate-700 bg-white'
                   }`}
                 >
-                  No, sin mascotas
+                  {t('wizard.no_pets')}
                 </div>
                 <div
                   onClick={() => setHasPet(true)}
@@ -422,13 +419,13 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                     hasPet ? 'border-emerald-600 bg-emerald-50 text-emerald-800' : 'border-slate-200 text-slate-700 bg-white'
                   }`}
                 >
-                  🐾 Sí, llevaré mascotas
+                  {t('wizard.yes_pets')}
                 </div>
               </div>
 
               {hasPet && (
                 <div className="space-y-2 pt-2">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase">Cantidad de Mascotas</label>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase">{t('wizard.pet_count_label')}</label>
                   <input
                     type="number"
                     min={1}
@@ -437,17 +434,17 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                     onChange={e => setPetCount(Number(e.target.value))}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium"
                   />
-                  <p className="text-xs text-slate-500">Recargo por mascota: $30.000 COP c/u.</p>
+                  <p className="text-xs text-slate-500">{t('wizard.pet_fee_notice')}</p>
                 </div>
               )}
             </div>
           )}
 
-          {/* STEP 6: Addons (Bono Time, Decor, Masaje) */}
+          {/* STEP 6: Addons */}
           {step === 6 && (
             <div className="space-y-6">
-              <h4 className="text-xl font-bold text-slate-900">Servicios y Complementos Adicionales</h4>
-              <p className="text-sm text-slate-600">Personaliza tu experiencia con nuestros complementos de alta gama.</p>
+              <h4 className="text-xl font-bold text-slate-900">{t('wizard.step6_title')}</h4>
+              <p className="text-sm text-slate-600">{t('wizard.step6_sub')}</p>
 
               <div className="space-y-3">
                 {/* Bono Time */}
@@ -462,8 +459,8 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                       <Clock className="w-5 h-5" />
                     </div>
                     <div>
-                      <h5 className="font-bold text-slate-900 text-sm">BONO TIME (+3 horas)</h5>
-                      <p className="text-xs text-slate-500">Agrega 3 horas adicionales a tu estadía.</p>
+                      <h5 className="font-bold text-slate-900 text-sm">{t('wizard.bono_time_title')}</h5>
+                      <p className="text-xs text-slate-500">{t('wizard.bono_time_desc')}</p>
                     </div>
                   </div>
                   <span className="font-bold text-emerald-700 text-sm">+$50.000 COP</span>
@@ -481,8 +478,8 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                       <Wine className="w-5 h-5" />
                     </div>
                     <div>
-                      <h5 className="font-bold text-slate-900 text-sm">Decoración VIP</h5>
-                      <p className="text-xs text-slate-500">1 botella de vino, 2 postres, 5 snacks, batas, 2 aguas y mensaje personalizado.</p>
+                      <h5 className="font-bold text-slate-900 text-sm">{t('wizard.decor_vip_title')}</h5>
+                      <p className="text-xs text-slate-500">{t('wizard.decor_vip_desc')}</p>
                     </div>
                   </div>
                   <span className="font-bold text-emerald-700 text-sm">+$150.000 COP</span>
@@ -500,8 +497,8 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
-                      <h5 className="font-bold text-slate-900 text-sm">Decoración Básica</h5>
-                      <p className="text-xs text-slate-500">Incluye mensaje personalizado elegido por el cliente.</p>
+                      <h5 className="font-bold text-slate-900 text-sm">{t('wizard.decor_basic_title')}</h5>
+                      <p className="text-xs text-slate-500">{t('wizard.decor_basic_desc')}</p>
                     </div>
                   </div>
                   <span className="font-bold text-emerald-700 text-sm">+$75.000 COP</span>
@@ -519,8 +516,8 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                       <Heart className="w-5 h-5" />
                     </div>
                     <div>
-                      <h5 className="font-bold text-slate-900 text-sm">Masaje en Pareja</h5>
-                      <p className="text-xs text-slate-500">Relajación profesional en pareja (60 min).</p>
+                      <h5 className="font-bold text-slate-900 text-sm">{t('wizard.massage_title')}</h5>
+                      <p className="text-xs text-slate-500">{t('wizard.massage_desc')}</p>
                     </div>
                   </div>
                   <span className="font-bold text-emerald-700 text-sm">+$250.000 COP</span>
@@ -529,12 +526,12 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
               {(selectedAddons.decorVip || selectedAddons.decorBasic) && (
                 <div className="space-y-2 pt-2">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase">Mensaje Personalizado para la Decoración</label>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase">{t('wizard.custom_msg_label')}</label>
                   <input
                     type="text"
                     value={customMessage}
                     onChange={e => setCustomMessage(e.target.value)}
-                    placeholder="Ej. Te amo mi amor / Feliz Cumpleaños / ¿Te casarías conmigo?"
+                    placeholder={t('wizard.custom_msg_ph')}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium"
                   />
                 </div>
@@ -545,49 +542,49 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           {/* STEP 7: Guest Details & Payment */}
           {step === 7 && (
             <div className="space-y-6">
-              <h4 className="text-xl font-bold text-slate-900">Datos de Contacto y Pago</h4>
+              <h4 className="text-xl font-bold text-slate-900">{t('wizard.step7_title')}</h4>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Nombre Completo *</label>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('wizard.full_name')}</label>
                   <input
                     type="text"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    placeholder="Ej. María Fernanda Pérez"
+                    placeholder={t('wizard.full_name_ph')}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Correo Electrónico *</label>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('wizard.email')}</label>
                   <input
                     type="email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    placeholder="correo@ejemplo.com"
+                    placeholder={t('wizard.email_ph')}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Teléfono / WhatsApp *</label>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('wizard.phone')}</label>
                   <input
                     type="text"
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
-                    placeholder="+57 310 1234567"
+                    placeholder={t('wizard.phone_ph')}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Cédula o Documento</label>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('wizard.doc_id')}</label>
                   <input
                     type="text"
                     value={documentId}
                     onChange={e => setDocumentId(e.target.value)}
-                    placeholder="Número de documento"
+                    placeholder={t('wizard.doc_id_ph')}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium"
                   />
                 </div>
@@ -598,23 +595,23 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                 <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium space-y-1">
                   <div className="font-bold flex items-center space-x-1.5 text-emerald-800">
                     <Sparkles className="w-4 h-4 text-emerald-600" />
-                    <span>Descuento Automático Entre Semana ({effectiveDiscountPercent}% Aplicado):</span>
+                    <span>{t('wizard.weekday_discount_title').replace('{percent}', String(effectiveDiscountPercent))}</span>
                   </div>
-                  <p>Por ser una estadía de lunes a jueves y según los servicios y consumo seleccionados, el sistema ha aplicado automáticamente un <strong>{effectiveDiscountPercent}% de descuento</strong> a tu reserva (-${discountAmount.toLocaleString('es-CO')} COP).</p>
+                  <p>{t('wizard.weekday_discount_desc').replace('{percent}', String(effectiveDiscountPercent)).replace('{amount}', discountAmount.toLocaleString('es-CO'))}</p>
                 </div>
               ) : (
                 <div className="pt-2">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">¿Tienes un código de descuento o promoción?</label>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('wizard.promo_code_label')}</label>
                   <div className="flex space-x-2">
                     <select
                       value={discountPercent}
                       onChange={e => setDiscountPercent(Number(e.target.value))}
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium bg-white"
                     >
-                      <option value={0}>Sin descuento</option>
-                      <option value={10}>Descuento Especial (10%)</option>
-                      <option value={15}>Descuento Promocional (15%)</option>
-                      <option value={20}>Descuento VIP (20%)</option>
+                      <option value={0}>{t('wizard.no_discount')}</option>
+                      <option value={10}>{t('wizard.disc_10')}</option>
+                      <option value={15}>{t('wizard.disc_15')}</option>
+                      <option value={20}>{t('wizard.disc_20')}</option>
                     </select>
                   </div>
                 </div>
@@ -622,11 +619,11 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
               {/* Payment Methods */}
               <div className="space-y-3 pt-2">
-                <label className="block text-xs font-semibold text-slate-700 uppercase">Método de Pago</label>
+                <label className="block text-xs font-semibold text-slate-700 uppercase">{t('wizard.payment_method')}</label>
                 {[
-                  { id: 'Transferencia Bancaria', title: 'Transferencia Bancaria (Bancolombia / Nequi / Daviplata)' },
-                  { id: 'Wompi', title: 'Pasarela Wompi (Tarjetas / PSE / Nequi)' },
-                  { id: 'Mercado Pago', title: 'Mercado Pago' }
+                  { id: 'Transferencia Bancaria', title: t('wizard.pay_transfer') },
+                  { id: 'Wompi', title: t('wizard.pay_wompi') },
+                  { id: 'Mercado Pago', title: t('wizard.pay_mercadopago') }
                 ].map(method => (
                   <div
                     key={method.id}
@@ -650,23 +647,23 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-2xl font-bold text-slate-900">¡Reserva Confirmada con Éxito!</h4>
+                <h4 className="text-2xl font-bold text-slate-900">{t('wizard.step8_title')}</h4>
                 <p className="text-slate-600 text-xs">
-                  Tu código de reserva es <strong className="text-emerald-700 font-mono text-base">{confirmedCode}</strong>.
+                  {t('wizard.step8_code_label')} <strong className="text-emerald-700 font-mono text-base">{confirmedCode}</strong>.
                 </p>
               </div>
 
               <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-2.5 text-xs">
-                <div className="flex justify-between"><span className="text-slate-500">Tipo de Reserva:</span><span className="font-bold uppercase text-slate-900">{bookingType}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Domo:</span><span className="font-bold text-slate-900">{selectedDome?.name}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Fecha:</span><span className="font-bold text-slate-900">{checkIn} {bookingType === 'estadia' ? `al ${checkOut}` : '(8am - 4pm)'}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Huéspedes:</span><span className="font-bold text-slate-900">{guests} personas</span></div>
-                {extraPersons > 0 && <div className="flex justify-between"><span className="text-slate-500">Personas Adicionales:</span><span className="font-bold text-slate-900">+{extraPersons} ($${extraPersonsFee.toLocaleString('es-CO')})</span></div>}
-                {hasPet && <div className="flex justify-between"><span className="text-slate-500">Mascotas:</span><span className="font-bold text-slate-900">+{petCount} ($${petsFee.toLocaleString('es-CO')})</span></div>}
-                {addonsTotal > 0 && <div className="flex justify-between"><span className="text-slate-500">Servicios Adicionales:</span><span className="font-bold text-slate-900">+${addonsTotal.toLocaleString('es-CO')}</span></div>}
-                {effectiveDiscountPercent > 0 && <div className="flex justify-between text-emerald-700"><span className="font-medium">Descuento {isWeekday ? 'Entre Semana (Automático)' : 'Promocional'} ({effectiveDiscountPercent}%):</span><span className="font-bold">-${discountAmount.toLocaleString('es-CO')}</span></div>}
+                <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_type')}</span><span className="font-bold uppercase text-slate-900">{bookingType}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_dome')}</span><span className="font-bold text-slate-900">{selectedDome?.name}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_date')}</span><span className="font-bold text-slate-900">{checkIn} {bookingType === 'estadia' ? `${language === 'en' ? 'to' : 'al'} ${checkOut}` : '(8am - 4pm)'}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_guests')}</span><span className="font-bold text-slate-900">{guests} {t('domes.people')}</span></div>
+                {extraPersons > 0 && <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_extra_persons')}</span><span className="font-bold text-slate-900">+{extraPersons} (${extraPersonsFee.toLocaleString('es-CO')})</span></div>}
+                {hasPet && <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_pets')}</span><span className="font-bold text-slate-900">+{petCount} (${petsFee.toLocaleString('es-CO')})</span></div>}
+                {addonsTotal > 0 && <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_addons')}</span><span className="font-bold text-slate-900">+${addonsTotal.toLocaleString('es-CO')}</span></div>}
+                {effectiveDiscountPercent > 0 && <div className="flex justify-between text-emerald-700"><span className="font-medium">{t('wizard.summary_discount')} ({effectiveDiscountPercent}%):</span><span className="font-bold">-${discountAmount.toLocaleString('es-CO')}</span></div>}
                 <div className="flex justify-between pt-3 border-t border-slate-200 text-sm font-black text-slate-900">
-                  <span>Total Final:</span>
+                  <span>{t('wizard.summary_total')}</span>
                   <span className="text-emerald-700">${totalAmount.toLocaleString('es-CO')} COP</span>
                 </div>
               </div>
@@ -680,10 +677,10 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           {step > 1 && step < 8 ? (
             <button
               onClick={() => setStep(prev => prev - 1)}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-300 font-medium text-slate-700 hover:bg-slate-100 flex items-center justify-center space-x-2 text-sm"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-300 font-medium text-slate-700 hover:bg-slate-100 flex items-center justify-center space-x-2 text-sm cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Anterior</span>
+              <span>{t('wizard.prev_btn')}</span>
             </button>
           ) : <div />}
 
@@ -693,14 +690,14 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                 onClick={() => {
                   if (step === 2 && !validateStep2()) return;
                   if (step === 3 && !selectedDomeId) {
-                    setErrorMsg("Por favor selecciona un domo disponible.");
+                    setErrorMsg(t('wizard.select_dome_err'));
                     return;
                   }
                   setStep(prev => prev + 1);
                 }}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 flex items-center justify-center space-x-2 text-sm shadow-md shadow-emerald-600/20"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 flex items-center justify-center space-x-2 text-sm shadow-md shadow-emerald-600/20 cursor-pointer"
               >
-                <span>Siguiente</span>
+                <span>{t('wizard.next_btn')}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}
@@ -709,9 +706,9 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
               <button
                 onClick={handleConfirmBooking}
                 disabled={submitting}
-                className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold hover:from-emerald-700 hover:to-teal-800 shadow-lg shadow-emerald-700/30 flex items-center justify-center space-x-2 text-xs sm:text-sm disabled:opacity-50"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold hover:from-emerald-700 hover:to-teal-800 shadow-lg shadow-emerald-700/30 flex items-center justify-center space-x-2 text-xs sm:text-sm disabled:opacity-50 cursor-pointer"
               >
-                <span>{submitting ? 'Confirmando Reserva...' : `Confirmar Reserva ($${totalAmount.toLocaleString('es-CO')} COP)`}</span>
+                <span>{submitting ? t('wizard.confirming_btn') : `${t('wizard.confirm_btn')} ($${totalAmount.toLocaleString('es-CO')} COP)`}</span>
                 <ShieldCheck className="w-5 h-5 shrink-0" />
               </button>
             )}
@@ -719,9 +716,9 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
             {step === 8 && (
               <button
                 onClick={onClose}
-                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 text-sm"
+                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 text-sm cursor-pointer"
               >
-                Cerrar y Volver al Inicio
+                {t('wizard.close_btn')}
               </button>
             )}
           </div>

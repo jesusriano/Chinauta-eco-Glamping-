@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Search, Calendar, Compass, CreditCard, CheckCircle2, Phone } from 'lucide-react';
+import { X, Search, Phone } from 'lucide-react';
 import { Reservation } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface MyReservationsModalProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface MyReservationsModalProps {
 }
 
 export const MyReservationsModal: React.FC<MyReservationsModalProps> = ({ isOpen, onClose }) => {
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [searched, setSearched] = useState(false);
@@ -50,8 +52,8 @@ export const MyReservationsModal: React.FC<MyReservationsModalProps> = ({ isOpen
               <Search className="w-6 h-6 text-emerald-300" />
             </div>
             <div>
-              <h3 className="text-lg font-bold">Consultar Mis Reservas</h3>
-              <p className="text-xs text-emerald-200">Busca por código de reserva o correo electrónico</p>
+              <h3 className="text-lg font-bold">{t('my_reservations.title')}</h3>
+              <p className="text-xs text-emerald-200">{t('my_reservations.subtitle')}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 rounded-xl hover:bg-white/10 text-white transition-colors">
@@ -66,7 +68,7 @@ export const MyReservationsModal: React.FC<MyReservationsModalProps> = ({ isOpen
               type="text"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Ej. EGC-9482 o tu correo@email.com"
+              placeholder={t('my_reservations.search_ph')}
               className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-hidden focus:border-emerald-500 font-medium"
               required
             />
@@ -75,19 +77,19 @@ export const MyReservationsModal: React.FC<MyReservationsModalProps> = ({ isOpen
               disabled={loading}
               className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-colors cursor-pointer"
             >
-              {loading ? 'Buscando...' : 'Buscar'}
+              {loading ? t('my_reservations.searching') : t('my_reservations.search_btn')}
             </button>
           </form>
 
           {searched && (
             <div className="space-y-4 pt-4">
               <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-                Resultados encontrados ({reservations.length})
+                {t('my_reservations.results_count')} ({reservations.length})
               </h4>
 
               {reservations.length === 0 ? (
                 <div className="text-center py-8 text-slate-500 bg-slate-50 rounded-2xl border border-slate-200">
-                  No se encontraron reservas con ese criterio. Verifica tu código o correo.
+                  {t('my_reservations.no_results')}
                 </div>
               ) : (
                 reservations.map(resv => (
@@ -102,26 +104,26 @@ export const MyReservationsModal: React.FC<MyReservationsModalProps> = ({ isOpen
                           {resv.status}
                         </span>
                       </div>
-                      <span className="text-xs text-slate-500">Creada: {resv.created_at?.split('T')[0]}</span>
+                      <span className="text-xs text-slate-500">{t('my_reservations.created_on')} {resv.created_at?.split('T')[0]}</span>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm bg-slate-50 p-4 rounded-xl">
                       <div>
-                        <p className="text-xs text-slate-500 font-medium">Domo</p>
+                        <p className="text-xs text-slate-500 font-medium">{t('my_reservations.dome_label')}</p>
                         <p className="font-bold text-slate-900">{resv.dome_name}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500 font-medium">Entrada / Salida</p>
-                        <p className="font-semibold text-slate-900">{resv.check_in} al {resv.check_out}</p>
+                        <p className="text-xs text-slate-500 font-medium">{t('my_reservations.dates_label')}</p>
+                        <p className="font-semibold text-slate-900">{resv.check_in} {t('my_reservations.to')} {resv.check_out}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500 font-medium">Total / Saldo</p>
+                        <p className="text-xs text-slate-500 font-medium">{t('my_reservations.total_label')}</p>
                         <p className="font-bold text-emerald-700">${resv.total_amount?.toLocaleString('es-CO')} COP</p>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between pt-2">
-                      <span className="text-xs font-medium text-slate-600">Estado de pago: <strong>{resv.payment_status}</strong></span>
+                      <span className="text-xs font-medium text-slate-600">{t('my_reservations.payment_status')} <strong>{resv.payment_status}</strong></span>
                       <a
                         href={`https://wa.me/573101234567?text=Hola,%20quisiera%20consultar%20sobre%20mi%20reserva%20${resv.reservation_code}`}
                         target="_blank"
@@ -129,7 +131,7 @@ export const MyReservationsModal: React.FC<MyReservationsModalProps> = ({ isOpen
                         className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
                       >
                         <Phone className="w-3.5 h-3.5" />
-                        <span>Contactar por WhatsApp</span>
+                        <span>{t('my_reservations.contact_whatsapp')}</span>
                       </a>
                     </div>
                   </div>

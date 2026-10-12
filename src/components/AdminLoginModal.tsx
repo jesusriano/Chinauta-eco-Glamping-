@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Shield, Lock, User, KeyRound } from 'lucide-react';
+import { X, Shield, User, KeyRound } from 'lucide-react';
 import { AdminUser } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AdminLoginModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface AdminLoginModalProps {
 }
 
 export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
+  const { t } = useLanguage();
   const [username, setUsername] = useState('superadmin');
   const [password, setPassword] = useState('admin123');
   const [loading, setLoading] = useState(false);
@@ -28,12 +30,12 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
         body: JSON.stringify({ username, password })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Credenciales inválidas');
+      if (!res.ok) throw new Error(data.error || t('admin_login.err_creds'));
 
       onLoginSuccess(data.user);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión');
+      setError(err.message || t('admin_login.err_creds'));
     } finally {
       setLoading(false);
     }
@@ -50,7 +52,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
               <Shield className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold">Portal Administrativo</h3>
+              <h3 className="text-lg font-bold">{t('admin_login.title')}</h3>
               <p className="text-xs text-slate-400">Eco Glamping Chinauta</p>
             </div>
           </div>
@@ -68,7 +70,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">Usuario Administrador</label>
+            <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">{t('admin_login.user_label')}</label>
             <div className="relative">
               <User className="absolute left-3.5 top-3.5 w-5 h-5 text-slate-400" />
               <input
@@ -82,7 +84,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">Contraseña</label>
+            <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">{t('admin_login.password_label')}</label>
             <div className="relative">
               <KeyRound className="absolute left-3.5 top-3.5 w-5 h-5 text-slate-400" />
               <input
@@ -101,13 +103,13 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
               disabled={loading}
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-semibold text-sm shadow-lg shadow-emerald-700/20 hover:from-emerald-700 hover:to-teal-800 transition-all flex items-center justify-center space-x-2"
             >
-              <span>{loading ? 'Ingresando...' : 'Acceder al Panel'}</span>
+              <span>{loading ? t('admin_login.logging_in') : t('admin_login.submit_btn')}</span>
             </button>
           </div>
 
           <div className="pt-4 border-t border-slate-100 text-center">
             <p className="text-xs text-slate-500">
-              Accesos predeterminados:<br />
+              {t('admin_login.defaults_info')}<br />
               <span className="font-mono text-emerald-700">superadmin / admin123</span> (Superadmin)<br />
               <span className="font-mono text-teal-700">reception / admin123</span> (Recepción)
             </p>

@@ -1,28 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { Sun, Cloud, CloudRain, Wind, Droplets, Thermometer, RefreshCw, MapPin } from 'lucide-react';
-import { motion } from 'motion/react';
+import React, { useState } from 'react';
+import { Sun, Cloud, CloudRain, Wind, Droplets, RefreshCw, MapPin } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 
 interface WeatherData {
   temp: number;
-  condition: string;
+  conditionKey: string;
   humidity: number;
   windSpeed: number;
   feelsLike: number;
-  forecast: { day: string; temp: number; icon: string }[];
+  forecast: { dayKey: string; temp: number; icon: string }[];
 }
 
 export const WeatherWidget: React.FC = () => {
+  const { t } = useLanguage();
   const [weather, setWeather] = useState<WeatherData>({
     temp: 24,
-    condition: 'Parcialmente Nublado',
+    conditionKey: 'weather.partly_cloudy',
     humidity: 68,
     windSpeed: 12,
     feelsLike: 25,
     forecast: [
-      { day: 'Hoy', temp: 24, icon: 'partly-cloudy' },
-      { day: 'Mañana', temp: 26, icon: 'sunny' },
-      { day: 'Sáb', temp: 23, icon: 'rain' },
-      { day: 'Dom', temp: 25, icon: 'sunny' }
+      { dayKey: 'weather.today', temp: 24, icon: 'partly-cloudy' },
+      { dayKey: 'weather.tomorrow', temp: 26, icon: 'sunny' },
+      { dayKey: 'weather.sat', temp: 23, icon: 'rain' },
+      { dayKey: 'weather.sun', temp: 25, icon: 'sunny' }
     ]
   });
   const [loading, setLoading] = useState(false);
@@ -59,7 +61,7 @@ export const WeatherWidget: React.FC = () => {
         <div className="space-y-3">
           <div className="flex items-center space-x-2 text-emerald-300 text-xs font-medium uppercase tracking-wider">
             <MapPin className="w-4 h-4 text-emerald-400" />
-            <span>Chinauta, Cundinamarca • Clima en Vivo</span>
+            <span>{t('weather.live_title')}</span>
           </div>
           
           <div className="flex items-baseline space-x-4">
@@ -69,9 +71,11 @@ export const WeatherWidget: React.FC = () => {
             <div className="space-y-1">
               <div className="text-lg font-semibold text-emerald-100 flex items-center space-x-2">
                 <Sun className="w-5 h-5 text-amber-400 animate-spin-slow" />
-                <span>{weather.condition}</span>
+                <span>{t(weather.conditionKey)}</span>
               </div>
-              <p className="text-xs text-slate-300">Sensación térmica {weather.feelsLike}°C • Clima templado perfecto</p>
+              <p className="text-xs text-slate-300">
+                {t('weather.feels_like')} {weather.feelsLike}°C • {t('weather.perfect_climate')}
+              </p>
             </div>
           </div>
         </div>
@@ -81,22 +85,22 @@ export const WeatherWidget: React.FC = () => {
           <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10 text-xs">
             <div className="flex items-center space-x-1.5">
               <Droplets className="w-4 h-4 text-cyan-400" />
-              <span>Humedad: {weather.humidity}%</span>
+              <span>{t('weather.humidity')}: {weather.humidity}%</span>
             </div>
             <div className="h-4 w-px bg-white/20" />
             <div className="flex items-center space-x-1.5">
               <Wind className="w-4 h-4 text-emerald-300" />
-              <span>Viento: {weather.windSpeed} km/h</span>
+              <span>{t('weather.wind')}: {weather.windSpeed} km/h</span>
             </div>
           </div>
 
           <button
             onClick={refreshWeather}
             disabled={loading}
-            className="inline-flex items-center space-x-2 text-xs text-emerald-300 hover:text-white transition-colors bg-emerald-900/60 hover:bg-emerald-800/80 px-3 py-1.5 rounded-xl border border-emerald-700/50"
+            className="inline-flex items-center space-x-2 text-xs text-emerald-300 hover:text-white transition-colors bg-emerald-900/60 hover:bg-emerald-800/80 px-3 py-1.5 rounded-xl border border-emerald-700/50 cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Actualizar Clima</span>
+            <span>{t('weather.refresh')}</span>
           </button>
         </div>
 
@@ -107,7 +111,7 @@ export const WeatherWidget: React.FC = () => {
         {weather.forecast.map((item, idx) => (
           <div key={idx} className="bg-white/5 hover:bg-white/10 transition-colors rounded-2xl p-3.5 border border-white/5 flex items-center justify-between">
             <div>
-              <span className="text-xs font-medium text-emerald-300">{item.day}</span>
+              <span className="text-xs font-medium text-emerald-300">{t(item.dayKey)}</span>
               <div className="text-base font-bold mt-0.5">{item.temp}°C</div>
             </div>
             {item.icon === 'sunny' ? (

@@ -13,6 +13,7 @@ import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, 
   BarChart, Bar, Legend, PieChart, Pie, Cell, LineChart, Line 
 } from 'recharts';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AdminDashboardProps {
   user: AdminUser;
@@ -20,6 +21,7 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
+  const { t } = useLanguage();
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [metrics, setMetrics] = useState<any>(null);
@@ -115,7 +117,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
       });
       loadAllData();
     } catch (err) {
-      alert("Error al actualizar estado");
+      alert(t('admin.alert_status_error'));
     }
   };
 
@@ -138,7 +140,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
 
       setShowMaintenanceModal(false);
       loadAllData();
-      alert("Bloqueo de mantenimiento creado exitosamente.");
+      alert(t('admin.alert_maint_success'));
     } catch (err: any) {
       alert(err.message);
     }
@@ -163,7 +165,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
       setShowPaymentModal(false);
       setSelectedResIdForPayment(null);
       loadAllData();
-      alert("Pago registrado exitosamente.");
+      alert(t('admin.alert_payment_success'));
     } catch (err: any) {
       alert(err.message);
     }
@@ -184,7 +186,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
       });
       if (!res.ok) throw new Error("Error al actualizar la imagen");
       loadAllData();
-      alert("¡Imagen del domo actualizada exitosamente!");
+      alert(t('admin.alert_img_success'));
     } catch (err: any) {
       alert(err.message);
     }
@@ -206,7 +208,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
       });
       if (!res.ok) throw new Error("Error al actualizar las fotos");
       loadAllData();
-      alert("¡Galería de fotos del domo actualizada exitosamente!");
+      alert(t('admin.alert_gallery_success'));
     } catch (err: any) {
       alert(err.message);
     }
@@ -224,7 +226,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                 EGC
               </div>
               <div>
-                <h2 className="font-bold text-white text-sm">Panel Administrativo</h2>
+                <h2 className="font-bold text-white text-sm">{t('admin.portal_title')}</h2>
                 <p className="text-xs text-emerald-400 font-medium">Eco Glamping Chinauta</p>
               </div>
             </div>
@@ -246,7 +248,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'dashboard' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <LayoutDashboard className="w-5 h-5" />
-              <span>Dashboard</span>
+              <span>{t('admin.menu_dashboard')}</span>
             </button>
 
             <button
@@ -254,7 +256,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'charts' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <BarChart3 className="w-5 h-5 text-emerald-400" />
-              <span>Gráficas & Reportes</span>
+              <span>{t('admin.menu_charts')}</span>
             </button>
 
             <button
@@ -262,7 +264,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'reservations' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <FileText className="w-5 h-5" />
-              <span>Reservas</span>
+              <span>{t('admin.menu_reservations')}</span>
             </button>
 
             <button
@@ -270,7 +272,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'calendar' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <CalendarDays className="w-5 h-5" />
-              <span>Calendario Operativo</span>
+              <span>{t('admin.menu_calendar')}</span>
             </button>
 
             <button
@@ -278,7 +280,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'domes' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <BedDouble className="w-5 h-5" />
-              <span>Estado de Domos</span>
+              <span>{t('admin.menu_domes')}</span>
             </button>
 
             <button
@@ -286,7 +288,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'customers' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <Users className="w-5 h-5" />
-              <span>Clientes CRM</span>
+              <span>{t('admin.menu_customers')}</span>
             </button>
 
             <button
@@ -294,7 +296,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'finances' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <DollarSign className="w-5 h-5" />
-              <span>Finanzas y Pagos</span>
+              <span>{t('admin.menu_finances')}</span>
             </button>
 
             <button
@@ -302,7 +304,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'audit' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <Shield className="w-5 h-5" />
-              <span>Auditoría</span>
+              <span>{t('admin.menu_audit')}</span>
             </button>
 
             {user.role === 'SUPERADMIN' && (
@@ -311,7 +313,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'users' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
               >
                 <Users className="w-5 h-5" />
-                <span>Administradores</span>
+                <span>{t('admin.menu_users')}</span>
               </button>
             )}
 
@@ -320,7 +322,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'images' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <Camera className="w-5 h-5" />
-              <span>Gestión de Imágenes</span>
+              <span>{t('admin.menu_images')}</span>
             </button>
 
             <button
@@ -328,7 +330,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'restaurant' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <Utensils className="w-5 h-5 text-emerald-400" />
-              <span>Restaurante / Menú</span>
+              <span>{t('admin.menu_restaurant')}</span>
             </button>
 
             <button
@@ -336,7 +338,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeMenu === 'settings' ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-slate-800'}`}
             >
               <Settings className="w-5 h-5" />
-              <span>Configuración</span>
+              <span>{t('admin.menu_settings')}</span>
             </button>
           </nav>
         </div>
@@ -352,7 +354,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             </div>
             <button
               onClick={onLogout}
-              title="Cerrar Sesión"
+              title={t('admin.logout')}
               className="p-2 rounded-xl bg-slate-800 hover:bg-rose-600 hover:text-white text-slate-300 transition-colors"
             >
               <LogOut className="w-4 h-4" />
@@ -368,17 +370,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 capitalize">
-              {activeMenu === 'dashboard' ? 'Dashboard General' :
-               activeMenu === 'charts' ? 'Gráficas, Tendencias & Analítica' :
-               activeMenu === 'reservations' ? 'Gestión de Reservas' :
-               activeMenu === 'calendar' ? 'Calendario Operativo' :
-               activeMenu === 'domes' ? 'Estado de los Domos y Mantenimiento' :
-               activeMenu === 'customers' ? 'Clientes CRM' :
-               activeMenu === 'finances' ? 'Finanzas y Pagos' :
-               activeMenu === 'audit' ? 'Registro de Auditoría' :
-               activeMenu === 'users' ? 'Gestión de Administradores' : 'Configuración General'}
+              {activeMenu === 'dashboard' ? t('admin.menu_dashboard') :
+               activeMenu === 'charts' ? t('admin.menu_charts') :
+               activeMenu === 'reservations' ? t('admin.menu_reservations') :
+               activeMenu === 'calendar' ? t('admin.menu_calendar') :
+               activeMenu === 'domes' ? t('admin.menu_domes') :
+               activeMenu === 'customers' ? t('admin.menu_customers') :
+               activeMenu === 'finances' ? t('admin.menu_finances') :
+               activeMenu === 'audit' ? t('admin.menu_audit') :
+               activeMenu === 'users' ? t('admin.menu_users') : t('admin.menu_settings')}
             </h1>
-            <p className="text-xs text-slate-500 mt-1">Sistema Integrado de Operación • Zona Horaria: America/Bogota</p>
+            <p className="text-xs text-slate-500 mt-1">Eco Glamping Chinauta • America/Bogota</p>
           </div>
 
           <div className="flex items-center space-x-3">
@@ -410,7 +412,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                 className="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center space-x-2"
               >
                 <Plus className="w-4 h-4" />
-                <span>Bloquear Mantenimiento</span>
+                <span>{t('admin.new_maint_btn')}</span>
               </button>
             )}
           </div>
@@ -422,33 +424,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
             {/* Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="glass-card p-6 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-                <p className="text-xs font-bold text-slate-500 uppercase">Reservas Hoy</p>
+                <p className="text-xs font-bold text-slate-500 uppercase">{t('admin.metrics_active_reservations')}</p>
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-3xl font-bold text-slate-900">{metrics.reservationsToday}</h3>
-                  <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">Activo</span>
+                  <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">{t('admin.status_confirmed')}</span>
                 </div>
               </div>
 
               <div className="glass-card p-6 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-                <p className="text-xs font-bold text-slate-500 uppercase">Check-ins Hoy</p>
+                <p className="text-xs font-bold text-slate-500 uppercase">{t('admin.dates')}</p>
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-3xl font-bold text-slate-900">{metrics.checkInsToday}</h3>
-                  <span className="text-xs font-semibold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-full">Llegadas</span>
+                  <span className="text-xs font-semibold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-full">{t('admin.status_pending')}</span>
                 </div>
               </div>
 
               <div className="glass-card p-6 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-                <p className="text-xs font-bold text-slate-500 uppercase">Domos Ocupados / Total</p>
+                <p className="text-xs font-bold text-slate-500 uppercase">{t('admin.dome')} / {t('admin.metrics_occupancy')}</p>
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-3xl font-bold text-slate-900">{metrics.occupiedDomes} / {metrics.activeDomesList?.length || 6}</h3>
                   <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">
-                    {Math.round((metrics.occupiedDomes / 6) * 100)}% Ocupación
+                    {Math.round((metrics.occupiedDomes / 6) * 100)}% {t('admin.metrics_occupancy')}
                   </span>
                 </div>
               </div>
 
               <div className="glass-card p-6 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-                <p className="text-xs font-bold text-slate-500 uppercase">Ingresos del Mes</p>
+                <p className="text-xs font-bold text-slate-500 uppercase">{t('admin.metrics_total_income')}</p>
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-2xl font-bold text-emerald-700">
                     ${finances?.monthRevenue?.toLocaleString('es-CO')}
@@ -822,14 +824,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-50 text-slate-600 text-xs font-bold uppercase border-b border-slate-200">
-                      <th className="p-4">Código</th>
-                      <th className="p-4">Cliente</th>
-                      <th className="p-4">Domo</th>
-                      <th className="p-4">Fechas</th>
-                      <th className="p-4">Estado</th>
-                      <th className="p-4">Pago</th>
-                      <th className="p-4">Total</th>
-                      <th className="p-4 text-right">Acciones</th>
+                      <th className="p-4">{t('admin.code')}</th>
+                      <th className="p-4">{t('admin.customer')}</th>
+                      <th className="p-4">{t('admin.dome')}</th>
+                      <th className="p-4">{t('admin.dates')}</th>
+                      <th className="p-4">{t('admin.status')}</th>
+                      <th className="p-4">{t('admin.menu_payments')}</th>
+                      <th className="p-4">{t('admin.amount')}</th>
+                      <th className="p-4 text-right">{t('admin.actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-sm">
@@ -983,11 +985,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 text-slate-600 text-xs font-bold uppercase border-b border-slate-200">
-                    <th className="p-4">Nombre</th>
-                    <th className="p-4">Teléfono / WhatsApp</th>
-                    <th className="p-4">Correo</th>
-                    <th className="p-4">Total Reservas</th>
-                    <th className="p-4">Total Gastado</th>
+                    <th className="p-4">{t('admin.customer')}</th>
+                    <th className="p-4">WhatsApp / Tel</th>
+                    <th className="p-4">Email</th>
+                    <th className="p-4">{t('admin.menu_reservations')}</th>
+                    <th className="p-4">{t('admin.amount')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
@@ -1011,15 +1013,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="glass-card p-6 rounded-2xl border border-slate-200">
-                <p className="text-xs font-bold text-slate-500 uppercase">Total Reservado</p>
+                <p className="text-xs font-bold text-slate-500 uppercase">{t('admin.metrics_total_income')}</p>
                 <h3 className="text-2xl font-bold text-slate-900 mt-1">${finances.totalBooked?.toLocaleString('es-CO')}</h3>
               </div>
               <div className="glass-card p-6 rounded-2xl border border-slate-200">
-                <p className="text-xs font-bold text-slate-500 uppercase">Total Cobrado</p>
+                <p className="text-xs font-bold text-slate-500 uppercase">{t('admin.menu_payments')}</p>
                 <h3 className="text-2xl font-bold text-emerald-700 mt-1">${finances.totalCollected?.toLocaleString('es-CO')}</h3>
               </div>
               <div className="glass-card p-6 rounded-2xl border border-slate-200">
-                <p className="text-xs font-bold text-slate-500 uppercase">Saldo Pendiente</p>
+                <p className="text-xs font-bold text-slate-500 uppercase">{t('admin.metrics_pending_income')}</p>
                 <h3 className="text-2xl font-bold text-amber-600 mt-1">${finances.totalPending?.toLocaleString('es-CO')}</h3>
               </div>
             </div>
@@ -1322,11 +1324,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(settings)
                   });
-                  alert("Configuración guardada correctamente.");
+                  alert(t('admin.save'));
                 }}
                 className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700"
               >
-                Guardar Cambios
+                {t('admin.save')}
               </button>
             </div>
           </div>
@@ -1338,10 +1340,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
       {showMaintenanceModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70">
           <div className="glass-card w-full max-w-md rounded-3xl p-6 bg-white space-y-6 shadow-2xl">
-            <h3 className="text-lg font-bold text-slate-900">Bloquear Domo por Mantenimiento</h3>
+            <h3 className="text-lg font-bold text-slate-900">{t('admin.new_maint_btn')}</h3>
             <form onSubmit={handleCreateMaintenance} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Seleccionar Domo</label>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('admin.dome')}</label>
                 <select
                   value={maintDomeId}
                   onChange={e => setMaintDomeId(Number(e.target.value))}
@@ -1353,7 +1355,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Fecha Inicio</label>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('admin.dates')} (Check-in)</label>
                 <input
                   type="date"
                   value={maintStart}
@@ -1363,7 +1365,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Fecha Fin</label>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('admin.dates')} (Check-out)</label>
                 <input
                   type="date"
                   value={maintEnd}
@@ -1373,7 +1375,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Motivo</label>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('admin.actions')}</label>
                 <input
                   type="text"
                   value={maintReason}
@@ -1388,13 +1390,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                   onClick={() => setShowMaintenanceModal(false)}
                   className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium"
                 >
-                  Cancelar
+                  {t('admin.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800"
                 >
-                  Bloquear Domo
+                  {t('admin.new_maint_btn')}
                 </button>
               </div>
             </form>
@@ -1406,10 +1408,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
       {showPaymentModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70">
           <div className="glass-card w-full max-w-md rounded-3xl p-6 bg-white space-y-6 shadow-2xl">
-            <h3 className="text-lg font-bold text-slate-900">Registrar Abono o Pago</h3>
+            <h3 className="text-lg font-bold text-slate-900">{t('admin.menu_payments')}</h3>
             <form onSubmit={handleRecordPayment} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Monto a Abonar (COP)</label>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('admin.amount')} (COP)</label>
                 <input
                   type="number"
                   value={payAmount}
@@ -1419,7 +1421,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Método de Pago</label>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">{t('admin.menu_payments')}</label>
                 <select
                   value={payMethod}
                   onChange={e => setPayMethod(e.target.value)}
@@ -1437,13 +1439,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }
                   onClick={() => setShowPaymentModal(false)}
                   className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium"
                 >
-                  Cancelar
+                  {t('admin.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700"
                 >
-                  Registrar Pago
+                  {t('admin.menu_payments')}
                 </button>
               </div>
             </form>

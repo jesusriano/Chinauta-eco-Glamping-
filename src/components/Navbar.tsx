@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Calendar, Compass, Phone, Shield, Search, Home, Utensils, 
   Menu, X, ChevronDown, MapPin, Sparkles, Waves, Clock, 
-  MessageSquare, ChevronRight, ExternalLink
+  MessageSquare, ChevronRight, ExternalLink, HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
@@ -25,6 +25,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAvailableMenuOpen, setIsAvailableMenuOpen] = useState(false);
   const [isExplorarDropdownOpen, setIsExplorarDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -202,6 +203,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                         </div>
                       </button>
 
+                      <button
+                        onClick={() => handleNavClick('faq')}
+                        className="w-full text-left px-4 py-2.5 hover:bg-emerald-50 flex items-start space-x-3 transition-colors group"
+                      >
+                        <div className="p-2 rounded-lg bg-cyan-100/80 text-cyan-700 group-hover:bg-cyan-200 transition-colors">
+                          <HelpCircle className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900">{t('nav.faq')}</p>
+                          <p className="text-xs text-slate-500">{t('faq.badge')}</p>
+                        </div>
+                      </button>
+
                       <div className="border-t border-slate-100 my-1" />
 
                       <a
@@ -307,31 +321,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-4">
                 
-                {/* Status Bar */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50/80 border border-emerald-200/60">
-                  <div className="flex items-center space-x-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs font-semibold text-emerald-900">{t('nav.online_reception')}</span>
-                  </div>
-                  <a
-                    href="https://wa.me/573213109331"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold text-emerald-700 hover:underline flex items-center space-x-1"
-                  >
-                    <span>WhatsApp</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                </div>
-
-                {/* Mobile Language Switcher Full */}
-                <LanguageSwitcher variant="full" />
-
                 {/* Primary Action Buttons */}
                 <div className="grid grid-cols-2 gap-2.5">
                   <button
                     onClick={() => {
                       setIsMobileMenuOpen(false);
+                      setIsAvailableMenuOpen(false);
                       onOpenBooking();
                     }}
                     className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-700 shadow-md shadow-emerald-700/20 flex items-center justify-center space-x-1.5 active:scale-98"
@@ -343,6 +338,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <button
                     onClick={() => {
                       setIsMobileMenuOpen(false);
+                      setIsAvailableMenuOpen(false);
                       onOpenMyReservations();
                     }}
                     className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center space-x-1.5 active:scale-98"
@@ -352,99 +348,165 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                 </div>
 
-                {/* Nav Links List */}
-                <div className="space-y-1 pt-1">
+                {/* Collapsible Available Menu Dropdown (Closed by default) */}
+                <div className="pt-1">
                   <button
-                    onClick={() => handleNavClick('home')}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
-                      activeTab === 'home' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
-                    }`}
+                    type="button"
+                    onClick={() => setIsAvailableMenuOpen(prev => !prev)}
+                    className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-800 font-bold text-sm transition-all"
                   >
-                    <div className="flex items-center space-x-3">
-                      <Home className="w-5 h-5 text-emerald-600" />
-                      <span>{t('nav.home')}</span>
+                    <div className="flex items-center space-x-2.5">
+                      <Menu className="w-5 h-5 text-emerald-600" />
+                      <span>{t('nav.available_menu')}</span>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                    <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isAvailableMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
-                  <button
-                    onClick={() => handleNavClick('availability')}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
-                      activeTab === 'availability' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <Calendar className="w-5 h-5 text-emerald-600" />
-                      <span>{t('nav.availability')}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  </button>
+                  <AnimatePresence>
+                    {isAvailableMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="space-y-1 pt-2 overflow-hidden"
+                      >
+                        <button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsAvailableMenuOpen(false);
+                            handleNavClick('home');
+                          }}
+                          className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                            activeTab === 'home' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Home className="w-5 h-5 text-emerald-600" />
+                            <span>{t('nav.home')}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </button>
 
-                  <button
-                    onClick={() => handleNavClick('domes')}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
-                      activeTab === 'domes' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <Compass className="w-5 h-5 text-emerald-600" />
-                      <span>{t('nav.domes')}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  </button>
+                        <button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsAvailableMenuOpen(false);
+                            handleNavClick('availability');
+                          }}
+                          className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                            activeTab === 'availability' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Calendar className="w-5 h-5 text-emerald-600" />
+                            <span>{t('nav.availability')}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </button>
 
-                  <button
-                    onClick={() => handleNavClick('menu')}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
-                      activeTab === 'menu' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <Utensils className="w-5 h-5 text-emerald-600" />
-                      <span>{t('nav.menu')}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  </button>
+                        <button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsAvailableMenuOpen(false);
+                            handleNavClick('domes');
+                          }}
+                          className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                            activeTab === 'domes' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Compass className="w-5 h-5 text-emerald-600" />
+                            <span>{t('nav.domes')}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </button>
 
-                  <button
-                    onClick={() => handleNavClick('map')}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
-                      activeTab === 'map' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <MapPin className="w-5 h-5 text-emerald-600" />
-                      <span>{t('nav.map')}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  </button>
+                        <button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsAvailableMenuOpen(false);
+                            handleNavClick('menu');
+                          }}
+                          className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                            activeTab === 'menu' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Utensils className="w-5 h-5 text-emerald-600" />
+                            <span>{t('nav.menu')}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </button>
 
-                  <button
-                    onClick={() => handleNavClick('contact')}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
-                      activeTab === 'contact' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <Phone className="w-5 h-5 text-emerald-600" />
-                      <span>{t('nav.contact')}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  </button>
+                        <button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsAvailableMenuOpen(false);
+                            handleNavClick('map');
+                          }}
+                          className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                            activeTab === 'map' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <MapPin className="w-5 h-5 text-emerald-600" />
+                            <span>{t('nav.map')}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </button>
 
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      onOpenAdminLogin();
-                    }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <Shield className="w-5 h-5 text-slate-500" />
-                      <span>{t('nav.admin')}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  </button>
+                        <button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsAvailableMenuOpen(false);
+                            handleNavClick('contact');
+                          }}
+                          className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                            activeTab === 'contact' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Phone className="w-5 h-5 text-emerald-600" />
+                            <span>{t('nav.contact')}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsAvailableMenuOpen(false);
+                            handleNavClick('faq');
+                          }}
+                          className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                            activeTab === 'faq' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <HelpCircle className="w-5 h-5 text-emerald-600" />
+                            <span>{t('nav.faq')}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsAvailableMenuOpen(false);
+                            onOpenAdminLogin();
+                          }}
+                          className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Shield className="w-5 h-5 text-slate-500" />
+                            <span>{t('nav.admin')}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Direct Telephone Link */}

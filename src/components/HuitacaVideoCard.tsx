@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX, Maximize2, Film, Camera, Upload, CheckCircle, AlertCircle } from 'lucide-react';
 import defaultVideoUrl from '../assets/videos/domo_1_huitaca.mp4';
 import { ImageCarousel } from './ImageCarousel';
+import { useLanguage } from '../context/LanguageContext';
 
 interface HuitacaVideoCardProps {
   images: string[];
@@ -21,6 +22,7 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
   className = 'h-64 sm:h-72',
   onVideoChange
 }) => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'video' | 'photos'>('video');
   const [videoSrc, setVideoSrc] = useState<string>(() => {
     try {
@@ -204,7 +206,7 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
             {overlayBadge}
             <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-950/85 backdrop-blur-md text-emerald-300 text-[11px] font-semibold border border-emerald-500/30 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Video Tour</span>
+              <span>{t('domes.video_tour')}</span>
             </span>
           </div>
 
@@ -216,17 +218,17 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
                 e.stopPropagation();
                 fileInputRef.current?.click();
               }}
-              title="Cargar o cambiar archivo de video (.mp4)"
+              title={`${t('domes.upload_video')} - ${domeName}`}
               className="px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-emerald-600 text-white text-[11px] font-semibold backdrop-blur-md border border-white/20 transition-all flex items-center space-x-1 shadow-sm"
             >
               <Upload className="w-3 h-3" />
-              <span className="hidden sm:inline">Subir video</span>
+              <span className="hidden sm:inline">{t('domes.upload_video')}</span>
             </button>
 
             <button
               type="button"
               onClick={toggleMute}
-              aria-label={isMuted ? 'Activar sonido' : 'Silenciar sonido'}
+              aria-label={isMuted ? 'Unmute' : 'Mute'}
               className="p-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white backdrop-blur-md border border-white/20 transition-transform active:scale-95 shadow-sm"
             >
               {isMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-300" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-400" />}
@@ -235,7 +237,7 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
             <button
               type="button"
               onClick={toggleFullscreen}
-              aria-label="Ver video en pantalla completa"
+              aria-label="Fullscreen"
               className="p-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white backdrop-blur-md border border-white/20 transition-transform active:scale-95 shadow-sm"
             >
               <Maximize2 className="w-3.5 h-3.5 text-white" />
@@ -264,7 +266,7 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
       {/* Bottom Floating Bar: Price and Tab switcher */}
       <div className="relative z-20 p-3 sm:p-4 flex items-center justify-between pointer-events-auto">
         <div className="bg-emerald-600/95 text-white text-xs px-2.5 py-1 rounded-md font-bold shadow-md">
-          ${pricePerNight.toLocaleString('es-CO')} COP / noche
+          ${pricePerNight.toLocaleString('es-CO')} COP {t('domes.night')}
         </div>
 
         {/* Tab Switcher: Video vs Fotos */}
@@ -284,7 +286,7 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
             }`}
           >
             <Film className="w-3.5 h-3.5" />
-            <span>Video</span>
+            <span>{t('domes.video_tab')}</span>
           </button>
           <button
             type="button"
@@ -299,7 +301,7 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
             }`}
           >
             <Camera className="w-3.5 h-3.5" />
-            <span>Fotos</span>
+            <span>{t('domes.photos_tab')}</span>
           </button>
         </div>
       </div>
@@ -314,7 +316,7 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
             className="absolute top-12 left-1/2 -translate-x-1/2 z-30 bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-xl flex items-center space-x-1.5"
           >
             <CheckCircle className="w-3.5 h-3.5" />
-            <span>¡Video de Domo 1 cargado exitosamente!</span>
+            <span>{t('domes.toast_video_loaded')} {domeName}!</span>
           </motion.div>
         )}
       </AnimatePresence>

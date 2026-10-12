@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { MapPin, Navigation, Compass, Car, Clock, Sparkles, Trees, Coffee, Mountain, ExternalLink } from 'lucide-react';
+import { MapPin, Navigation, Compass, Sparkles, Trees, Coffee, Mountain, ExternalLink, Clock } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface Attraction {
   id: string;
   name: string;
   category: 'Glamping' | 'Naturaleza' | 'Turismo' | 'Vía';
+  categoryKey: string;
   distance: string;
   time: string;
   description: string;
@@ -13,6 +15,7 @@ interface Attraction {
 }
 
 export const InteractiveMap: React.FC = () => {
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [activeAttraction, setActiveAttraction] = useState<Attraction | null>(null);
 
@@ -21,8 +24,9 @@ export const InteractiveMap: React.FC = () => {
       id: 'glamping',
       name: 'Eco Glamping Chinauta (Ubicación Central)',
       category: 'Glamping',
+      categoryKey: 'map.cat_glamping',
       distance: '0 km',
-      time: 'Punto de Partida',
+      time: t('map.departure_point'),
       description: 'Vía Principal Chinauta Km 4.5, Fusagasugá. Domos geodésicos con jacuzzi privado y mallas flotantes.',
       coordinates: { x: 50, y: 55 },
       icon: Sparkles
@@ -31,8 +35,9 @@ export const InteractiveMap: React.FC = () => {
       id: 'cerro',
       name: 'Cerro Fusacatán & Miradores',
       category: 'Naturaleza',
+      categoryKey: 'map.cat_nature',
       distance: '12.5 km',
-      time: '25 min en auto',
+      time: '25 min',
       description: 'Majestuoso cerro tutelar ideal para senderismo ecológico, avistamiento de aves e historia muisca.',
       coordinates: { x: 28, y: 30 },
       icon: Mountain
@@ -41,8 +46,9 @@ export const InteractiveMap: React.FC = () => {
       id: 'piscilago',
       name: 'Parque Acuático Piscilago',
       category: 'Turismo',
+      categoryKey: 'map.cat_tourism',
       distance: '18.2 km',
-      time: '20 min hacia Melgar',
+      time: '20 min Melgar',
       description: 'Uno de los parques de conservación de fauna y atracciones acuáticas más grandes de Colombia.',
       coordinates: { x: 78, y: 75 },
       icon: Trees
@@ -51,8 +57,9 @@ export const InteractiveMap: React.FC = () => {
       id: 'plaza',
       name: 'Plaza de Mercado & Centro Fusagasugá',
       category: 'Turismo',
+      categoryKey: 'map.cat_tourism',
       distance: '8.4 km',
-      time: '15 min en auto',
+      time: '15 min',
       description: 'Mercado tradicional de frutas exóticas de la región del Sumapaz, artesanías y cafés de origen.',
       coordinates: { x: 35, y: 70 },
       icon: Coffee
@@ -61,8 +68,9 @@ export const InteractiveMap: React.FC = () => {
       id: 'cascada',
       name: 'Cascadas Ocultas de Chinauta',
       category: 'Naturaleza',
+      categoryKey: 'map.cat_nature',
       distance: '4.2 km',
-      time: '10 min + caminata',
+      time: '10 min',
       description: 'Saltos de agua cristalina rodeados de bosque nativo y vegetación tropical templada.',
       coordinates: { x: 68, y: 35 },
       icon: Trees
@@ -71,15 +79,22 @@ export const InteractiveMap: React.FC = () => {
       id: 'autopista',
       name: 'Troncal Bogotá - Girardot (Km 4.5)',
       category: 'Vía',
+      categoryKey: 'map.cat_route',
       distance: '0.5 km',
-      time: '2 min acceso directo',
+      time: '2 min',
       description: 'Vía principal pavimentada de doble calzada con excelente accesibilidad desde Bogotá (1.5 horas).',
       coordinates: { x: 52, y: 88 },
       icon: Navigation
     }
   ];
 
-  const categories = ['Todos', 'Glamping', 'Naturaleza', 'Turismo', 'Vía'];
+  const categories = [
+    { id: 'Todos', labelKey: 'map.cat_all' },
+    { id: 'Glamping', labelKey: 'map.cat_glamping' },
+    { id: 'Naturaleza', labelKey: 'map.cat_nature' },
+    { id: 'Turismo', labelKey: 'map.cat_tourism' },
+    { id: 'Vía', labelKey: 'map.cat_route' }
+  ];
 
   const filteredAttractions = selectedCategory === 'Todos'
     ? attractions
@@ -92,26 +107,26 @@ export const InteractiveMap: React.FC = () => {
       <div className="text-center max-w-3xl mx-auto space-y-3">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold">
           <MapPin className="w-4 h-4 text-emerald-600" />
-          <span>Geolocalización & Entorno</span>
+          <span>{t('map.tag')}</span>
         </div>
-        <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">Mapa Interactivo de Chinauta y Alrededores</h2>
+        <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">{t('map.heading')}</h2>
         <p className="text-slate-600 text-base">
-          Ubica nuestro glamping en Fusagasugá y descubre los principales atractivos turísticos, naturales y rutas de acceso a solo minutos de tu domo.
+          {t('map.subheading')}
         </p>
 
         {/* Categories */}
         <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
           {categories.map(cat => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
               className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
-                selectedCategory === cat
+                selectedCategory === cat.id
                   ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              {cat}
+              {t(cat.labelKey)}
             </button>
           ))}
         </div>
@@ -181,9 +196,9 @@ export const InteractiveMap: React.FC = () => {
               <span className="font-semibold truncate max-w-[200px] sm:max-w-none">Eco Glamping Chinauta (Km 4.5)</span>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-4 text-slate-300">
-              <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-emerald-400"></span><span>Glamping</span></span>
-              <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-cyan-400"></span><span>Naturaleza</span></span>
-              <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-amber-400"></span><span>Turismo</span></span>
+              <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-emerald-400"></span><span>{t('map.cat_glamping')}</span></span>
+              <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-cyan-400"></span><span>{t('map.cat_nature')}</span></span>
+              <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-amber-400"></span><span>{t('map.cat_tourism')}</span></span>
             </div>
           </div>
         </div>
@@ -192,7 +207,7 @@ export const InteractiveMap: React.FC = () => {
         <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
           <h3 className="text-lg font-bold text-slate-900 flex items-center space-x-2">
             <Compass className="w-5 h-5 text-emerald-600" />
-            <span>Puntos de Interés Cercanos</span>
+            <span>{t('map.nearby_points')}</span>
           </h3>
 
           {filteredAttractions.map(item => {
@@ -218,7 +233,7 @@ export const InteractiveMap: React.FC = () => {
                     </div>
                     <div>
                       <h4 className="font-bold text-slate-900 text-sm">{item.name}</h4>
-                      <span className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">{item.category}</span>
+                      <span className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">{t(item.categoryKey)}</span>
                     </div>
                   </div>
                 </div>
@@ -246,7 +261,7 @@ export const InteractiveMap: React.FC = () => {
                     onClick={(e) => e.stopPropagation()}
                     className="inline-flex items-center space-x-1 text-emerald-700 font-semibold hover:text-emerald-800"
                   >
-                    <span>Ruta GPS</span>
+                    <span>{t('map.gps_route')}</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
