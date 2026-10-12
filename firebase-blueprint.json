@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "Dome": {
+      "title": "Dome",
+      "description": "Glamping dome accommodation",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "code": { "type": "string", "maxLength": 50 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "capacity": { "type": "number" },
+        "price_per_night": { "type": "number" },
+        "image_url": { "type": "string", "maxLength": 500 },
+        "status": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["name", "code", "price_per_night"]
+    },
+    "Reservation": {
+      "title": "Reservation",
+      "description": "Guest booking reservation",
+      "type": "object",
+      "properties": {
+        "reservation_code": { "type": "string", "maxLength": 50 },
+        "customer_name": { "type": "string", "maxLength": 100 },
+        "customer_email": { "type": "string", "maxLength": 150 },
+        "customer_phone": { "type": "string", "maxLength": 50 },
+        "dome_id": { "type": "string", "maxLength": 50 },
+        "check_in": { "type": "string", "maxLength": 20 },
+        "check_out": { "type": "string", "maxLength": 20 },
+        "guests": { "type": "number" },
+        "total_amount": { "type": "number" },
+        "status": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["reservation_code", "customer_name", "dome_id", "check_in", "check_out", "total_amount"]
+    },
+    "MenuItem": {
+      "title": "MenuItem",
+      "description": "Restaurant menu item",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 100 },
+        "category": { "type": "string", "maxLength": 50 },
+        "price": { "type": "number" },
+        "description": { "type": "string", "maxLength": 500 }
+      },
+      "required": ["title", "category", "price"]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Customer review testimonial",
+      "type": "object",
+      "properties": {
+        "author": { "type": "string", "maxLength": 100 },
+        "comment": { "type": "string", "maxLength": 500 },
+        "rating": { "type": "number" }
+      },
+      "required": ["author", "comment"]
+    }
+  },
+  "firestore": {
+    "/domes/{domeId}": {
+      "schema": "Dome",
+      "description": "Glamping domes collection"
+    },
+    "/reservations/{reservationId}": {
+      "schema": "Reservation",
+      "description": "Customer reservations collection"
+    },
+    "/menu_items/{itemId}": {
+      "schema": "MenuItem",
+      "description": "Restaurant menu items collection"
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": "Testimonial",
+      "description": "Customer testimonials collection"
+    }
+  }
+}
