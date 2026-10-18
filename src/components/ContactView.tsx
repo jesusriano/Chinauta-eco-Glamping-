@@ -6,12 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 export const ContactView: React.FC = () => {
   const { t } = useLanguage();
-  const [galleryImages, setGalleryImages] = useState<string[]>([
-    'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80'
-  ]);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -59,6 +54,11 @@ export const ContactView: React.FC = () => {
       console.error(err);
       setIsUploading(false);
     }
+  };
+
+  const removeGalleryImage = (indexToRemove: number) => {
+    setGalleryImages(galleryImages.filter((_, idx) => idx !== indexToRemove));
+    showToast('Imagen eliminada de la galería.');
   };
 
   const faqs = [
@@ -189,7 +189,7 @@ export const ContactView: React.FC = () => {
               <span>Galería Chinauta Fusagasugá</span>
             </div>
             <h4 className="text-2xl font-bold text-slate-900">Postales y Momentos en Chinauta</h4>
-            <p className="text-sm text-slate-600">Explora la galería fotográfica de nuestro entorno o sube tus propias imágenes de los domos y paisajes.</p>
+            <p className="text-sm text-slate-600">Sube tus propias imágenes de los domos y paisajes para exhibirlas en la galería.</p>
           </div>
 
           <button
@@ -203,30 +203,45 @@ export const ContactView: React.FC = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {galleryImages.map((imgUrl, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="h-56 rounded-2xl overflow-hidden shadow-md border border-slate-200 group relative bg-slate-100"
-            >
-              <img
-                src={imgUrl}
-                alt={`Chinauta Fusagasugá ${index + 1}`}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                <span className="text-white text-xs font-medium flex items-center space-x-1.5">
-                  <Camera className="w-3.5 h-3.5" />
-                  <span>Chinauta Fusagasugá</span>
-                </span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {galleryImages.length === 0 ? (
+          <div className="text-center py-12 text-slate-400 space-y-3">
+            <Camera className="w-10 h-10 mx-auto opacity-40" />
+            <p className="text-sm">No hay imágenes en la galería actualmente. ¡Sube tu primera foto usando el botón de arriba!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {galleryImages.map((imgUrl, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="h-56 rounded-2xl overflow-hidden shadow-md border border-slate-200 group relative bg-slate-100"
+              >
+                <img
+                  src={imgUrl}
+                  alt={`Chinauta Fusagasugá ${index + 1}`}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-4">
+                  <span className="text-white text-xs font-medium flex items-center space-x-1.5">
+                    <Camera className="w-3.5 h-3.5" />
+                    <span>Chinauta Fusagasugá</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeGalleryImage(index)}
+                    className="p-2 rounded-xl bg-red-600/80 hover:bg-red-600 text-white text-xs transition-colors shadow-sm cursor-pointer"
+                    title="Eliminar imagen"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* FAQs */}
