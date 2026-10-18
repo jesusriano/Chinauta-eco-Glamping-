@@ -283,21 +283,8 @@ export const TestimonialsSection: React.FC = () => {
                   "{item.comment}"
                 </p>
 
-                {/* Real Guest Photo or Video */}
-                {item.video_url ? (
-                  <div className="h-52 rounded-2xl overflow-hidden shadow-inner border border-slate-200 bg-slate-950 relative group/video">
-                    <video
-                      src={item.video_url}
-                      controls
-                      playsInline
-                      preload="none"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 right-2 bg-slate-900/80 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur-md">
-                      {t('testimonials.guest_video')}
-                    </div>
-                  </div>
-                ) : item.image ? (
+                {/* Real Guest Photo (Videos are kept in data but hidden as requested) */}
+                {item.image ? (
                   <div className="h-52 rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative group/img">
                     {(() => {
                       const testImg = getResponsiveImageData(item.image, '(max-width: 640px) 100vw, 400px');
