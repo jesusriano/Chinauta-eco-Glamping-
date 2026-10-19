@@ -54,7 +54,10 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
   onImageClick
 }) => {
   const { t } = useLanguage();
-  const validImages = images.length > 0 ? images : ['https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80'];
+  const rawValidImages = images && images.length > 0 ? images.filter(img => Boolean(img && img.trim() !== '')) : [];
+  const validImages = rawValidImages.length > 0 
+    ? rawValidImages 
+    : ['https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80'];
   const [[page, direction], setPage] = useState<[number, number]>([0, 0]);
   const [imageError, setImageError] = useState<Record<number, boolean>>({});
 

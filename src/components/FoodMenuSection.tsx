@@ -44,11 +44,8 @@ export const DEFAULT_MENU_ITEMS: FoodMenuItem[] = [
     beverage: "Jugo natural de fruta de estación",
     beverage_en: "Fresh natural seasonal fruit juice",
     price: 38000,
-    image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=1000&q=80"
-    ],
+    image: "",
+    images: [],
     badge: "Plato Especialidad",
     badge_en: "House Specialty"
   },
