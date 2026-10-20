@@ -532,12 +532,12 @@ try {
     );
     insertMenu.run(
       2,
-      "Carne de Res Gratinada o Asada",
-      "Grilled or Au Gratin Beef Tenderloin",
+      "Carnes Gratinadas o en Salsa de Champiñones (Res, Cerdo o Pechuga)",
+      "Au Gratin or Mushroom Sauce Meats (Beef, Pork or Chicken Breast)",
       "Almuerzos y Comidas",
-      "Jugoso corte de carne de res madurada, sazonada al estilo campestre y terminada según tu preferencia.",
-      "Juicy aged beef steak, seasoned in rustic style and prepared to your liking (grilled or with rich au gratin mushrooms).",
-      JSON.stringify(["Gratinada con queso", "En salsa de champiñones", "Asada a la parrilla"]),
+      "Carne de res, cerdo o pechuga, sazonada al estilo campestre y preparada a tu preferencia: gratinada con queso o en salsa de champiñones. También disponible asada a la parrilla.",
+      "Beef, pork or chicken breast, seasoned in rustic style and prepared to your liking: au gratin with cheese or in mushroom sauce. Also available grilled.",
+      JSON.stringify(["Carne de res", "Cerdo", "Pechuga", "Gratinada con queso", "En salsa de champiñones", "Asada a la parrilla"]),
       JSON.stringify(["Papas a la francesa", "Ensalada fresca"]),
       "Jugo natural de fruta de estación",
       50000,
