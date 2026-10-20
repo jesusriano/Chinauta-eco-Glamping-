@@ -43,7 +43,7 @@ export const DEFAULT_MENU_ITEMS: FoodMenuItem[] = [
     sides_en: ["French fries", "Fresh house salad"],
     beverage: "Jugo natural de fruta de estación",
     beverage_en: "Fresh natural seasonal fruit juice",
-    price: 38000,
+    price: 60000,
     image: "/assets/images/trucha-gratinada.webp",
     images: [
       "/assets/images/trucha-gratinada.webp",
@@ -67,7 +67,7 @@ export const DEFAULT_MENU_ITEMS: FoodMenuItem[] = [
     sides_en: ["French fries", "Fresh salad"],
     beverage: "Jugo natural de fruta de estación",
     beverage_en: "Fresh natural seasonal fruit juice",
-    price: 38000,
+    price: 50000,
     image: "/assets/images/carne-asada.webp",
     images: [
       "/assets/images/carne-asada.webp"
@@ -90,7 +90,7 @@ export const DEFAULT_MENU_ITEMS: FoodMenuItem[] = [
     sides_en: ["Crispy french fries"],
     beverage: "Gaseosa Postobón de 400ml",
     beverage_en: "Postobón Soda (400ml)",
-    price: 30000,
+    price: 40000,
     image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=80",
     images: [
       "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=80"
