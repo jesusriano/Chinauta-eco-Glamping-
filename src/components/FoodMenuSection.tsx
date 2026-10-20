@@ -98,50 +98,6 @@ export const DEFAULT_MENU_ITEMS: FoodMenuItem[] = [
     badge: "Combo Rápido",
     badge_en: "Quick Combo"
   },
-  {
-    id: 7,
-    item_number: 7,
-    title: "Vino Tinto / Blanco & Tabla de Quesos",
-    title_en: "Fine Wine Bottle & Artisan Cheese Board",
-    category: "Bebidas",
-    category_en: "Beverages & Wines",
-    description: "Botella de vino reserva seleccionada (Cabernet / Sauvignon Blanc) acompañada de frutos secos, quesos madurados y uvas para la fogata.",
-    description_en: "Bottle of premium reserve wine accompanied by artisanal cheeses, nuts, and fresh grapes perfect for the fire pit.",
-    preparations: ["Vino Tinto Cabernet", "Vino Blanco Sauvignon", "Vino Rosado"],
-    preparations_en: ["Red Cabernet", "White Sauvignon", "Rosé Wine"],
-    sides: ["Tabla de quesos y jamones", "Frutos secos"],
-    sides_en: ["Cheese & charcuterie board", "Dried fruits & nuts"],
-    beverage: "Botella 750ml",
-    beverage_en: "750ml Bottle",
-    price: 75000,
-    image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1000&q=80"
-    ],
-    badge: "Noche Romántica",
-    badge_en: "Romantic Night"
-  },
-  {
-    id: 8,
-    item_number: 8,
-    title: "Cócteles de la Casa & Jugos Naturales",
-    title_en: "House Cocktails & Tropical Natural Juices",
-    category: "Bebidas",
-    category_en: "Beverages & Wines",
-    description: "Mojitos refrescantes de maracuyá y menta, Piña Colada artesanal o jugos tropicales en agua o leche.",
-    description_en: "Refreshing passionfruit and mint mojitos, artisanal Piña Colada, or fresh tropical fruit juices in water/milk.",
-    preparations: ["Mojito Maracuyá", "Piña Colada", "Margarita Glamping", "Jugo Mango / Mora / Lulo"],
-    preparations_en: ["Passionfruit Mojito", "Piña Colada", "Glamping Margarita", "Natural Tropical Juice"],
-    sides: ["Copas escarchadas con fruta fresca"],
-    sides_en: ["Chilled glass with fresh fruit garnish"],
-    beverage: "Preparación al instante",
-    beverage_en: "Freshly made",
-    price: 22000,
-    image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1000&q=80"
-    ]
-  }
 ];
 
 export const CHINAUTA_MENU_ITEMS = DEFAULT_MENU_ITEMS;

@@ -562,38 +562,6 @@ try {
       null,
       "Combo Rápido"
     );
-    insertMenu.run(
-      5,
-      "Vino Tinto / Blanco & Tabla de Quesos",
-      "Fine Wine Bottle & Artisan Cheese Board",
-      "Bebidas",
-      "Botella de vino reserva seleccionada (Cabernet / Sauvignon Blanc) acompañada de frutos secos, quesos madurados y uvas para la fogata.",
-      "Bottle of premium reserve wine accompanied by artisanal cheeses, nuts, and fresh grapes perfect for the fire pit.",
-      JSON.stringify(["Vino Tinto Cabernet", "Vino Blanco Sauvignon", "Vino Rosado"]),
-      JSON.stringify(["Tabla de quesos y jamones", "Frutos secos"]),
-      "Botella 750ml",
-      75000,
-      "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1000&q=80",
-      JSON.stringify(["https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1000&q=80"]),
-      null,
-      "Noche Romántica"
-    );
-    insertMenu.run(
-      6,
-      "Cócteles de la Casa & Jugos Naturales",
-      "House Cocktails & Tropical Natural Juices",
-      "Bebidas",
-      "Mojitos refrescantes de maracuyá y menta, Piña Colada artesanal o jugos tropicales en agua o leche.",
-      "Refreshing passionfruit and mint mojitos, artisanal Piña Colada, or fresh tropical fruit juices in water/milk.",
-      JSON.stringify(["Mojito Maracuyá", "Piña Colada", "Margarita Glamping", "Jugo Mango / Mora / Lulo"]),
-      JSON.stringify(["Copas escarchadas con fruta fresca"]),
-      "Preparación al instante",
-      22000,
-      "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1000&q=80",
-      JSON.stringify(["https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1000&q=80"]),
-      null,
-      null
-    );
   }
 } catch (e) {
   console.warn("Menu seed notice:", e);
