@@ -541,8 +541,14 @@ try {
       JSON.stringify(["Papas a la francesa", "Ensalada fresca"]),
       "Jugo natural de fruta de estación",
       50000,
-      "/assets/images/carne-asada.webp",
-      JSON.stringify(["/assets/images/carne-asada.webp"]),
+      "/assets/images/carne-res-gratinada.webp",
+      JSON.stringify([
+        "/assets/images/carne-res-gratinada.webp",
+        "/assets/images/carne-cerdo-gratinada.webp",
+        "/assets/images/carne-pechuga-gratinada.webp",
+        "/assets/images/carne-cerdo-champinones.webp",
+        "/assets/images/carne-pechuga-champinones.webp"
+      ]),
       null,
       "Favorito del Huésped"
     );

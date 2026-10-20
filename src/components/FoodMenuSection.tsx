@@ -68,9 +68,13 @@ export const DEFAULT_MENU_ITEMS: FoodMenuItem[] = [
     beverage: "Jugo natural de fruta de estación",
     beverage_en: "Fresh natural seasonal fruit juice",
     price: 50000,
-    image: "/assets/images/carne-asada.webp",
+    image: "/assets/images/carne-res-gratinada.webp",
     images: [
-      "/assets/images/carne-asada.webp"
+      "/assets/images/carne-res-gratinada.webp",
+      "/assets/images/carne-cerdo-gratinada.webp",
+      "/assets/images/carne-pechuga-gratinada.webp",
+      "/assets/images/carne-cerdo-champinones.webp",
+      "/assets/images/carne-pechuga-champinones.webp"
     ],
     badge: "Favorito del Huésped",
     badge_en: "Guest Favorite"
