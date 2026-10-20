@@ -68,55 +68,12 @@ export const DEFAULT_MENU_ITEMS: FoodMenuItem[] = [
     beverage: "Jugo natural de fruta de estación",
     beverage_en: "Fresh natural seasonal fruit juice",
     price: 38000,
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1000&q=80",
+    image: "/assets/images/carne-asada.webp",
     images: [
-      "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=1000&q=80"
+      "/assets/images/carne-asada.webp"
     ],
     badge: "Favorito del Huésped",
     badge_en: "Guest Favorite"
-  },
-  {
-    id: 3,
-    item_number: 3,
-    title: "Cerdo en Salsa de Champiñones o Gratinado",
-    title_en: "Pork Loin in Mushroom Cream / Au Gratin",
-    category: "Almuerzos y Cenas",
-    category_en: "Lunch & Dinner",
-    description: "Tierno lomito de cerdo bañado en cremosa salsa artesanal de champiñones silvestres, gratinado o asado a fuego lento.",
-    description_en: "Tender pork loin bathed in creamy wild mushroom sauce, baked au gratin or slow-grilled.",
-    preparations: ["En salsa de champiñones", "Gratinado", "Asado"],
-    preparations_en: ["Mushroom Sauce", "Au Gratin", "Grilled"],
-    sides: ["Papa a la francesa", "Ensalada fresca"],
-    sides_en: ["French fries", "Fresh salad"],
-    beverage: "Jugo natural de fruta de estación",
-    beverage_en: "Fresh natural seasonal fruit juice",
-    price: 36000,
-    image: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1432139555190-58524dae6a55?auto=format&fit=crop&w=1000&q=80"
-    ]
-  },
-  {
-    id: 4,
-    item_number: 4,
-    title: "Pechuga Asada, Gratinada o en Champiñones",
-    title_en: "Grilled or Au Gratin Chicken Breast",
-    category: "Almuerzos y Cenas",
-    category_en: "Lunch & Dinner",
-    description: "Pechuga de pollo seleccionada, deshuesada y marinada con finas hierbas. Servida asada, en salsa o gratinada.",
-    description_en: "Free-range chicken breast marinated in herbs, served grilled, in mushroom sauce or baked au gratin.",
-    preparations: ["Asada a la plancha", "En salsa de champiñones", "Gratinada con queso"],
-    preparations_en: ["Grilled", "Mushroom Sauce", "Au Gratin Cheese"],
-    sides: ["Papa a la francesa", "Ensalada campesina"],
-    sides_en: ["French fries", "Garden salad"],
-    beverage: "Jugo natural de fruta de estación",
-    beverage_en: "Fresh natural seasonal fruit juice",
-    price: 34000,
-    image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=1000&q=80"
-    ]
   },
   {
     id: 5,
@@ -140,29 +97,6 @@ export const DEFAULT_MENU_ITEMS: FoodMenuItem[] = [
     ],
     badge: "Combo Rápido",
     badge_en: "Quick Combo"
-  },
-  {
-    id: 6,
-    item_number: 6,
-    title: "Picada Campesina Chinauta (Para Compartir)",
-    title_en: "Chinauta Farmer Platter (To Share)",
-    category: "Snacks & Picadas",
-    category_en: "Snacks & Platters",
-    description: "Generosa picada tradicional con trozos de lomo de res, cerdo, pechuga, chorizo santandereano, papa criolla dorada y arepitas.",
-    description_en: "Hearty traditional Colombian sharing platter with beef, pork, chicken, artisanal chorizo, golden creole potatoes, and corn arepas.",
-    preparations: ["Para 2 Personas", "Para 4 Personas"],
-    preparations_en: ["For 2 Guests", "For 4 Guests"],
-    sides: ["Papa criolla", "Arepitas de queso", "Guacamole casero"],
-    sides_en: ["Creole potatoes", "Cheese arepas", "Homemade guacamole"],
-    beverage: "2 Bebidas a elección (Gaseosa o Jugo Natural)",
-    beverage_en: "2 Beverages of choice",
-    price: 65000,
-    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1000&q=80"
-    ],
-    badge: "Especial Para Parejas",
-    badge_en: "Special for Couples"
   },
   {
     id: 7,

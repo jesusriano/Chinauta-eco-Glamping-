@@ -541,8 +541,8 @@ try {
       JSON.stringify(["Papas a la francesa", "Ensalada fresca"]),
       "Jugo natural de fruta de estación",
       38000,
-      "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1000&q=80",
-      JSON.stringify(["https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1000&q=80"]),
+      "/assets/images/carne-asada.webp",
+      JSON.stringify(["/assets/images/carne-asada.webp"]),
       null,
       "Favorito del Huésped"
     );
@@ -561,22 +561,6 @@ try {
       JSON.stringify(["https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=80"]),
       null,
       "Combo Rápido"
-    );
-    insertMenu.run(
-      4,
-      "Picada Campesina Chinauta (Para Compartir)",
-      "Chinauta Farmer Platter (To Share)",
-      "Snacks",
-      "Generosa picada tradicional con trozos de lomo de res, cerdo, pechuga, chorizo santandereano, papa criolla dorada y arepitas.",
-      "Hearty traditional Colombian sharing platter with beef, pork, chicken, artisanal chorizo, golden creole potatoes, and corn arepas.",
-      JSON.stringify(["Para 2 Personas", "Para 4 Personas"]),
-      JSON.stringify(["Papa criolla", "Arepitas de queso", "Guacamole casero"]),
-      "2 Bebidas a elección (Gaseosa o Jugo Natural)",
-      65000,
-      "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1000&q=80",
-      JSON.stringify(["https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1000&q=80"]),
-      null,
-      "Especial Para Parejas"
     );
     insertMenu.run(
       5,
@@ -1596,8 +1580,6 @@ app.post("/api/ai/chat", async (req, res) => {
     MENÚ CHINAUTA ECO GLAMPING (CENAS Y ALMUERZOS):
     #1 Trucha gratinada o en salsa de champiñones asada. Incluye papas a la francesa, ensalada y jugo natural ($38.000 COP).
     #2 Carne de res gratinada, ensalada de champiñones o asada. Incluye papas a la francesa, ensalada y jugo natural ($38.000 COP).
-    #3 Cerdo en salsa de champiñones gratinado o asado. Incluye papa a la francesa, ensalada y jugo natural ($36.000 COP).
-    #4 Pechuga asada o en salsa de champiñones o gratinada. Incluye papa a la francesa, ensalada y jugo natural ($34.000 COP).
     #5 Combo de hamburguesa artesanal. Incluye papa a la francesa y gaseosa Postobón de 400ml ($30.000 COP).
 
     Responde de forma amable, profesional, elegante y acogedora a los clientes, ayudándoles con información sobre tarifas, ubicación, clima, reservas, el menú gastronómico y servicios adicionales.`;
