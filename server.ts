@@ -525,8 +525,8 @@ try {
       JSON.stringify(["Papas a la francesa", "Ensalada fresca de la casa"]),
       "Jugo natural de fruta de estación",
       38000,
-      "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=1000&q=80",
-      JSON.stringify(["https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=1000&q=80"]),
+      "/assets/images/trucha-gratinada.webp",
+      JSON.stringify(["/assets/images/trucha-gratinada.webp", "/assets/images/trucha-salsa-champinones.webp"]),
       null,
       "Plato Especialidad"
     );
