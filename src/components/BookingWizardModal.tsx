@@ -4,6 +4,7 @@ import { Dome } from '../types';
 import { ImageCarousel } from './ImageCarousel';
 import { getDomeImages } from '../utils/domeImages';
 import { useLanguage } from '../context/LanguageContext';
+import { CHINAUTA_MENU_ITEMS } from './FoodMenuSection';
 
 interface BookingWizardModalProps {
   isOpen: boolean;
@@ -60,20 +61,25 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
   useEffect(() => {
     if (!isOpen) return;
+    // Use the menu from the server when available; otherwise fall back to the built-in menu.
+    const fallback = CHINAUTA_MENU_ITEMS.filter(d => !String(d.category || '').toLowerCase().includes('bebida'));
+    const useFallback = () => setMenuItems(fallback);
     fetch('/api/menu')
       .then(r => r.json())
       .then(data => {
-        if (!Array.isArray(data)) return;
-        setMenuItems(
-          data
-            .filter((d: any) => !String(d.category || '').toLowerCase().includes('bebida'))
-            .map((d: any) => ({
-              ...d,
-              preparations: typeof d.preparations === 'string' ? JSON.parse(d.preparations || '[]') : (d.preparations || [])
-            }))
-        );
+        if (!Array.isArray(data) || data.length === 0) return useFallback();
+        const items = data
+          .filter((d: any) => !String(d.category || '').toLowerCase().includes('bebida'))
+          .map((d: any) => ({
+            ...d,
+            preparations: typeof d.preparations === 'string' ? JSON.parse(d.preparations || '[]') : (d.preparations || [])
+          }));
+        setMenuItems(items.length > 0 ? items : fallback);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        useFallback();
+      });
   }, [isOpen]);
 
   // Customer form
