@@ -52,6 +52,30 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
   const [customMessage, setCustomMessage] = useState('');
   const [discountPercent, setDiscountPercent] = useState<number>(0);
 
+  // Food choices (from the menu)
+  const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [foodChoices, setFoodChoices] = useState<Record<string, { preparation: string; qty: number }>>({});
+  const setFoodChoice = (id: string, patch: { preparation?: string; qty?: number }) =>
+    setFoodChoices(prev => ({ ...prev, [id]: { preparation: '', qty: 0, ...prev[id], ...patch } }));
+
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch('/api/menu')
+      .then(r => r.json())
+      .then(data => {
+        if (!Array.isArray(data)) return;
+        setMenuItems(
+          data
+            .filter((d: any) => !String(d.category || '').toLowerCase().includes('bebida'))
+            .map((d: any) => ({
+              ...d,
+              preparations: typeof d.preparations === 'string' ? JSON.parse(d.preparations || '[]') : (d.preparations || [])
+            }))
+        );
+      })
+      .catch(err => console.error(err));
+  }, [isOpen]);
+
   // Customer form
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -90,6 +114,17 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
   };
 
   if (!isOpen) return null;
+
+  const foodSummary = menuItems
+    .filter(i => (foodChoices[String(i.id)]?.qty || 0) > 0)
+    .map(i => {
+      const c = foodChoices[String(i.id)];
+      return `${i.title}${c.preparation ? ` (${c.preparation})` : ''} x${c.qty}`;
+    });
+  const foodIncomplete = menuItems.some(i => {
+    const c = foodChoices[String(i.id)];
+    return !!c && c.qty > 0 && (i.preparations || []).length > 0 && !c.preparation;
+  });
 
   const selectedDome = domes.find(d => Number(d.id) === Number(selectedDomeId));
 
@@ -172,7 +207,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           check_out: effectiveCheckOut,
           guests,
           total_amount: totalAmount,
-          notes: `[${bookingType.toUpperCase()}] Mascotas: ${hasPet ? petCount : 0}. Addons: ${Object.entries(selectedAddons).filter(([_,v]) => v).map(([k]) => k).join(', ')}. Mensaje decorativo: ${customMessage}. Notas: ${notes}`,
+          notes: `[${bookingType.toUpperCase()}] Mascotas: ${hasPet ? petCount : 0}. Addons: ${Object.entries(selectedAddons).filter(([_,v]) => v).map(([k]) => k).join(', ')}. Mensaje decorativo: ${customMessage}. Comida: ${foodSummary.join('; ') || 'No seleccionada'}. Notas: ${notes}`,
           customer: {
             name,
             phone,
@@ -190,7 +225,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
       }
 
       setConfirmedCode(data.reservation_code);
-      setStep(8);
+      setStep(9);
       onSuccess(data.reservation_code);
     } catch (err: any) {
       setErrorMsg(err.message || t('wizard.booking_process_err'));
@@ -539,8 +574,73 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
             </div>
           )}
 
-          {/* STEP 7: Guest Details & Payment */}
+          {/* STEP 7: Food Choices */}
           {step === 7 && (
+            <div className="space-y-6">
+              <h4 className="text-xl font-bold text-slate-900">{language === 'en' ? 'Choose your meals' : 'Elige tu comida'}</h4>
+              <p className="text-sm text-slate-600">
+                {language === 'en'
+                  ? 'Select the dishes and how many portions you want (at least one).'
+                  : 'Selecciona los platos y cuántas porciones quieres (al menos uno).'}
+              </p>
+
+              {menuItems.length === 0 && (
+                <p className="text-sm text-slate-500">{language === 'en' ? 'Loading menu...' : 'Cargando menú...'}</p>
+              )}
+
+              <div className="space-y-3">
+                {menuItems.map(item => {
+                  const choice = foodChoices[String(item.id)] || { preparation: '', qty: 0 };
+                  const active = choice.qty > 0;
+                  const title = language === 'en' ? (item.title_en || item.title) : item.title;
+                  const preps: string[] = item.preparations || [];
+                  return (
+                    <div
+                      key={item.id}
+                      className={`p-4 rounded-2xl border-2 transition-all space-y-3 ${
+                        active ? 'border-emerald-600 bg-emerald-50/50' : 'border-slate-200 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <h5 className="font-bold text-slate-900 text-sm">{title}</h5>
+                        <div className="flex items-center space-x-2 shrink-0">
+                          <label className="text-xs text-slate-500">{language === 'en' ? 'Portions' : 'Porciones'}</label>
+                          <input
+                            type="number"
+                            min={0}
+                            max={20}
+                            value={choice.qty}
+                            onChange={e => setFoodChoice(String(item.id), { qty: Math.max(0, Number(e.target.value) || 0) })}
+                            className="w-20 px-3 py-2 rounded-xl border border-slate-200 text-sm font-medium"
+                          />
+                        </div>
+                      </div>
+                      {active && preps.length > 0 && (
+                        <select
+                          value={choice.preparation}
+                          onChange={e => setFoodChoice(String(item.id), { preparation: e.target.value })}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium bg-white"
+                        >
+                          <option value="">{language === 'en' ? 'Choose preparation' : 'Elige la preparación'}</option>
+                          {preps.map(p => (
+                            <option key={p} value={p}>{p}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="text-xs text-slate-500">
+                {language === 'en' ? 'Selected dishes: ' : 'Platos seleccionados: '}
+                {foodSummary.length > 0 ? foodSummary.join(', ') : (language === 'en' ? 'none' : 'ninguno')}
+              </p>
+            </div>
+          )}
+
+          {/* STEP 8: Guest Details & Payment */}
+          {step === 8 && (
             <div className="space-y-6">
               <h4 className="text-xl font-bold text-slate-900">{t('wizard.step7_title')}</h4>
               
@@ -641,7 +741,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           )}
 
           {/* STEP 8: Full Summary & Confirmation */}
-          {step === 8 && (
+          {step === 9 && (
             <div className="text-center py-6 space-y-6">
               <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-md">
                 <CheckCircle2 className="w-8 h-8" />
@@ -661,6 +761,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                 {extraPersons > 0 && <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_extra_persons')}</span><span className="font-bold text-slate-900">+{extraPersons} (${extraPersonsFee.toLocaleString('es-CO')})</span></div>}
                 {hasPet && <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_pets')}</span><span className="font-bold text-slate-900">+{petCount} (${petsFee.toLocaleString('es-CO')})</span></div>}
                 {addonsTotal > 0 && <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_addons')}</span><span className="font-bold text-slate-900">+${addonsTotal.toLocaleString('es-CO')}</span></div>}
+                {foodSummary.length > 0 && <div className="flex justify-between gap-4"><span className="text-slate-500">{language === 'en' ? 'Meals' : 'Comida'}</span><span className="font-bold text-slate-900 text-right">{foodSummary.join(', ')}</span></div>}
                 {effectiveDiscountPercent > 0 && <div className="flex justify-between text-emerald-700"><span className="font-medium">{t('wizard.summary_discount')} ({effectiveDiscountPercent}%):</span><span className="font-bold">-${discountAmount.toLocaleString('es-CO')}</span></div>}
                 <div className="flex justify-between pt-3 border-t border-slate-200 text-sm font-black text-slate-900">
                   <span>{t('wizard.summary_total')}</span>
@@ -674,7 +775,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
         {/* Footer Actions */}
         <div className="p-4 sm:p-6 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          {step > 1 && step < 8 ? (
+          {step > 1 && step < 9 ? (
             <button
               onClick={() => setStep(prev => prev - 1)}
               className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-300 font-medium text-slate-700 hover:bg-slate-100 flex items-center justify-center space-x-2 text-sm cursor-pointer"
@@ -685,10 +786,16 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
           ) : <div />}
 
           <div className="w-full sm:w-auto flex justify-end">
-            {step < 7 && (
+            {step < 8 && (
               <button
                 onClick={() => {
                   if (step === 2 && !validateStep2()) return;
+                  if (step === 7 && (foodSummary.length === 0 || foodIncomplete)) {
+                    setErrorMsg(language === 'en'
+                      ? 'Please choose at least one dish and its preparation.'
+                      : 'Por favor elige al menos un plato y su preparación.');
+                    return;
+                  }
                   if (step === 3 && !selectedDomeId) {
                     setErrorMsg(t('wizard.select_dome_err'));
                     return;
@@ -702,7 +809,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
               </button>
             )}
 
-            {step === 7 && (
+            {step === 8 && (
               <button
                 onClick={handleConfirmBooking}
                 disabled={submitting}
@@ -713,7 +820,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
               </button>
             )}
 
-            {step === 8 && (
+            {step === 9 && (
               <button
                 onClick={onClose}
                 className="w-full sm:w-auto px-8 py-3 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 text-sm cursor-pointer"
