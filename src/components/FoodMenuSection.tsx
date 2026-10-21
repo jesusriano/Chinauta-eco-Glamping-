@@ -95,9 +95,9 @@ export const DEFAULT_MENU_ITEMS: FoodMenuItem[] = [
     beverage: "Gaseosa Postobón de 400ml",
     beverage_en: "Postobón Soda (400ml)",
     price: 40000,
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=80",
+    image: "/assets/images/hamburguesa-papas.webp",
     images: [
-      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=80"
+      "/assets/images/hamburguesa-papas.webp"
     ],
     badge: "Combo Rápido",
     badge_en: "Quick Combo"

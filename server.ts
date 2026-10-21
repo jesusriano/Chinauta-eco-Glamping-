@@ -563,8 +563,8 @@ try {
       JSON.stringify(["Papas a la francesa crujientes"]),
       "Gaseosa Postobón de 400ml",
       40000,
-      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=80",
-      JSON.stringify(["https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=80"]),
+      "/assets/images/hamburguesa-papas.webp",
+      JSON.stringify(["/assets/images/hamburguesa-papas.webp"]),
       null,
       "Combo Rápido"
     );
