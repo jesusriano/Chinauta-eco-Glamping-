@@ -92,6 +92,9 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      setStep(1);
+      setConfirmedCode('');
+      setErrorMsg('');
       if (initialDomeId) setSelectedDomeId(initialDomeId);
       if (initialCheckIn) setCheckIn(initialCheckIn);
       if (initialCheckOut) setCheckOut(initialCheckOut);
@@ -105,9 +108,20 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
       const effectiveCheckOut = bookingType === 'pasadia' ? checkIn : checkOut;
       const res = await fetch(`/api/availability?checkIn=${checkIn}&checkOut=${effectiveCheckOut}`);
       const data = await res.json();
-      if (Array.isArray(data)) setDomes(data);
+      if (Array.isArray(data)) {
+        setDomes(data);
+      } else {
+        setDomes([]);
+        setErrorMsg(language === 'en'
+          ? 'We could not load the domes right now. Please try again later.'
+          : 'No pudimos cargar los domos en este momento. Intenta más tarde.');
+      }
     } catch (err) {
       console.error(err);
+      setDomes([]);
+      setErrorMsg(language === 'en'
+        ? 'We could not load the domes right now. Please try again later.'
+        : 'No pudimos cargar los domos en este momento. Intenta más tarde.');
     } finally {
       setLoadingAvailability(false);
     }
