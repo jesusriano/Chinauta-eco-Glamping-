@@ -192,7 +192,12 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
   }
 
   const discountAmount = (subtotal * effectiveDiscountPercent) / 100;
-  const totalAmount = Math.max(0, subtotal - discountAmount);
+  // Food is charged separately: it is added after the discount and is not discounted.
+  const foodTotal = menuItems.reduce(
+    (sum, i) => sum + (Number(i.price) || 0) * (foodChoices[String(i.id)]?.qty || 0),
+    0
+  );
+  const totalAmount = Math.max(0, subtotal - discountAmount) + foodTotal;
 
   const validateStep2 = () => {
     if (bookingType === 'pasadia') {
@@ -622,7 +627,10 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                       }`}
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <h5 className="font-bold text-slate-900 text-sm">{title}</h5>
+                        <div>
+                          <h5 className="font-bold text-slate-900 text-sm">{title}</h5>
+                          <p className="text-xs text-emerald-700 font-bold">${Number(item.price || 0).toLocaleString('es-CO')} COP / {language === 'en' ? 'portion' : 'porción'}</p>
+                        </div>
                         <div className="flex items-center space-x-2 shrink-0">
                           <label className="text-xs text-slate-500">{language === 'en' ? 'Portions' : 'Porciones'}</label>
                           <input
@@ -655,6 +663,10 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
               <p className="text-xs text-slate-500">
                 {language === 'en' ? 'Selected dishes: ' : 'Platos seleccionados: '}
                 {foodSummary.length > 0 ? foodSummary.join(', ') : (language === 'en' ? 'none' : 'ninguno')}
+              </p>
+              <p className="text-sm font-bold text-slate-900">
+                {language === 'en' ? 'Meals (paid separately): ' : 'Comida (se paga aparte): '}
+                ${foodTotal.toLocaleString('es-CO')} COP
               </p>
             </div>
           )}
@@ -782,6 +794,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
                 {hasPet && <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_pets')}</span><span className="font-bold text-slate-900">+{petCount} (${petsFee.toLocaleString('es-CO')})</span></div>}
                 {addonsTotal > 0 && <div className="flex justify-between"><span className="text-slate-500">{t('wizard.summary_addons')}</span><span className="font-bold text-slate-900">+${addonsTotal.toLocaleString('es-CO')}</span></div>}
                 {foodSummary.length > 0 && <div className="flex justify-between gap-4"><span className="text-slate-500">{language === 'en' ? 'Meals' : 'Comida'}</span><span className="font-bold text-slate-900 text-right">{foodSummary.join(', ')}</span></div>}
+                {foodTotal > 0 && <div className="flex justify-between"><span className="text-slate-500">{language === 'en' ? 'Meals total (separate)' : 'Total comida (aparte)'}</span><span className="font-bold text-slate-900">+${foodTotal.toLocaleString('es-CO')}</span></div>}
                 {effectiveDiscountPercent > 0 && <div className="flex justify-between text-emerald-700"><span className="font-medium">{t('wizard.summary_discount')} ({effectiveDiscountPercent}%):</span><span className="font-bold">-${discountAmount.toLocaleString('es-CO')}</span></div>}
                 <div className="flex justify-between pt-3 border-t border-slate-200 text-sm font-black text-slate-900">
                   <span>{t('wizard.summary_total')}</span>
