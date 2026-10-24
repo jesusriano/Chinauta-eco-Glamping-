@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Calendar, Compass, CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck, CreditCard, Sparkles, Heart, Sun, Clock, Dog, Wine } from 'lucide-react';
 import { Dome } from '../types';
 import { ImageCarousel } from './ImageCarousel';
-import { getDomeImages } from '../utils/domeImages';
+import { getDomeImages, DEFAULT_DOMES } from '../utils/domeImages';
 import { useLanguage } from '../context/LanguageContext';
 import { CHINAUTA_MENU_ITEMS } from './FoodMenuSection';
 
@@ -117,17 +117,20 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
       if (Array.isArray(data)) {
         setDomes(data);
       } else {
-        setDomes([]);
-        setErrorMsg(language === 'en'
-          ? 'We could not load the domes right now. Please try again later.'
-          : 'No pudimos cargar los domos en este momento. Intenta más tarde.');
+        throw new Error('Respuesta de disponibilidad no válida');
       }
     } catch (err) {
+      // Si no se puede consultar la disponibilidad, se muestran los domos igual.
+      // El servidor vuelve a revisar las fechas al confirmar la reserva (evita doble reserva).
       console.error(err);
-      setDomes([]);
+      setDomes(DEFAULT_DOMES.map((d: any) => ({
+        ...d,
+        isAvailable: true,
+        reason: 'Disponible'
+      })));
       setErrorMsg(language === 'en'
-        ? 'We could not load the domes right now. Please try again later.'
-        : 'No pudimos cargar los domos en este momento. Intenta más tarde.');
+        ? 'Availability will be confirmed when you send the booking.'
+        : 'La disponibilidad se confirmará al enviar tu reserva.');
     } finally {
       setLoadingAvailability(false);
     }
