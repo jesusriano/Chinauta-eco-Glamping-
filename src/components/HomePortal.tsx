@@ -391,10 +391,10 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
           <LocationPhotos
             alt="Instalaciones y Entorno Eco Glamping Chinauta"
             defaultImages={[
-              'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1200&q=80',
-              'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-              'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
-              'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80'
+              '/assets/images/chinauta-ubicacion-1.webp',
+              '/assets/images/chinauta-ubicacion-2.webp',
+              '/assets/images/chinauta-ubicacion-3.webp',
+              '/assets/images/chinauta-ubicacion-4.webp'
             ]}
           />
         </div>
