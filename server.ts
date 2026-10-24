@@ -14,8 +14,16 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(express.static(path.join(process.cwd(), "public")));
 
-// Initialize SQLite database
-const db = new DatabaseSync("glamping.db");
+// Initialize SQLite database: buscar glamping.db sin depender de desde dónde se arranque el servidor
+const DB_CANDIDATES = [
+  process.env.GLAMPING_DB_PATH,
+  path.join(process.cwd(), "glamping.db"),
+  path.join(process.cwd(), "..", "glamping.db"),
+  ...(typeof __dirname !== "undefined" ? [path.join(__dirname, "glamping.db"), path.join(__dirname, "..", "glamping.db")] : []),
+].filter((p): p is string => Boolean(p));
+const DB_PATH = DB_CANDIDATES.find((p) => fs.existsSync(p)) || path.join(process.cwd(), "glamping.db");
+console.log(`[DB] Usando base de datos: ${DB_PATH}`);
+const db = new DatabaseSync(DB_PATH);
 
 // Enable foreign keys
 db.exec("PRAGMA foreign_keys = ON;");
