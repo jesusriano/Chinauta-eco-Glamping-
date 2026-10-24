@@ -772,6 +772,46 @@ app.post("/api/upload-media", (req, res) => {
   }
 });
 
+// Fotos de la sección de ubicación (Chinauta)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS location_photos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    url TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+app.get("/api/location-photos", (req, res) => {
+  try {
+    const items = db.prepare("SELECT id, url FROM location_photos ORDER BY id ASC").all();
+    res.json(items);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/location-photos", (req, res) => {
+  try {
+    const { url } = req.body || {};
+    if (!url || typeof url !== "string" || !url.startsWith("/assets/")) {
+      return res.status(400).json({ success: false, error: "URL de foto no válida." });
+    }
+    const info = db.prepare("INSERT INTO location_photos (url) VALUES (?)").run(url);
+    res.json({ success: true, id: Number(info.lastInsertRowid) });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.delete("/api/location-photos/:id", (req, res) => {
+  try {
+    db.prepare("DELETE FROM location_photos WHERE id = ?").run(req.params.id);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+});
+
 // Gallery Endpoints
 app.get("/api/gallery", (req, res) => {
   try {

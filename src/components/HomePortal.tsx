@@ -9,6 +9,7 @@ import { TestimonialsSection } from './TestimonialsSection';
 import { WeatherWidget } from './WeatherWidget';
 import { FoodMenuSection } from './FoodMenuSection';
 import { ImageCarousel } from './ImageCarousel';
+import { LocationPhotos } from './LocationPhotos';
 import { BochicaCarousel } from './BochicaCarousel';
 import { HuitacaVideoCard } from './HuitacaVideoCard';
 import { DomeMediaCard } from './DomeMediaCard';
@@ -387,23 +388,15 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
             </div>
           </div>
 
-          <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200">
-            <ImageCarousel
-              images={[
-                'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1200&q=80',
-                'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-                'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
-                'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80'
-              ]}
-              alt="Instalaciones y Entorno Eco Glamping Chinauta"
-              className="h-80 sm:h-96"
-              overlayBadge={
-                <div className="bg-slate-900/80 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm">
-                  Chinauta, Fusagasugá
-                </div>
-              }
-            />
-          </div>
+          <LocationPhotos
+            alt="Instalaciones y Entorno Eco Glamping Chinauta"
+            defaultImages={[
+              'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1200&q=80',
+              'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+              'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
+              'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80'
+            ]}
+          />
         </div>
       </section>
 
