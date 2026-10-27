@@ -172,12 +172,15 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
       const c = foodChoices[String(i.id)];
       return `${i.title}${c.meat ? ` - ${c.meat}` : ''}${c.preparation ? ` (${c.preparation})` : ''}${c.side ? ` + ${c.side}` : ''} x${c.qty}`;
     });
-  const foodIncomplete = !bbqOnly && menuItems.some(i => {
-    const c = foodChoices[String(i.id)];
-    if (!c || c.qty <= 0) return false;
-    const g = getPrepGroups(i);
-    return (g.meats.length > 0 && !c.meat) || (g.styles.length > 0 && !c.preparation);
-  });
+  const foodMissingNames: string[] = bbqOnly ? [] : menuItems
+    .filter(i => {
+      const c = foodChoices[String(i.id)];
+      if (!c || c.qty <= 0) return false;
+      const g = getPrepGroups(i);
+      return (g.meats.length > 0 && !c.meat) || (g.styles.length > 0 && !c.preparation);
+    })
+    .map(i => (language === 'en' ? (i.title_en || i.title) : i.title));
+  const foodIncomplete = foodMissingNames.length > 0;
 
   const selectedDome = domes.find(d => Number(d.id) === Number(selectedDomeId));
 
@@ -315,7 +318,7 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
         {/* Wizard Content */}
         <div className="p-6 sm:p-8 max-h-[75vh] overflow-y-auto space-y-6">
-          {errorMsg && (
+          {errorMsg && step !== 7 && (
             <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium">
               {errorMsg}
             </div>
@@ -899,6 +902,13 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
         </div>
 
+        {/* Food-step message sits right above the buttons so it is always visible */}
+        {errorMsg && step === 7 && (
+          <div className="mx-4 sm:mx-6 mt-4 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-bold">
+            {errorMsg}
+          </div>
+        )}
+
         {/* Footer Actions */}
         <div className="p-4 sm:p-6 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
           {step > 1 && step < 9 ? (
@@ -916,16 +926,25 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
               <button
                 onClick={() => {
                   if (step === 2 && !validateStep2()) return;
-                  if (step === 7 && !bbqOnly && (foodSummary.length === 0 || foodIncomplete)) {
-                    setErrorMsg(language === 'en'
-                      ? 'Please choose at least one dish and its preparation.'
-                      : 'Por favor elige al menos un plato y su preparación.');
-                    return;
+                  if (step === 7 && !bbqOnly) {
+                    if (foodSummary.length === 0) {
+                      setErrorMsg(language === 'en'
+                        ? 'Please choose at least one dish, or select the BBQ zone option.'
+                        : 'Elige al menos un plato, o marca la opción de zona BBQ.');
+                      return;
+                    }
+                    if (foodIncomplete) {
+                      setErrorMsg(language === 'en'
+                        ? `Please finish the choices for: ${foodMissingNames.join(', ')}.`
+                        : `Falta completar: ${foodMissingNames.join(', ')}.`);
+                      return;
+                    }
                   }
                   if (step === 3 && !selectedDomeId) {
                     setErrorMsg(t('wizard.select_dome_err'));
                     return;
                   }
+                  setErrorMsg('');
                   setStep(prev => prev + 1);
                 }}
                 className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 flex items-center justify-center space-x-2 text-sm shadow-md shadow-emerald-600/20 cursor-pointer"
