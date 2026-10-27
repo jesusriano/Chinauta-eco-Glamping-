@@ -62,12 +62,22 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
     setFoodChoices(prev => ({ ...prev, [id]: { preparation: '', meat: '', side: '', qty: 0, ...prev[id], ...patch } }));
   // Meat options are the meat-type entries of the dish; the rest are cooking styles.
   const isMeatOption = (p: string) => /^(carne de res|cerdo|pechuga)$/i.test(p.trim());
+  // Meat types offered for any dish whose name mentions "carne", even if the saved menu lacks them.
+  const DEFAULT_MEATS = [
+    { value: 'Carne de res', label_en: 'Beef' },
+    { value: 'Cerdo', label_en: 'Pork' },
+    { value: 'Pechuga', label_en: 'Chicken breast' },
+  ];
   const getPrepGroups = (item: any) => {
     const preps: string[] = item.preparations || [];
     const preps_en: string[] = item.preparations_en || [];
     const toOpt = (p: string) => ({ value: p, label: language === 'en' ? (preps_en[preps.indexOf(p)] || p) : p });
+    let meats = preps.filter(isMeatOption).map(toOpt);
+    if (meats.length === 0 && /carne/i.test(String(item.title || ''))) {
+      meats = DEFAULT_MEATS.map(m => ({ value: m.value, label: language === 'en' ? m.label_en : m.value }));
+    }
     return {
-      meats: preps.filter(isMeatOption).map(toOpt),
+      meats,
       styles: preps.filter(p => !isMeatOption(p)).map(toOpt),
       sides: (item.sides || []) as string[],
       sides_en: (item.sides_en || []) as string[],
