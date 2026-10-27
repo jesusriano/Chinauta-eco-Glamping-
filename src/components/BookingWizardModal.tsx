@@ -5,6 +5,7 @@ import { ImageCarousel } from './ImageCarousel';
 import { getDomeImages, DEFAULT_DOMES } from '../utils/domeImages';
 import { useLanguage } from '../context/LanguageContext';
 import { CHINAUTA_MENU_ITEMS } from './FoodMenuSection';
+import { isColombianHoliday } from '../utils/colombiaHolidays';
 
 interface BookingWizardModalProps {
   isOpen: boolean;
@@ -197,7 +198,8 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({
 
   // Weekday check
   const checkInDayOfWeek = new Date(checkIn).getDay();
-  const isWeekday = checkInDayOfWeek >= 1 && checkInDayOfWeek <= 4;
+  // Festivos de Colombia se cobran como fin de semana (sin descuento entre semana).
+  const isWeekday = checkInDayOfWeek >= 1 && checkInDayOfWeek <= 4 && !isColombianHoliday(checkIn);
 
   let effectiveDiscountPercent = 0;
   if (isWeekday) {
