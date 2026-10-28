@@ -33,24 +33,24 @@ export const DecorationsSection: React.FC<DecorationsSectionProps> = ({ onOpenBo
   const isEn = language === 'en';
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 space-y-16">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-16 space-y-12 sm:space-y-16">
       <div className="text-center space-y-3">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">
           <Sparkles className="w-4 h-4" />
           <span>{isEn ? 'Decorations' : 'Decoraciones'}</span>
         </div>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
           {isEn ? 'Make your stay special' : 'Haz tu estadía especial'}
         </h2>
       </div>
 
       {DECORATION_GROUPS.map(group => (
-        <div key={group.key} className="space-y-8">
+        <div key={group.key} className="space-y-6 sm:space-y-8">
           <div className="text-center space-y-2">
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+            <h3 className="text-xl sm:text-3xl font-extrabold text-slate-900">
               {isEn ? group.title_en : group.title}
             </h3>
-            <p className="text-2xl sm:text-3xl font-extrabold text-emerald-700">{group.price}</p>
+            <p className="text-xl sm:text-3xl font-extrabold text-emerald-700">{group.price}</p>
             <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
               {isEn ? group.desc_en : group.desc}
             </p>
@@ -81,7 +81,7 @@ export const DecorationsSection: React.FC<DecorationsSectionProps> = ({ onOpenBo
           <button
             type="button"
             onClick={onOpenBooking}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold shadow-lg shadow-emerald-700/30 hover:from-emerald-700 hover:to-teal-800 text-sm"
+            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold shadow-lg shadow-emerald-700/30 hover:from-emerald-700 hover:to-teal-800 text-sm"
           >
             {isEn ? 'Book now' : 'Reservar ahora'}
           </button>
