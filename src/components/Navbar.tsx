@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Calendar, Compass, Phone, Shield, Search, Home, Utensils, 
   Menu, X, ChevronDown, MapPin, Sparkles, Waves, Clock, 
-  MessageSquare, ChevronRight, ExternalLink, HelpCircle, Sparkles
+  MessageSquare, ChevronRight, ExternalLink, HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
