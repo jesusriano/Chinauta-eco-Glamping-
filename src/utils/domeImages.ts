@@ -15,7 +15,7 @@ export const DEFAULT_DOMES: Dome[] = [
     id: 1,
     name: "Domo Huitaca",
     code: "DOMO-01",
-    description: "Romántico domo geodésico con jacuzzi privado de hidromasaje al aire libre, malla de descanso tipo catamarán, baño privado y vista privilegiada sobre las montañas de Chinauta.",
+    description: "Romántico domo geodésico con jacuzzi privado de hidromasaje al aire libre, baño privado, zona BBQ, cocina pequeña y vista privilegiada sobre las montañas de Chinauta.",
     capacity: 2,
     price_per_night: 380000,
     image_url: "/assets/images/dome_1_1791403584294.jpg",
@@ -29,14 +29,14 @@ export const DEFAULT_DOMES: Dome[] = [
       huitacaEntranceSteps
     ],
     status: "Disponible",
-    features: "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Desayuno campesino incluido, Zona de fogata, Malla de descanso",
+    features: "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona BBQ, Cocina pequeña, Desayuno campesino incluido",
     policies: "No se admiten mascotas. Check-in: 3:00 PM. Check-out: 12:00 PM."
   },
   {
     id: 2,
     name: "Domo Bochica",
     code: "DOMO-02",
-    description: "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, terraza, zona barbacoa (BBQ), malla flotante y zona de fogata.",
+    description: "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, terraza, zona barbacoa (BBQ), cocina pequeña y vista premium.",
     capacity: 3,
     price_per_night: 450000,
     image_url: "/assets/images/dome_2_1791404907620.jpg",
@@ -50,14 +50,14 @@ export const DEFAULT_DOMES: Dome[] = [
       bochicaSunsetView
     ],
     status: "Disponible",
-    features: "1 Cama King + 1 Cama Pequeña, Jacuzzi privado de hidromasaje, Terraza privada, Zona Barbacoa (BBQ), Malla flotante, Zona de fogata, Desayuno campesino incluido, Baño privado",
+    features: "1 Cama King + 1 Cama Pequeña, Jacuzzi privado de hidromasaje, Terraza privada, Zona BBQ, Cocina pequeña, Vista premium, Desayuno campesino incluido, Baño privado",
     policies: "Ambiente familiar y de descanso. Check-in: 3:00 PM."
   },
   {
     id: 3,
     name: "Domo Bachué",
     code: "DOMO-03",
-    description: "Acogedor domo inmerso en la naturaleza con jacuzzi privado de hidromasaje, zona barbacoa (BBQ), 1 cama King, baño privado, zona de fogata y vista al bosque nativo.",
+    description: "Acogedor domo inmerso en la naturaleza con jacuzzi privado de hidromasaje, zona barbacoa (BBQ), cocina pequeña, 1 cama King, baño privado y vista al bosque nativo.",
     capacity: 2,
     price_per_night: 350000,
     image_url: chinautaRomanticDomeNight,
@@ -68,14 +68,14 @@ export const DEFAULT_DOMES: Dome[] = [
       bochicaJacuzziDeck
     ],
     status: "Disponible",
-    features: "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona Barbacoa (BBQ), Zona de fogata, Desayuno campesino incluido, Vista al bosque",
+    features: "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona BBQ, Cocina pequeña, Desayuno campesino incluido, Vista al bosque",
     policies: "Ideal para parejas en desconexión total. Check-in: 3:00 PM."
   },
   {
     id: 4,
     name: "Domo Luna Chía",
     code: "DOMO-04",
-    description: "Luminoso domo con jacuzzi privado de hidromasaje, zona de fogata privada, 1 cama King, baño privado y vista panorámica al valle de Chinauta.",
+    description: "Luminoso domo con jacuzzi privado de hidromasaje, zona BBQ, cocina pequeña, 1 cama King, baño privado y vista panorámica al valle de Chinauta.",
     capacity: 2,
     price_per_night: 420000,
     image_url: "/assets/images/dome_4_1791404275513.jpg",
@@ -88,14 +88,14 @@ export const DEFAULT_DOMES: Dome[] = [
       chinautaRomanticDomeNight
     ],
     status: "Disponible",
-    features: "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona de fogata privada, Desayuno campesino incluido, Vista panorámica",
+    features: "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona BBQ, Cocina pequeña, Desayuno campesino incluido, Vista panorámica",
     policies: "Ambiente romántico y de descanso. Check-in: 3:00 PM."
   },
   {
     id: 5,
     name: "Domo Chiminichagua",
     code: "DOMO-05",
-    description: "Domo de descanso con jacuzzi privado de hidromasaje, balcón privado, 1 cama King, baño privado, zona de fogata y desayuno campesino.",
+    description: "Domo de descanso con jacuzzi privado de hidromasaje, balcón privado, zona BBQ, cocina pequeña, 1 cama King, baño privado y la mejor vista del glamping.",
     capacity: 2,
     price_per_night: 390000,
     image_url: "/assets/images/dome_5_1791404612181.jpg",
@@ -108,14 +108,14 @@ export const DEFAULT_DOMES: Dome[] = [
       bochicaRomanticDecor
     ],
     status: "Disponible",
-    features: "Jacuzzi privado de hidromasaje, Balcón privado, Baño privado, 1 Cama King, Zona de fogata, Desayuno campesino incluido",
+    features: "Jacuzzi privado de hidromasaje, Balcón privado, Baño privado, 1 Cama King, Zona BBQ, Cocina pequeña, Mejor vista del glamping, Desayuno campesino incluido",
     policies: "Prohibido fiestas o música a alto volumen. Check-in: 3:00 PM."
   },
   {
     id: 6,
     name: "Domo Xue Sol",
     code: "DOMO-06",
-    description: "Domo con jacuzzi privado de hidromasaje al aire libre, terraza con vista panorámica a la montaña, 1 cama King, baño privado, zona de fogata y desayuno campesino incluido.",
+    description: "Domo con jacuzzi privado de hidromasaje al aire libre, terraza con vista panorámica a la montaña, hamaca, zona BBQ, cocina pequeña, 1 cama King, baño privado y desayuno campesino incluido.",
     capacity: 2,
     price_per_night: 480000,
     image_url: bochicaJacuzziDeck,
@@ -126,7 +126,7 @@ export const DEFAULT_DOMES: Dome[] = [
       huitacaDeckJacuzzi
     ],
     status: "Disponible",
-    features: "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona de fogata privada, Malla de descanso, Desayuno campesino incluido",
+    features: "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona BBQ, Cocina pequeña, Vista premium, Hamaca (único domo con hamaca), Desayuno campesino incluido",
     policies: "Experiencia exclusiva de descanso y naturaleza. Check-in: 3:00 PM."
   }
 ];

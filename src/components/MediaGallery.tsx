@@ -98,7 +98,7 @@ const DEFAULT_GALLERY_ITEMS: GalleryMediaItem[] = [
     media_type: 'image',
     media_url: 'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80',
     image: 'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80',
-    description: 'Espacios privados para fogata nocturna, vino de la casa y vista a las estrellas.'
+    description: 'Una fogata comunitaria para todo el glamping, con vino de la casa y vista a las estrellas.'
   }
 ];
 

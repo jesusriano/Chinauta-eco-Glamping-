@@ -337,8 +337,8 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
               <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
                 <Flame className="w-6 h-6" />
               </div>
-              <h4 className="text-lg font-bold text-white">Zona de Fogatas Privada</h4>
-              <p className="text-slate-400 text-sm">Espacios privados para encender fogata nocturna, compartir vino y malvaviscos.</p>
+              <h4 className="text-lg font-bold text-white">Fogata Comunitaria</h4>
+              <p className="text-slate-400 text-sm">Una sola fogata comunitaria para todo el glamping, para compartir vino y malvaviscos.</p>
             </div>
 
             <div className="glass-dark p-6 rounded-2xl border border-slate-800 space-y-4">
