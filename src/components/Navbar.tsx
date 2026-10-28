@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Calendar, Compass, Phone, Shield, Search, Home, Utensils, 
   Menu, X, ChevronDown, MapPin, Sparkles, Waves, Clock, 
-  MessageSquare, ChevronRight, ExternalLink, HelpCircle
+  MessageSquare, ChevronRight, ExternalLink, HelpCircle, Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
@@ -23,7 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAdminLogin,
   onOpenMyReservations
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAvailableMenuOpen, setIsAvailableMenuOpen] = useState(false);
   const [isExplorarDropdownOpen, setIsExplorarDropdownOpen] = useState(false);
@@ -145,6 +145,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Utensils className="w-4 h-4 text-emerald-600" />
                 <span>{t('nav.menu')}</span>
+              </button>
+
+              <button
+                onClick={() => handleNavClick('decoraciones')}
+                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-1.5 ${
+                  activeTab === 'decoraciones'
+                    ? 'bg-emerald-50 text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                }`}
+              >
+                <Sparkles className="w-4 h-4 text-emerald-600" />
+                <span>{language === 'en' ? 'Decorations' : 'Decoraciones'}</span>
               </button>
 
               {/* Elegant Dropdown: Explorar */}
@@ -435,6 +447,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <div className="flex items-center space-x-3">
                             <Utensils className="w-5 h-5 text-emerald-600" />
                             <span>{t('nav.menu')}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsAvailableMenuOpen(false);
+                            handleNavClick('decoraciones');
+                          }}
+                          className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-colors ${
+                            activeTab === 'decoraciones' ? 'bg-emerald-100/70 text-emerald-900 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Sparkles className="w-5 h-5 text-emerald-600" />
+                            <span>{language === 'en' ? 'Decorations' : 'Decoraciones'}</span>
                           </div>
                           <ChevronRight className="w-4 h-4 text-slate-400" />
                         </button>

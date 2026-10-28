@@ -6,6 +6,7 @@ import { ContactView } from './components/ContactView';
 import { InteractiveMap } from './components/InteractiveMap';
 import { FoodMenuSection } from './components/FoodMenuSection';
 import { FAQSection } from './components/FAQSection';
+import { DecorationsSection } from './components/DecorationsSection';
 import { BookingWizardModal } from './components/BookingWizardModal';
 import { MyReservationsModal } from './components/MyReservationsModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
@@ -104,6 +105,10 @@ function AppContent() {
 
         {activeTab === 'menu' && (
           <FoodMenuSection onOpenBooking={handleOpenBooking} />
+        )}
+
+        {activeTab === 'decoraciones' && (
+          <DecorationsSection onOpenBooking={handleOpenBooking} />
         )}
       </div>
 
