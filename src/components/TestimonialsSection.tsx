@@ -3,6 +3,7 @@ import { Star, CheckCircle2, Quote, Upload, Camera, Plus, X, ImagePlus, Video, C
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { getResponsiveImageData } from '../utils/imageUtils';
+import { PUBLIC_UPLOADS_ENABLED } from '../config/uploads';
 
 export interface Testimonial {
   id: string | number;
@@ -224,13 +225,15 @@ export const TestimonialsSection: React.FC = () => {
 
   return (
     <section className="py-20 bg-slate-50 border-y border-slate-200/60 relative">
-      <input
+      {PUBLIC_UPLOADS_ENABLED && (
+<input
         type="file"
         ref={fileInputRef}
         onChange={handleCardMediaUpload}
         accept="image/*,video/*"
         className="hidden"
       />
+)}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         
@@ -305,7 +308,8 @@ export const TestimonialsSection: React.FC = () => {
 
                 {/* Quick Upload Action on Card */}
                 <div className="pt-2 flex flex-wrap items-center gap-2">
-                  <button
+                  {PUBLIC_UPLOADS_ENABLED && (
+<button
                     type="button"
                     onClick={() => {
                       setActiveUploadTarget({ id: item.id, type: 'image' });
@@ -316,8 +320,10 @@ export const TestimonialsSection: React.FC = () => {
                     <Camera className="w-3.5 h-3.5 text-emerald-600" />
                     <span>{t('testimonials.upload_photo_btn')}</span>
                   </button>
+)}
 
-                  <button
+                  {PUBLIC_UPLOADS_ENABLED && (
+<button
                     type="button"
                     onClick={() => {
                       setActiveUploadTarget({ id: item.id, type: 'video' });
@@ -328,6 +334,7 @@ export const TestimonialsSection: React.FC = () => {
                     <Video className="w-3.5 h-3.5 text-teal-600" />
                     <span>{t('testimonials.upload_video_btn')}</span>
                   </button>
+)}
                 </div>
               </div>
 
@@ -500,21 +507,25 @@ export const TestimonialsSection: React.FC = () => {
                 </div>
 
                 {/* Upload Real Vacation Photo/Video */}
+{PUBLIC_UPLOADS_ENABLED && (
                 <div className="space-y-2 pt-2 border-t border-slate-100">
                   <label className="block text-xs font-semibold text-slate-700 uppercase">
                     {t('testimonials.upload_photo_btn')} / {t('testimonials.upload_video_btn')}
                   </label>
 
-                  <input
+                  {PUBLIC_UPLOADS_ENABLED && (
+<input
                     type="file"
                     ref={modalFileInputRef}
                     onChange={handleModalFileUpload}
                     accept="image/*,video/*"
                     className="hidden"
                   />
+)}
 
                   <div className="flex items-center space-x-3">
-                    <button
+                    {PUBLIC_UPLOADS_ENABLED && (
+<button
                       type="button"
                       onClick={() => modalFileInputRef.current?.click()}
                       disabled={isUploading}
@@ -523,6 +534,7 @@ export const TestimonialsSection: React.FC = () => {
                       <ImagePlus className="w-4 h-4 text-emerald-600" />
                       <span>{isUploading ? '...' : t('testimonials.upload_photo_btn')}</span>
                     </button>
+)}
 
                     {newMediaUrl && (
                       <span className="text-xs text-emerald-700 font-medium flex items-center space-x-1">
@@ -542,6 +554,8 @@ export const TestimonialsSection: React.FC = () => {
                     </div>
                   )}
                 </div>
+)}
+
 
                 <div className="pt-4 flex items-center justify-end space-x-3">
                   <button

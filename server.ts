@@ -204,7 +204,7 @@ if (domeCount.count === 0) {
   insertDome.run(
     "Domo Bochica",
     "DOMO-02",
-    "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, terraza, zona barbacoa (BBQ), malla flotante y zona de fogata.",
+    "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, zona barbacoa (BBQ), malla flotante y zona de fogata.",
     3,
     450000,
     "/assets/images/chinauta_romantic_dome_night.jpg",
@@ -215,7 +215,7 @@ if (domeCount.count === 0) {
       "/assets/images/bochica_sunset_view_1790617981274.jpg"
     ]),
     "Disponible",
-    "1 Cama King + 1 Cama Pequeña, Jacuzzi privado de hidromasaje, Terraza privada, Zona Barbacoa (BBQ), Malla flotante, Zona de fogata, Desayuno campesino incluido, Baño privado",
+    "1 Cama King + 1 Cama Pequeña, Jacuzzi privado de hidromasaje, Zona Barbacoa (BBQ), Malla flotante, Zona de fogata, Desayuno campesino incluido, Baño privado",
     "Ambiente familiar y de descanso. Check-in: 3:00 PM."
   );
   insertDome.run(
@@ -272,7 +272,7 @@ if (domeCount.count === 0) {
   insertDome.run(
     "Domo Xue Sol",
     "DOMO-06",
-    "Domo con jacuzzi privado de hidromasaje al aire libre, terraza con vista panorámica a la montaña, 1 cama King, baño privado, zona de fogata y desayuno campesino incluido.",
+    "Domo con jacuzzi privado de hidromasaje al aire libre, vista panorámica a la montaña, 1 cama King, baño privado, zona de fogata y desayuno campesino incluido.",
     2,
     480000,
     "/assets/images/bochica_jacuzzi_deck_1790618019311.jpg",
@@ -429,8 +429,8 @@ try {
     "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Desayuno campesino incluido, Zona de fogata, Malla de descanso"
   );
   db.prepare(`UPDATE domes SET capacity = 3, description = ?, features = ? WHERE code = 'DOMO-02' OR id = 2`).run(
-    "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, terraza, zona barbacoa (BBQ), malla flotante y zona de fogata.",
-    "1 Cama King + 1 Cama Pequeña, Jacuzzi privado de hidromasaje, Terraza privada, Zona Barbacoa (BBQ), Malla flotante, Zona de fogata, Desayuno campesino incluido, Baño privado"
+    "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, zona barbacoa (BBQ), malla flotante y zona de fogata.",
+    "1 Cama King + 1 Cama Pequeña, Jacuzzi privado de hidromasaje, Zona Barbacoa (BBQ), Malla flotante, Zona de fogata, Desayuno campesino incluido, Baño privado"
   );
   db.prepare(`UPDATE domes SET capacity = 2, description = ?, features = ? WHERE code = 'DOMO-03' OR id = 3`).run(
     "Acogedor domo inmerso en la naturaleza con jacuzzi privado de hidromasaje, zona barbacoa (BBQ), 1 cama King, baño privado, zona de fogata y vista al bosque nativo.",
@@ -445,7 +445,7 @@ try {
     "Jacuzzi privado de hidromasaje, Balcón privado, Baño privado, 1 Cama King, Zona de fogata, Desayuno campesino incluido"
   );
   db.prepare(`UPDATE domes SET capacity = 2, description = ?, features = ? WHERE code = 'DOMO-06' OR id = 6`).run(
-    "Domo con jacuzzi privado de hidromasaje al aire libre, terraza con vista panorámica a la montaña, 1 cama King, baño privado, zona de fogata y desayuno campesino incluido.",
+    "Domo con jacuzzi privado de hidromasaje al aire libre, vista panorámica a la montaña, 1 cama King, baño privado, zona de fogata y desayuno campesino incluido.",
     "Jacuzzi privado de hidromasaje, Baño privado, 1 Cama King, Zona de fogata privada, Malla de descanso, Desayuno campesino incluido"
   );
 } catch (e) {
@@ -457,11 +457,11 @@ try {
   db.exec(`
     DELETE FROM gallery_items;
     INSERT INTO gallery_items (title, category, media_type, media_url, description) VALUES
-    ('Domo 1 Huitaca — Video Tour y Jacuzzi Privado', 'Videos', 'video', '/assets/videos/domo_1_user_video.mp4', 'Recorrido completo en video de alta calidad por las instalaciones, terraza y jacuzzi del Domo Huitaca.'),
+    ('Domo 1 Huitaca — Video Tour y Jacuzzi Privado', 'Videos', 'video', '/assets/videos/domo_1_user_video.mp4', 'Recorrido completo en video de alta calidad por las instalaciones, jacuzzi del Domo Huitaca.'),
     ('Domo 3 Bachué — Experiencia de Descanso y Naturaleza', 'Videos', 'video', '/assets/videos/domo_3_user_video.mp4', 'Video experiencia real en el Domo Bachué rodeado de vegetación y clima cálido en Chinauta.'),
-    ('Domo 5 Chiminichagua — Vista Panorámica y Balcón', 'Videos', 'video', '/assets/videos/domo_5_user_video.mp4', 'Video tour por la terraza privada y balcón del Domo Chiminichagua.'),
+    ('Domo 5 Chiminichagua — Vista Panorámica y Balcón', 'Videos', 'video', '/assets/videos/domo_5_user_video.mp4', 'Video tour por el balcón del Domo Chiminichagua.'),
     ('Domo 1 Huitaca — Habitación y Jacuzzi Fotos Reales', 'Domos', 'image', '/assets/images/dome_1_1791403584294.jpg', 'Fotografía real del Domo Huitaca con jacuzzi privado de hidromasaje y cama King.'),
-    ('Domo 2 Bochica — Suite con Doble Cama y Terraza', 'Domos', 'image', '/assets/images/dome_2_1791404907620.jpg', 'Fotografía real del Domo Bochica equipado con 1 cama King y 1 cama adicional.'),
+    ('Domo 2 Bochica — Suite con Doble Cama', 'Domos', 'image', '/assets/images/dome_2_1791404907620.jpg', 'Fotografía real del Domo Bochica equipado con 1 cama King y 1 cama adicional.'),
     ('Domo 4 Luna Chía — Vista Espectacular al Valle', 'Domos', 'image', '/assets/images/dome_4_1791404275513.jpg', 'Fotografía real del Domo Luna Chía con amplia panorámica de las montañas de Chinauta.'),
     ('Domo 5 Chiminichagua — Suite y Balcón Campestre', 'Domos', 'image', '/assets/images/dome_5_1791404612181.jpg', 'Fotografía real del Domo Chiminichagua con balcón privado y jacuzzi de hidromasaje.'),
     ('Deck Solárium con Asoleadoras & Sombrilla', 'Jacuzzis & Vistas', 'image', '/assets/images/chinauta_deck_asoleadoras.jpg', 'Deck privado en madera con asoleadoras, sombrilla verde y jacuzzi de hidromasaje.'),

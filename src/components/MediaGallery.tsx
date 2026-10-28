@@ -15,6 +15,7 @@ import chinautaRomanticDomeNight from '../assets/images/chinauta_romantic_dome_n
 import bochicaRomanticDecor from '../assets/images/bochica_romantic_decor_1790618007934.jpg';
 import bochicaJacuzziDeck from '../assets/images/bochica_jacuzzi_deck_1790618019311.jpg';
 import bochicaSunsetView from '../assets/images/bochica_sunset_view_1790617981274.jpg';
+import { PUBLIC_UPLOADS_ENABLED } from '../config/uploads';
 
 export interface GalleryMediaItem {
   id: string | number;
@@ -53,7 +54,7 @@ const DEFAULT_GALLERY_ITEMS: GalleryMediaItem[] = [
     media_type: 'video',
     media_url: '/assets/videos/domo_1_huitaca.mp4',
     image: chinautaDeckAsoleadoras,
-    description: 'Recorrido en video de alta definición por las instalaciones, terraza y jacuzzi del Domo Huitaca.'
+    description: 'Recorrido en video de alta definición por las instalaciones, jacuzzi del Domo Huitaca.'
   },
   {
     id: 4,
@@ -359,12 +360,13 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
   return (
     <div 
       className="space-y-10 relative"
-      onDragOver={handleDragOver}
+      onDragOver={PUBLIC_UPLOADS_ENABLED ? handleDragOver : undefined}
       onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      onDrop={PUBLIC_UPLOADS_ENABLED ? handleDrop : undefined}
     >
       {/* Hidden file input */}
-      <input
+      {PUBLIC_UPLOADS_ENABLED && (
+<input
         type="file"
         ref={fileInputRef}
         onChange={(e) => {
@@ -375,6 +377,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
         accept="image/*,video/*"
         className="hidden"
       />
+)}
 
       {/* Global Drag & Drop Overlay Indicator */}
       <AnimatePresence>
@@ -414,7 +417,8 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
         </div>
 
         {/* Upload Button */}
-        <button
+        {PUBLIC_UPLOADS_ENABLED && (
+<button
           type="button"
           onClick={() => setIsUploadModalOpen(true)}
           className="w-full sm:w-auto justify-center px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs sm:text-sm flex items-center space-x-2.5 shadow-xl shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
@@ -422,6 +426,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
           <UploadCloud className="w-5 h-5 text-emerald-200" />
           <span>{t('gallery.upload_btn')}</span>
         </button>
+)}
       </div>
 
       {/* Category Filter Pills */}
@@ -860,7 +865,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onOpenBooking }) => 
 
       {/* Upload Modal with Drag & Drop Zone */}
       <AnimatePresence>
-        {isUploadModalOpen && (
+        {PUBLIC_UPLOADS_ENABLED && isUploadModalOpen && (
           <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}

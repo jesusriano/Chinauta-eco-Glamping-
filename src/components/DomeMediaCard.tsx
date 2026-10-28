@@ -6,6 +6,7 @@ import { getDomeImages } from '../utils/domeImages';
 import defaultDomo1Video from '../assets/videos/domo_1_huitaca.mp4';
 import { getResponsiveImageData } from '../utils/imageUtils';
 import { useLanguage } from '../context/LanguageContext';
+import { PUBLIC_UPLOADS_ENABLED } from '../config/uploads';
 
 interface DomeMediaCardProps {
   dome: Dome;
@@ -281,20 +282,24 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
   return (
     <div className={`relative w-full overflow-hidden select-none bg-slate-950 rounded-t-2xl flex flex-col justify-end ${className}`}>
       {/* Hidden File Inputs for Video and Image */}
-      <input
+      {PUBLIC_UPLOADS_ENABLED && (
+<input
         type="file"
         ref={videoInputRef}
         onChange={handleVideoUpload}
         accept="video/mp4,video/webm,video/quicktime"
         className="hidden"
       />
-      <input
+)}
+      {PUBLIC_UPLOADS_ENABLED && (
+<input
         type="file"
         ref={imageInputRef}
         onChange={handleImageUpload}
         accept="image/jpeg,image/png,image/webp,image/jpg"
         className="hidden"
       />
+)}
 
       {/* Main Display: Video vs Photos */}
       {activeTab === 'video' && !videoError ? (
@@ -345,7 +350,8 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
 
           {/* Top Right Controls: Subir Video, Subir Foto, Mute, Fullscreen */}
           <div className="absolute top-3 right-3 z-20 flex items-center space-x-1.5 pointer-events-auto">
-            <button
+            {PUBLIC_UPLOADS_ENABLED && (
+<button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -357,8 +363,10 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
               <Upload className="w-3.5 h-3.5 text-emerald-400" />
               <span>{t('domes.upload_video')}</span>
             </button>
+)}
 
-            <button
+            {PUBLIC_UPLOADS_ENABLED && (
+<button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -370,6 +378,7 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
               <ImagePlus className="w-3.5 h-3.5 text-teal-300" />
               <span className="hidden sm:inline">{t('domes.upload_photo')}</span>
             </button>
+)}
 
             <button
               type="button"
@@ -440,7 +449,8 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
 
           {/* Top Right: Subir Imagen, Subir Video, Borrar & Expand */}
           <div className="absolute top-3 right-3 z-20 flex items-center space-x-1.5 pointer-events-auto">
-            <button
+            {PUBLIC_UPLOADS_ENABLED && (
+<button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -452,8 +462,10 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
               <ImagePlus className="w-3.5 h-3.5 text-emerald-400" />
               <span>{t('domes.upload_photo')}</span>
             </button>
+)}
 
-            <button
+            {PUBLIC_UPLOADS_ENABLED && (
+<button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -465,8 +477,9 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
               <Upload className="w-3.5 h-3.5 text-teal-300" />
               <span className="hidden sm:inline">{t('domes.upload_video')}</span>
             </button>
+)}
 
-            {images.length > 1 && (
+            {PUBLIC_UPLOADS_ENABLED && images.length > 1 && (
               <button
                 type="button"
                 onClick={handleDeleteCurrentPhoto}
@@ -573,13 +586,15 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
 
       {/* Floating Quick Upload Bar on Mobile */}
       <div className="absolute bottom-1.5 right-3 sm:hidden z-20 flex items-center space-x-1">
-        <button
+        {PUBLIC_UPLOADS_ENABLED && (
+<button
           type="button"
           onClick={() => (activeTab === 'video' ? videoInputRef.current?.click() : imageInputRef.current?.click())}
           className="text-[10px] text-emerald-300 underline font-medium"
         >
           {activeTab === 'video' ? `+ ${t('domes.upload_video')}` : `+ ${t('domes.upload_photo')}`}
         </button>
+)}
       </div>
 
       {/* Toast Notification */}
@@ -648,7 +663,8 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-2 py-2">
-              <button
+              {PUBLIC_UPLOADS_ENABLED && (
+<button
                 type="button"
                 onClick={() => imageInputRef.current?.click()}
                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95"
@@ -656,8 +672,9 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
                 <ImagePlus className="w-4 h-4" />
                 <span>{t('domes.upload_photo')}</span>
               </button>
+)}
 
-              {images.length > 1 && (
+              {PUBLIC_UPLOADS_ENABLED && images.length > 1 && (
                 <button
                   type="button"
                   onClick={handleDeleteCurrentPhoto}

@@ -36,7 +36,7 @@ export const DEFAULT_DOMES: Dome[] = [
     id: 2,
     name: "Domo Bochica",
     code: "DOMO-02",
-    description: "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, terraza, zona barbacoa (BBQ), cocina pequeña y vista premium.",
+    description: "Domo espacioso equipado con 1 cama King size y 1 cama pequeña (único domo con 2 camas), jacuzzi privado de hidromasaje, zona barbacoa (BBQ), cocina pequeña y vista premium.",
     capacity: 3,
     price_per_night: 450000,
     image_url: "/assets/images/dome_2_1791404907620.jpg",
@@ -50,7 +50,7 @@ export const DEFAULT_DOMES: Dome[] = [
       bochicaSunsetView
     ],
     status: "Disponible",
-    features: "1 Cama King + 1 Cama Pequeña, Jacuzzi privado de hidromasaje, Terraza privada, Zona BBQ, Cocina pequeña, Vista premium, Desayuno campesino incluido, Baño privado",
+    features: "1 Cama King + 1 Cama Pequeña, Jacuzzi privado de hidromasaje, Zona BBQ, Cocina pequeña, Vista premium, Desayuno campesino incluido, Baño privado",
     policies: "Ambiente familiar y de descanso. Check-in: 3:00 PM."
   },
   {
@@ -115,7 +115,7 @@ export const DEFAULT_DOMES: Dome[] = [
     id: 6,
     name: "Domo Xue Sol",
     code: "DOMO-06",
-    description: "Domo con jacuzzi privado de hidromasaje al aire libre, terraza con vista panorámica a la montaña, hamaca, zona BBQ, cocina pequeña, 1 cama King, baño privado y desayuno campesino incluido.",
+    description: "Domo con jacuzzi privado de hidromasaje al aire libre, vista panorámica a la montaña, hamaca, zona BBQ, cocina pequeña, 1 cama King, baño privado y desayuno campesino incluido.",
     capacity: 2,
     price_per_night: 480000,
     image_url: bochicaJacuzziDeck,

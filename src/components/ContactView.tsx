@@ -3,6 +3,7 @@ import { MapPin, Phone, Mail, HelpCircle, Upload, Camera, CheckCircle, Sparkles 
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageCarousel } from './ImageCarousel';
 import { useLanguage } from '../context/LanguageContext';
+import { PUBLIC_UPLOADS_ENABLED } from '../config/uploads';
 
 export const ContactView: React.FC = () => {
   const { t, language } = useLanguage();
@@ -174,13 +175,15 @@ export const ContactView: React.FC = () => {
 
       {/* Chinauta Fusagasugá Photo Gallery & Upload Section */}
       <div className="glass-card p-8 sm:p-10 rounded-3xl border border-slate-200 space-y-8 bg-gradient-to-b from-white to-slate-50 shadow-md">
-        <input
+        {PUBLIC_UPLOADS_ENABLED && (
+<input
           type="file"
           ref={fileInputRef}
           onChange={handleImageUpload}
           accept="image/*"
           className="hidden"
         />
+)}
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200/80 pb-6">
           <div className="space-y-2">
@@ -189,10 +192,11 @@ export const ContactView: React.FC = () => {
               <span>{language === 'en' ? 'Chinauta Fusagasugá Gallery' : 'Galería Chinauta Fusagasugá'}</span>
             </div>
             <h4 className="text-2xl font-bold text-slate-900">Postales y Momentos en Chinauta</h4>
-            <p className="text-sm text-slate-600">Sube tus propias imágenes de los domos y paisajes para exhibirlas en la galería.</p>
+            <p className="text-sm text-slate-600">Fotos reales de los domos y paisajes de Chinauta.</p>
           </div>
 
-          <button
+          {PUBLIC_UPLOADS_ENABLED && (
+<button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
@@ -201,6 +205,7 @@ export const ContactView: React.FC = () => {
             <Upload className="w-4 h-4" />
             <span>{isUploading ? 'Subiendo imagen...' : 'Subir Imagen a la Galería'}</span>
           </button>
+)}
         </div>
 
         {galleryImages.length === 0 ? (

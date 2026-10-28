@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { UploadCloud, Trash2 } from 'lucide-react';
 import { ImageCarousel } from './ImageCarousel';
+import { PUBLIC_UPLOADS_ENABLED } from '../config/uploads';
 
 interface LocationPhoto {
   id: number;
@@ -110,7 +111,8 @@ export const LocationPhotos: React.FC<LocationPhotosProps> = ({ defaultImages, a
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <input
+        {PUBLIC_UPLOADS_ENABLED && (
+<input
           ref={inputRef}
           type="file"
           accept="image/*"
@@ -118,7 +120,9 @@ export const LocationPhotos: React.FC<LocationPhotosProps> = ({ defaultImages, a
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
-        <button
+)}
+        {PUBLIC_UPLOADS_ENABLED && (
+<button
           type="button"
           disabled={busy}
           onClick={() => inputRef.current?.click()}
@@ -127,6 +131,7 @@ export const LocationPhotos: React.FC<LocationPhotosProps> = ({ defaultImages, a
           <UploadCloud className="w-4 h-4" />
           <span>{busy ? 'Procesando...' : 'Subir fotos'}</span>
         </button>
+)}
         {msg && <span className="text-sm text-slate-600">{msg}</span>}
       </div>
 

@@ -3,6 +3,7 @@ import { Utensils, Sparkles, CheckCircle2, ChevronRight, ShoppingBag, Coffee, Fl
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageCarousel } from './ImageCarousel';
 import { useLanguage } from '../context/LanguageContext';
+import { PUBLIC_UPLOADS_ENABLED } from '../config/uploads';
 
 export interface FoodMenuItem {
   id: number;
@@ -323,13 +324,15 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12 relative">
-      <input
+      {PUBLIC_UPLOADS_ENABLED && (
+<input
         type="file"
         ref={fileInputRef}
         onChange={handleItemMediaUpload}
         accept={activeUploadTarget?.type === 'video' ? "video/*" : "image/*,video/*"}
         className="hidden"
       />
+)}
 
       {/* Header with Add Button */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -348,7 +351,8 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
           </p>
         </div>
 
-        <button
+        {PUBLIC_UPLOADS_ENABLED && (
+<button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
           className="w-full sm:w-auto justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-lg shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
@@ -356,6 +360,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
           <Plus className="w-4 h-4" />
           <span>{t('food_menu.add_btn')}</span>
         </button>
+)}
       </div>
 
       {/* Category Tabs */}
@@ -463,7 +468,8 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                     {t('food_menu.update_media')}
                   </span>
                   <div className="flex items-center space-x-2">
-                    <button
+                    {PUBLIC_UPLOADS_ENABLED && (
+<button
                       type="button"
                       onClick={() => {
                         setActiveUploadTarget({ id: item.id, type: 'image' });
@@ -474,8 +480,10 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                       <Camera className="w-3.5 h-3.5 text-emerald-600" />
                       <span>{t('food_menu.upload_photo')}</span>
                     </button>
+)}
 
-                    <button
+                    {PUBLIC_UPLOADS_ENABLED && (
+<button
                       type="button"
                       onClick={() => {
                         setActiveUploadTarget({ id: item.id, type: 'video' });
@@ -486,6 +494,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                       <Video className="w-3.5 h-3.5 text-teal-600" />
                       <span>{t('food_menu.upload_video')}</span>
                     </button>
+)}
                   </div>
                 </div>
 
@@ -686,13 +695,15 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                     {language === 'en' ? 'Upload Photo or Video Tour' : 'Subir Foto o Video del Plato'}
                   </label>
 
-                  <input
+                  {PUBLIC_UPLOADS_ENABLED && (
+<input
                     type="file"
                     ref={modalFileInputRef}
                     onChange={handleModalMediaUpload}
                     accept="image/*,video/*"
                     className="hidden"
                   />
+)}
 
                   <div className="flex items-center space-x-3">
                     <button

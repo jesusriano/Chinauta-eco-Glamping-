@@ -4,6 +4,7 @@ import { Play, Pause, Volume2, VolumeX, Maximize2, Film, Camera, Upload, CheckCi
 import defaultVideoUrl from '../assets/videos/domo_1_huitaca.mp4';
 import { ImageCarousel } from './ImageCarousel';
 import { useLanguage } from '../context/LanguageContext';
+import { PUBLIC_UPLOADS_ENABLED } from '../config/uploads';
 
 interface HuitacaVideoCardProps {
   images: string[];
@@ -158,13 +159,15 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
   return (
     <div className={`relative w-full overflow-hidden select-none group bg-slate-950 rounded-t-2xl flex flex-col justify-end ${className}`}>
       {/* Hidden File Input for uploading custom video */}
-      <input
+      {PUBLIC_UPLOADS_ENABLED && (
+<input
         type="file"
         ref={fileInputRef}
         onChange={handleFileUpload}
         accept="video/mp4,video/webm,video/quicktime"
         className="hidden"
       />
+)}
 
       {activeTab === 'video' && !videoError ? (
         <div className="absolute inset-0 overflow-hidden cursor-pointer" onClick={togglePlay}>
@@ -212,7 +215,8 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
 
           {/* Top Right: Upload Video & Fullscreen */}
           <div className="absolute top-3 right-3 z-20 flex items-center space-x-1.5 pointer-events-auto">
-            <button
+            {PUBLIC_UPLOADS_ENABLED && (
+<button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -224,6 +228,7 @@ export const HuitacaVideoCard: React.FC<HuitacaVideoCardProps> = ({
               <Upload className="w-3 h-3" />
               <span className="hidden sm:inline">{t('domes.upload_video')}</span>
             </button>
+)}
 
             <button
               type="button"
