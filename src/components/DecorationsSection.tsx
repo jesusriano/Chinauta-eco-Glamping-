@@ -8,8 +8,14 @@ const DECORATION_GROUPS = [
     title: 'Decoración VIP',
     title_en: 'VIP Decoration',
     price: '$150.000 COP',
-    desc: 'Globos, letras, pétalos de rosa y un montaje romántico para tu cama.',
-    desc_en: 'Balloons, letters, rose petals and a romantic setup for your bed.',
+    includes: [
+      ['1 botella de vino', '1 bottle of wine'],
+      ['5 snacks', '5 snacks'],
+      ['2 postres', '2 desserts'],
+      ['2 botellas de agua', '2 bottles of water'],
+      ['Mensaje personalizado en la cama', 'Personalized message on the bed'],
+      ['12 globos', '12 balloons'],
+    ],
     photos: [1, 2, 3, 4, 5].map(n => `/assets/images/decoracion-vip-${n}.jpg`),
   },
   {
@@ -17,8 +23,11 @@ const DECORATION_GROUPS = [
     title: 'Decoración Básica',
     title_en: 'Basic Decoration',
     price: '$75.000 COP',
-    desc: 'Un detalle especial para tu cama con letreros, globos y decoración sencilla.',
-    desc_en: 'A special touch for your bed with signs, balloons and simple decoration.',
+    includes: [
+      ['12 globos', '12 balloons'],
+      ['Mensaje personalizado', 'Personalized message'],
+      ['Decoraciones', 'Decorations'],
+    ],
     photos: [1, 2, 3, 4].map(n => `/assets/images/decoracion-basica-${n}.jpg`),
   },
 ];
@@ -51,9 +60,14 @@ export const DecorationsSection: React.FC<DecorationsSectionProps> = ({ onOpenBo
               {isEn ? group.title_en : group.title}
             </h3>
             <p className="text-xl sm:text-3xl font-extrabold text-emerald-700">{group.price}</p>
-            <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
-              {isEn ? group.desc_en : group.desc}
-            </p>
+            <ul className="text-sm sm:text-base text-slate-700 max-w-md mx-auto text-left space-y-1.5 pt-2">
+              {group.includes.map(([es, en]) => (
+                <li key={es} className="flex items-start space-x-2">
+                  <span className="text-emerald-600 font-bold">•</span>
+                  <span>{isEn ? en : es}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
