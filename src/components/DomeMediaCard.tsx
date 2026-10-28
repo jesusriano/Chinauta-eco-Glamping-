@@ -41,6 +41,9 @@ export const DomeMediaCard: React.FC<DomeMediaCardProps> = ({
     if (domeId === 1) {
       return defaultDomo1Video || '/assets/videos/domo_1_huitaca.mp4';
     }
+    if (domeId === 2 || domeId === 3 || domeId === 5) {
+      return `/assets/videos/domo_${domeId}_user_video.mp4`;
+    }
     // High quality nature and glamping fallback video for other domes
     return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
   });
