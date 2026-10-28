@@ -7,6 +7,7 @@ const VIP_PHOTOS = [
   '/assets/images/decoracion-vip-2.jpg',
   '/assets/images/decoracion-vip-3.jpg',
   '/assets/images/decoracion-vip-4.jpg',
+  '/assets/images/decoracion-vip-5.jpg',
 ];
 
 interface DecorationsSectionProps {
@@ -35,7 +36,12 @@ export const DecorationsSection: React.FC<DecorationsSectionProps> = ({ onOpenBo
         </p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="text-center">
+        <p className="text-2xl sm:text-3xl font-extrabold text-emerald-700">$150.000 COP</p>
+        <p className="text-xs text-slate-500">{isEn ? 'VIP decoration price' : 'Precio de la decoración VIP'}</p>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
         {VIP_PHOTOS.map((src, idx) => (
           <button
             key={src}
