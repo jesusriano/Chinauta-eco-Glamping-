@@ -5,7 +5,7 @@ import { ImageCarousel } from './ImageCarousel';
 import { useLanguage } from '../context/LanguageContext';
 
 export const ContactView: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -186,7 +186,7 @@ export const ContactView: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Galería Chinauta Fusagasugá</span>
+              <span>{language === 'en' ? 'Chinauta Fusagasugá Gallery' : 'Galería Chinauta Fusagasugá'}</span>
             </div>
             <h4 className="text-2xl font-bold text-slate-900">Postales y Momentos en Chinauta</h4>
             <p className="text-sm text-slate-600">Sube tus propias imágenes de los domos y paisajes para exhibirlas en la galería.</p>

@@ -457,12 +457,12 @@ export const TestimonialsSection: React.FC = () => {
                       onChange={e => setNewDome(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-emerald-500 focus:outline-hidden bg-white"
                     >
-                      <option value="Domo Huitaca">Domo 1 — Huitaca</option>
-                      <option value="Domo Bochica">Domo 2 — Bochica</option>
-                      <option value="Domo Bachué">Domo 3 — Bachué</option>
-                      <option value="Domo Luna Chía">Domo 4 — Luna Chía</option>
-                      <option value="Domo Chiminichagua">Domo 5 — Chiminichagua</option>
-                      <option value="Domo Xue Sol">Domo 6 — Xue Sol</option>
+                      <option value="Domo Huitaca">{language === 'en' ? 'Dome 1 — Huitaca' : 'Domo 1 — Huitaca'}</option>
+                      <option value="Domo Bochica">{language === 'en' ? 'Dome 2 — Bochica' : 'Domo 2 — Bochica'}</option>
+                      <option value="Domo Bachué">{language === 'en' ? 'Dome 3 — Bachué' : 'Domo 3 — Bachué'}</option>
+                      <option value="Domo Luna Chía">{language === 'en' ? 'Dome 4 — Luna Chía' : 'Domo 4 — Luna Chía'}</option>
+                      <option value="Domo Chiminichagua">{language === 'en' ? 'Dome 5 — Chiminichagua' : 'Domo 5 — Chiminichagua'}</option>
+                      <option value="Domo Xue Sol">{language === 'en' ? 'Dome 6 — Xue Sol' : 'Domo 6 — Xue Sol'}</option>
                     </select>
                   </div>
                 </div>

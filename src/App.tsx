@@ -17,7 +17,7 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { useDynamicSEO } from './utils/seoConfig';
 
 function AppContent() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('home');
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
 
@@ -130,12 +130,12 @@ function AppContent() {
           <div>
             <h4 className="font-bold text-white text-sm mb-3">{t('footer.domes_title')}</h4>
             <ul className="space-y-2 text-xs">
-              <li>Domo 1 — Huitaca</li>
-              <li>Domo 2 — Bochica</li>
-              <li>Domo 3 — Bachué</li>
-              <li>Domo 4 — Luna Chía</li>
-              <li>Domo 5 — Chiminichagua</li>
-              <li>Domo 6 — Xue Sol</li>
+              <li>{language === 'en' ? 'Dome' : 'Domo'} 1 — Huitaca</li>
+              <li>{language === 'en' ? 'Dome' : 'Domo'} 2 — Bochica</li>
+              <li>{language === 'en' ? 'Dome' : 'Domo'} 3 — Bachué</li>
+              <li>{language === 'en' ? 'Dome' : 'Domo'} 4 — Luna Chía</li>
+              <li>{language === 'en' ? 'Dome' : 'Domo'} 5 — Chiminichagua</li>
+              <li>{language === 'en' ? 'Dome' : 'Domo'} 6 — Xue Sol</li>
             </ul>
           </div>
 

@@ -405,7 +405,7 @@ export const FoodMenuSection: React.FC<FoodMenuSectionProps> = ({ onOpenBooking 
                       />
                       <div className="absolute top-3 left-3 z-10 bg-slate-900/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-slate-700/50 flex items-center space-x-1.5 shadow-md pointer-events-none">
                         <Video className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>Video Tour</span>
+                        <span>{language === 'en' ? 'Video Tour' : 'Video Tour'}</span>
                       </div>
                     </div>
                   ) : (

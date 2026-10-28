@@ -358,24 +358,24 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
           <div className="space-y-6">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold">
               <MapPin className="w-4 h-4 text-emerald-600" />
-              <span>Ubicación Privilegiada</span>
+              <span>{language === 'en' ? 'Prime Location' : 'Ubicación Privilegiada'}</span>
             </div>
             <h3 className="text-3xl font-bold text-slate-900">Chinauta, Fusagasugá, Cundinamarca</h3>
             <p className="text-slate-600 leading-relaxed text-base">
-              A tan solo 1.5 horas de Bogotá, en el corazón del clima templado de Chinauta. Un oasis de paz, aire puro y paisajes montañosos majestuosos.
+              {language === 'en' ? 'Just 1.5 hours from Bogotá, in the heart of Chinauta\'s mild climate. An oasis of peace, fresh air and majestic mountain landscapes.' : 'A tan solo 1.5 horas de Bogotá, en el corazón del clima templado de Chinauta. Un oasis de paz, aire puro y paisajes montañosos majestuosos.'}
             </p>
             <div className="space-y-3 pt-2">
               <div className="flex items-center space-x-3 text-slate-700 text-sm">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                <span>Vía pavimentada hasta la entrada principal</span>
+                <span>{language === 'en' ? 'Paved road to the main entrance' : 'Vía pavimentada hasta la entrada principal'}</span>
               </div>
               <div className="flex items-center space-x-3 text-slate-700 text-sm">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                <span>Parqueadero privado vigilado 24/7</span>
+                <span>{language === 'en' ? 'Private guarded parking 24/7' : 'Parqueadero privado vigilado 24/7'}</span>
               </div>
               <div className="flex items-center space-x-3 text-slate-700 text-sm">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                <span>Senderos ecológicos internos</span>
+                <span>{language === 'en' ? 'Internal ecological trails' : 'Senderos ecológicos internos'}</span>
               </div>
             </div>
             <div className="pt-4">
