@@ -51,6 +51,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
   // Real uploaded videos for Domes (Domos 1, 3, 5 and custom uploaded)
   const [domeVideos, setDomeVideos] = useState<Record<number, string>>({
     1: '/assets/videos/domo_1_user_video.mp4',
+    2: '/assets/videos/domo_2_user_video.mp4',
     3: '/assets/videos/domo_3_user_video.mp4',
     5: '/assets/videos/domo_5_user_video.mp4'
   });
@@ -72,6 +73,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({ onOpenBooking, onNavigat
           // Sync videos from server
           const serverVideos: Record<number, string> = {
             1: '/assets/videos/domo_1_user_video.mp4',
+            2: '/assets/videos/domo_2_user_video.mp4',
             3: '/assets/videos/domo_3_user_video.mp4',
             5: '/assets/videos/domo_5_user_video.mp4'
           };
