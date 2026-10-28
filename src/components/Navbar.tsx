@@ -135,28 +135,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800">6</span>
               </button>
 
-              <button
-                onClick={() => handleNavClick('menu')}
-                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-1.5 ${
-                  activeTab === 'menu'
-                    ? 'bg-emerald-50 text-emerald-700 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
-                }`}
-              >
-                <Utensils className="w-4 h-4 text-emerald-600" />
-                <span>{t('nav.menu')}</span>
-              </button>
+
 
               <button
-                onClick={() => handleNavClick('decoraciones')}
-                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-1.5 ${
-                  activeTab === 'decoraciones'
+                onClick={() => handleNavClick('contact')}
+                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === 'contact'
                     ? 'bg-emerald-50 text-emerald-700 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>{language === 'en' ? 'Decorations' : 'Decoraciones'}</span>
+                {t('nav.contact')}
               </button>
 
               {/* Elegant Dropdown: Explorar */}
@@ -183,6 +172,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                       transition={{ duration: 0.15 }}
                       className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200/90 py-2.5 z-50 overflow-hidden"
                     >
+                      <button
+                        onClick={() => handleNavClick('menu')}
+                        className="w-full text-left px-4 py-2.5 hover:bg-emerald-50 flex items-start space-x-3 transition-colors group"
+                      >
+                        <div className="p-2 rounded-lg bg-amber-100/80 text-amber-700 group-hover:bg-amber-200 transition-colors">
+                          <Utensils className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900">{t('nav.menu')}</p>
+                          <p className="text-xs text-slate-500">{language === 'en' ? 'Food and drinks' : 'Comida y bebidas'}</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => handleNavClick('decoraciones')}
+                        className="w-full text-left px-4 py-2.5 hover:bg-emerald-50 flex items-start space-x-3 transition-colors group"
+                      >
+                        <div className="p-2 rounded-lg bg-rose-100/80 text-rose-700 group-hover:bg-rose-200 transition-colors">
+                          <Sparkles className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900">{language === 'en' ? 'Decorations' : 'Decoraciones'}</p>
+                          <p className="text-xs text-slate-500">{language === 'en' ? 'VIP decoration for your stay' : 'Decoración VIP para tu estadía'}</p>
+                        </div>
+                      </button>
+
+                      <div className="border-t border-slate-100 my-1" />
+
                       <button
                         onClick={() => handleNavClick('map')}
                         className="w-full text-left px-4 py-2.5 hover:bg-emerald-50 flex items-start space-x-3 transition-colors group"
@@ -252,16 +269,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </AnimatePresence>
               </div>
 
-              <button
-                onClick={() => handleNavClick('contact')}
-                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === 'contact'
-                    ? 'bg-emerald-50 text-emerald-700 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
-                }`}
-              >
-                {t('nav.contact')}
-              </button>
             </nav>
 
             {/* Desktop Actions (visible on md+) */}
